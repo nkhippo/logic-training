@@ -34,7 +34,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .app-header h1{font-size:20px;font-weight:500;margin-bottom:.15rem;}
 .app-header .subtitle{font-size:13px;color:var(--text2);}
 .lang-sw{display:flex;border:.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;flex-shrink:0;}
-.lang-btn{padding:6px 14px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;}
+.lang-btn{padding:6px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;white-space:nowrap;}
 .lang-btn.active{background:var(--bg2);color:var(--text);}
 .lang-btn:first-child{border-right:.5px solid var(--border2);}
 .api-bar{background:var(--bg);border:.5px solid var(--border2);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1rem;}
@@ -45,7 +45,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .api-save-btn:hover{background:var(--bg2);}
 .api-note{font-size:12px;color:var(--text2);margin-top:8px;}
 .api-note a{color:var(--text2);}
-.api-saved{font-size:11px;color:var(--green);margin-top:5px;display:none;}
+.api-saved{font-size:11px;color:var(--green);margin-top:8px;display:none;align-items:center;gap:5px;}
+.api-saved.visible{display:flex;animation:api-saved-pop .35s ease;}
+.api-bar.flash-saved{border-color:var(--green);box-shadow:0 0 0 2px rgba(45,122,92,.18);transition:border-color .3s,box-shadow .3s;}
+.api-save-btn.saved{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
+@keyframes api-saved-pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.btn.needs-apikey{opacity:.45;cursor:not-allowed;}
 .tabs{display:flex;gap:6px;margin-bottom:1.25rem;}
 .tab{flex:1;padding:9px 4px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;}
 .tab.active{background:var(--bg2);color:var(--text);}
@@ -96,6 +101,22 @@ textarea{resize:vertical;}
 .loading{color:var(--text2);font-size:14px;padding:.75rem 0;}
 .dots::after{content:'.';animation:dots 1.2s steps(3,end) infinite;}
 @keyframes dots{0%,20%{content:'.'}40%{content:'..'}80%,100%{content:'...'}}
+.gen-status{margin-top:12px;padding:12px 14px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-md);}
+.gen-status-hd{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--text);margin-bottom:10px;}
+.gen-spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:gen-spin .7s linear infinite;flex-shrink:0;}
+@keyframes gen-spin{to{transform:rotate(360deg);}}
+.gen-steps{list-style:none;display:grid;gap:6px;}
+.gen-step{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);transition:color .2s;}
+.gen-step.active{color:var(--text);font-weight:500;}
+.gen-step.done{color:var(--green);}
+.gen-step-mark{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:1;}
+.gen-step.active .gen-step-mark{border-color:var(--purple);border-top-color:transparent;border-width:2px;animation:gen-spin .7s linear infinite;background:transparent;}
+.gen-step.done .gen-step-mark{border-color:var(--green);background:var(--green);color:#fff;}
+.gen-step.done .gen-step-mark::after{content:'✓';}
+.btn.is-loading{opacity:.65;cursor:wait;}
+.app.is-busy .pcard{cursor:not-allowed;}
+.completed-text .conj strong{color:var(--purple);font-weight:600;}
+.completed-text .conj-role{font-size:.85em;color:var(--amber);font-weight:500;margin-left:1px;}
 .err{color:#c0453a;font-size:14px;padding:.5rem 0;}
 .slabel{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;}
 .theme-tag{display:inline-block;font-size:12px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-md);padding:3px 10px;margin-bottom:10px;color:var(--text2);}
@@ -150,15 +171,14 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
-      <p class="subtitle" id="ui-app-sub">接続詞の使い方を磨く</p>
     </div>
     <div class="lang-sw">
-      <button class="lang-btn active" onclick="setLang('ja')">JA</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
+      <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+      <button class="lang-btn" onclick="setLang('en')">English</button>
     </div>
   </div>
 
-  <div class="api-bar no-print">
+  <div class="api-bar no-print" id="api-bar">
     <div class="api-row">
       <label id="ui-api-lbl">Claude APIキー</label>
       <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="current-password"/>
@@ -192,6 +212,13 @@ textarea{resize:vertical;}
       <div class="diff-desc" id="f-diff-desc"></div>
       <div class="auto-info" id="f-auto-info"></div>
       <button class="btn" id="f-gen-btn" onclick="generateFill()"><span id="ui-f-gen">問題を生成する</span></button>
+      <div class="gen-status" id="f-gen-status" hidden aria-live="polite">
+        <div class="gen-status-hd"><span class="gen-spinner" aria-hidden="true"></span><span id="f-gen-status-title"></span></div>
+        <ol class="gen-steps">
+          <li class="gen-step pending" id="f-gen-step-llm"><span class="gen-step-mark" aria-hidden="true"></span><span id="f-gen-lbl-llm"></span></li>
+          <li class="gen-step pending" id="f-gen-step-process"><span class="gen-step-mark" aria-hidden="true"></span><span id="f-gen-lbl-process"></span></li>
+        </ol>
+      </div>
     </div>
     <div id="fill-result" style="display:none;">
       <div class="print-header" id="f-ph"></div>
@@ -203,14 +230,18 @@ textarea{resize:vertical;}
       <div class="action-bar no-print">
         <button class="btn" id="f-submit" onclick="submitFill()"><span id="ui-f-submit">答え合わせをする</span></button>
       </div>
+      <div class="gen-status" id="f-grade-status" hidden aria-live="polite">
+        <div class="gen-status-hd"><span class="gen-spinner" aria-hidden="true"></span><span id="f-grade-status-title"></span></div>
+        <ol class="gen-steps">
+          <li class="gen-step pending" id="f-grade-step-llm"><span class="gen-step-mark" aria-hidden="true"></span><span id="f-grade-lbl-llm"></span></li>
+          <li class="gen-step pending" id="f-grade-step-process"><span class="gen-step-mark" aria-hidden="true"></span><span id="f-grade-lbl-process"></span></li>
+        </ol>
+      </div>
       <div class="action-bar no-print" style="margin-top:8px;">
         <button class="btn btn-icon btn-sm" onclick="doPrint('fill','q')"><i class="ti ti-printer"></i> <span id="ui-f-pq">問題を印刷</span></button>
         <button class="btn btn-icon btn-sm" id="f-pa-btn" style="display:none;" onclick="doPrint('fill','a')"><i class="ti ti-printer"></i> <span id="ui-f-pa">解説を印刷</span></button>
       </div>
       <div id="f-fb"></div>
-      <div id="f-savebar" class="action-bar no-print" style="display:none;">
-        <button class="btn btn-icon" onclick="saveFill()"><i class="ti ti-cloud-upload"></i> <span id="ui-f-save">過去問として保存</span></button>
-      </div>
     </div>
     <div class="past-section no-print">
       <div id="fp-list-view">
@@ -265,6 +296,13 @@ textarea{resize:vertical;}
       <div class="diff-desc" id="s-diff-desc"></div>
       <div class="auto-info" id="s-auto-info"></div>
       <button class="btn" id="s-gen-btn" onclick="generateSummary()"><span id="ui-s-gen">問題を生成する</span></button>
+      <div class="gen-status" id="s-gen-status" hidden aria-live="polite">
+        <div class="gen-status-hd"><span class="gen-spinner" aria-hidden="true"></span><span id="s-gen-status-title"></span></div>
+        <ol class="gen-steps">
+          <li class="gen-step pending" id="s-gen-step-llm"><span class="gen-step-mark" aria-hidden="true"></span><span id="s-gen-lbl-llm"></span></li>
+          <li class="gen-step pending" id="s-gen-step-process"><span class="gen-step-mark" aria-hidden="true"></span><span id="s-gen-lbl-process"></span></li>
+        </ol>
+      </div>
     </div>
     <div id="summary-result" style="display:none;">
       <div class="print-header" id="s-ph"></div>
@@ -280,9 +318,6 @@ textarea{resize:vertical;}
         <button class="btn btn-icon btn-sm" id="s-pa-btn" style="display:none;" onclick="doPrint('summary','a')"><i class="ti ti-printer"></i> <span id="ui-s-pa">解説を印刷</span></button>
       </div>
       <div id="s-fb"></div>
-      <div id="s-savebar" class="action-bar no-print" style="display:none;">
-        <button class="btn btn-icon" onclick="saveSummary()"><i class="ti ti-cloud-upload"></i> <span id="ui-s-save">過去問として保存</span></button>
-      </div>
     </div>
     <div class="past-section no-print">
       <div id="sp-list-view">
@@ -319,7 +354,7 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.2',
+    appTitle:'論理トレーニング',
     apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
     fThemeLbl:'テーマ',optional:'（省略可）',fLenLbl:'文字数（目安）',
@@ -339,16 +374,17 @@ const L={
       '複雑な論述文。要約目標は原文の約30%。高度な抽象化が必要。',
       '東京大学入試レベルの難解な評論文。要約目標は原文の約20%。'
     ],
-    genBtn:'問題を生成する',
+    genBtn:'問題を生成する',genBtnBusy:'生成中…',
+    genPhaseLlm:'AIが問題を作成しています',genPhaseProcess:'問題を整理しています',
+    gradePhaseLlm:'AIが答え合わせしています',gradePhaseProcess:'解説を表示しています',
     fInst:'問題文 — 空欄に当てはまる接続詞を答えてください',
-    answerBox:'回答欄',submitBtn:'答え合わせをする',
+    answerBox:'回答欄',submitBtn:'答え合わせをする',submitBtnBusy:'答え合わせ中…',
     pq:'問題を印刷',pa:'解説を印刷',
-    saveLabel:'過去問として保存（全端末に同期）',
     fPastTitle:'穴埋め 過去問',sPastTitle:'要約 過去問',
     rand:'ランダム',ref:'更新',back:'一覧に戻る',all:'すべて',
     rLbl:'校閲する文章を貼り付けてください',rBtn:'接続詞・論理性をチェックする',
     sGenBtn:'問題を生成する',sInst:'問題文 — 以下の文章を指定文字数以内で要約してください',
-    yourSum:'あなたの要約',sSubmit:'添削してもらう',sSave:'過去問として保存（全端末に同期）',
+    yourSum:'あなたの要約',sSubmit:'添削してもらう',
     autoFill:'穴埋め数（自動）：',autoBlocks:'ブロック数（自動）：',autoRatio:'要約目標：原文の',
     offlineBtn:'オフライン採点（前回の解説を表示）',apiBtn:'APIで新たに添削してもらう',
     overwriteBtn:'この添削で上書き保存',overwriteNote:'※ APIで添削後に「上書き保存」も可能です',
@@ -361,7 +397,8 @@ const L={
     savedOk:'過去問を保存しました ✓',sSavedOk:'要約問題を保存しました ✓',
     deletedOk:'削除しました',overwriteOk:'添削を上書き保存しました ✓',
     delConfirm:'この過去問を削除しますか？',
-    noApiKey:'APIキーを入力してください。',
+    noApiKey:'APIキーを入力してください。',apiKeyHint:'APIキーを入力して「保存」を押してください',
+    saveBtnDone:'保存しました',
     genFailed:'問題の生成に失敗しました。',reviewFailed:'校閲に失敗しました',
     apiKeySaved:'APIキーを保存しました ✓',
     fPrintInst:'指示：空欄（　　）に適切な接続詞を入れてください。',
@@ -373,7 +410,7 @@ const L={
     theme:'テーマ：',diff:'難易度：',
   },
   en:{
-    appTitle:'Logic Training',appSub:'Master the use of conjunctions  Ver.1.2',
+    appTitle:'Logic Training',
     apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
     fThemeLbl:'Theme',optional:'(optional)',fLenLbl:'Length (approx.)',
@@ -393,16 +430,17 @@ const L={
       'Complex discourse. Target: ~30% of original. High abstraction needed.',
       'Advanced-level academic essay. Target: ~20% of original.'
     ],
-    genBtn:'Generate Problem',
+    genBtn:'Generate Problem',genBtnBusy:'Generating…',
+    genPhaseLlm:'AI is generating the problem',genPhaseProcess:'Organizing the problem',
+    gradePhaseLlm:'AI is checking your answers',gradePhaseProcess:'Preparing your feedback',
     fInst:'Fill in the blanks with the appropriate conjunctions',
-    answerBox:'Answers',submitBtn:'Check Answers',
+    answerBox:'Answers',submitBtn:'Check Answers',submitBtnBusy:'Checking…',
     pq:'Print Problem',pa:'Print Explanation',
-    saveLabel:'Save as Past Problem (sync all devices)',
     fPastTitle:'Fill-in Past Problems',sPastTitle:'Summary Past Problems',
     rand:'Random',ref:'Refresh',back:'Back to List',all:'All',
     rLbl:'Paste the text you want to proofread',rBtn:'Check Conjunctions & Logic',
     sGenBtn:'Generate Problem',sInst:'Summarize the text within the word limit',
-    yourSum:'Your Summary',sSubmit:'Get Feedback',sSave:'Save as Past Problem (sync all devices)',
+    yourSum:'Your Summary',sSubmit:'Get Feedback',
     autoFill:'Blanks (auto):',autoBlocks:'Blocks (auto):',autoRatio:'Summary target: ~',
     offlineBtn:'Offline Scoring (show previous feedback)',apiBtn:'Get New AI Feedback',
     overwriteBtn:'Save this feedback (overwrite)',overwriteNote:'※ You can overwrite after getting new AI feedback.',
@@ -415,7 +453,8 @@ const L={
     savedOk:'Saved ✓',sSavedOk:'Summary saved ✓',
     deletedOk:'Deleted',overwriteOk:'Overwritten ✓',
     delConfirm:'Delete this past problem?',
-    noApiKey:'Please enter your API key.',
+    noApiKey:'Please enter your API key.',apiKeyHint:'Enter your API key and click Save',
+    saveBtnDone:'Saved',
     genFailed:'Failed to generate problem.',reviewFailed:'Review failed',
     apiKeySaved:'API key saved ✓',
     fPrintInst:'Fill in each blank with an appropriate conjunction.',
@@ -429,7 +468,11 @@ const L={
 };
 
 // ── State ─────────────────────────────────────────────────
-const st={lang:'ja',fDiff:3,sDiff:3,fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null};
+const st={lang:'ja',fDiff:3,sDiff:3,fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
+let _genLockedEls=[];
+let _gradeLockedEls=[];
+function isBusy(){return st.genBusy||st.gradeBusy;}
+function setAppBusyClass(){document.querySelector('.app').classList.toggle('is-busy',!!isBusy());}
 
 // ── 穴埋め数 / ブロック数の自動計算 ─────────────────────
 // 文字数80%・難易度20%の重みで決定
@@ -464,20 +507,20 @@ const BADGE={1:'b1',2:'b2',3:'b3',4:'b4',5:'b5'};
 function ui(id,txt){const e=document.getElementById(id);if(e)e.textContent=txt;}
 function applyLang(){
   const l=L[st.lang];
-  ui('ui-app-title',l.appTitle);ui('ui-app-sub',l.appSub);
+  ui('ui-app-title',l.appTitle);
   ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);ui('ui-saved-msg',l.savedMsg);
   ui('ui-tab-fill',l.tabFill);ui('ui-tab-review',l.tabReview);ui('ui-tab-sum',l.tabSum);
   document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
   ui('ui-f-len-lbl',l.fLenLbl);ui('ui-f-diff-lbl',l.diffLbl);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
-  ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);ui('ui-f-save',l.saveLabel);
+  ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
   ui('ui-f-past-title',l.fPastTitle);ui('ui-f-rand',l.rand);ui('ui-f-ref',l.ref);
   ui('ui-f-back',l.back);ui('ui-fp-all',l.all);
   ui('ui-r-lbl',l.rLbl);ui('ui-r-btn',l.rBtn);
   document.getElementById('ui-s-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
   ui('ui-s-len-lbl',l.sLenLbl);ui('ui-s-diff-lbl',l.diffLbl);
   ui('ui-s-gen',l.sGenBtn);ui('ui-s-submit',l.sSubmit);
-  ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);ui('ui-s-save',l.sSave);
+  ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
   ui('ui-s-past-title',l.sPastTitle);ui('ui-s-rand',l.rand);ui('ui-s-ref',l.ref);
   ui('ui-s-back',l.back);ui('ui-sp-all',l.all);
   // diff labels
@@ -495,6 +538,155 @@ function applyLang(){
   // lang buttons
   document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',i===(st.lang==='ja'?0:1)));
   document.documentElement.lang=st.lang;
+  if(st.genBusy)updateGenStatusUI(st.genBusy);
+  if(st.gradeBusy)updateGradeStatusUI(st.gradeBusy);
+  updateApiKeyUI();
+}
+
+function genPrefix(mode){return mode==='fill'?'f':'s';}
+function updateGenStatusUI(mode){
+  const l=L[st.lang],p=genPrefix(mode);
+  ui(p+'-gen-lbl-llm',l.genPhaseLlm);
+  ui(p+'-gen-lbl-process',l.genPhaseProcess);
+  const btn=document.getElementById(p+'-gen-btn');
+  if(btn&&st.genBusy===mode)btn.querySelector('span').textContent=l.genBtnBusy;
+  if(st.genPhase){
+    const title=document.getElementById(p+'-gen-status-title');
+    if(title)title.textContent=st.genPhase==='llm'?l.genPhaseLlm:l.genPhaseProcess;
+  }
+}
+function setGenPhase(mode,phase){
+  st.genPhase=phase;
+  const order=['llm','process'];
+  order.forEach(s=>{
+    const el=document.getElementById(genPrefix(mode)+'-gen-step-'+s);
+    if(!el)return;
+    el.classList.remove('pending','active','done');
+    if(!phase){el.classList.add('pending');return;}
+    const pi=order.indexOf(phase),si=order.indexOf(s);
+    if(si<pi)el.classList.add('done');
+    else if(si===pi)el.classList.add('active');
+    else el.classList.add('pending');
+  });
+  updateGenStatusUI(mode);
+}
+function collectGenLockEls(mode){
+  const panel='#'+(mode==='fill'?'fill':'summary')+'-panel';
+  return document.querySelectorAll(
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, '+panel+' .card button, '+panel+' .card input, '+panel+' .past-section button, '+panel+' .pf-tab, '+panel+' .pcard, '+panel+' .back-btn, '+panel+' .pcdel'
+  );
+}
+function lockEl(el,skipIds){
+  const skip=Array.isArray(skipIds)?skipIds:[];
+  if(skip.includes(el.id)||el.id==='f-gen-btn'||el.id==='s-gen-btn')return;
+  if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.tagName==='TEXTAREA'){
+    el.dataset.genWasDisabled=el.disabled?'1':'0';
+    el.disabled=true;
+  }else{
+    el.dataset.genLocked='1';
+    el.style.pointerEvents='none';
+    el.style.opacity='0.55';
+  }
+}
+function unlockEl(el){
+  if(el.dataset.genLocked){
+    delete el.dataset.genLocked;
+    el.style.pointerEvents='';
+    el.style.opacity='';
+  }else if(el.dataset.genWasDisabled!==undefined){
+    el.disabled=el.dataset.genWasDisabled==='1';
+    delete el.dataset.genWasDisabled;
+  }
+}
+function beginGen(mode){
+  if(isBusy())return false;
+  st.genBusy=mode;
+  const p=genPrefix(mode);
+  setAppBusyClass();
+  document.getElementById(p+'-gen-status').hidden=false;
+  updateGenStatusUI(mode);
+  setGenPhase(mode,'llm');
+  const btn=document.getElementById(p+'-gen-btn');
+  btn.disabled=true;
+  btn.classList.add('is-loading');
+  _genLockedEls=[...collectGenLockEls(mode)];
+  _genLockedEls.forEach(el=>lockEl(el));
+  return true;
+}
+function endGen(mode){
+  if(st.genBusy!==mode)return;
+  st.genBusy=null;
+  st.genPhase=null;
+  const p=genPrefix(mode);
+  setAppBusyClass();
+  document.getElementById(p+'-gen-status').hidden=true;
+  const btn=document.getElementById(p+'-gen-btn');
+  btn.classList.remove('is-loading');
+  btn.querySelector('span').textContent=mode==='fill'?L[st.lang].genBtn:L[st.lang].sGenBtn;
+  _genLockedEls.forEach(unlockEl);
+  _genLockedEls=[];
+  setGenPhase(mode,null);
+  updateApiKeyUI();
+}
+
+function updateGradeStatusUI(){
+  const l=L[st.lang];
+  ui('f-grade-lbl-llm',l.gradePhaseLlm);
+  ui('f-grade-lbl-process',l.gradePhaseProcess);
+  const btn=document.getElementById('f-submit');
+  if(btn&&st.gradeBusy)btn.querySelector('span').textContent=l.submitBtnBusy;
+  if(st.gradePhase){
+    const title=document.getElementById('f-grade-status-title');
+    if(title)title.textContent=st.gradePhase==='llm'?l.gradePhaseLlm:l.gradePhaseProcess;
+  }
+}
+function setGradePhase(phase){
+  st.gradePhase=phase;
+  ['llm','process'].forEach(s=>{
+    const el=document.getElementById('f-grade-step-'+s);
+    if(!el)return;
+    el.classList.remove('pending','active','done');
+    if(!phase){el.classList.add('pending');return;}
+    const order=['llm','process'],pi=order.indexOf(phase),si=order.indexOf(s);
+    if(si<pi)el.classList.add('done');
+    else if(si===pi)el.classList.add('active');
+    else el.classList.add('pending');
+  });
+  updateGradeStatusUI();
+}
+function collectGradeLockEls(){
+  return document.querySelectorAll(
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn, #fill-panel .pcdel'
+  );
+}
+function beginGrade(){
+  if(isBusy())return false;
+  st.gradeBusy='fill';
+  setAppBusyClass();
+  document.getElementById('f-grade-status').hidden=false;
+  document.getElementById('f-fb').innerHTML='';
+  updateGradeStatusUI();
+  setGradePhase('llm');
+  const btn=document.getElementById('f-submit');
+  btn.disabled=true;
+  btn.classList.add('is-loading');
+  _gradeLockedEls=[...collectGradeLockEls()];
+  _gradeLockedEls.forEach(el=>lockEl(el,['f-submit']));
+  return true;
+}
+function endGrade(){
+  if(st.gradeBusy!=='fill')return;
+  st.gradeBusy=null;
+  st.gradePhase=null;
+  setAppBusyClass();
+  document.getElementById('f-grade-status').hidden=true;
+  const btn=document.getElementById('f-submit');
+  btn.classList.remove('is-loading');
+  btn.querySelector('span').textContent=L[st.lang].submitBtn;
+  _gradeLockedEls.forEach(unlockEl);
+  _gradeLockedEls=[];
+  setGradePhase(null);
+  updateApiKeyUI();
 }
 
 function updateDiffUI(m){
@@ -513,14 +705,17 @@ function updateDiffUI(m){
 }
 
 function setLang(lang){
+  if(isBusy())return;
   st.lang=lang;localStorage.setItem(LANG_KEY,lang);applyLang();
 }
 function setDiff(m,d){
+  if(isBusy())return;
   if(m==='f')st.fDiff=d;else st.sDiff=d;
   document.querySelectorAll('#'+(m==='f'?'f':'s')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
   updateDiffUI(m);
 }
 function switchTab(name){
+  if(isBusy())return;
   ['fill','review','summary'].forEach((n,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('active',n===name);
     document.getElementById(n+'-panel').classList.toggle('active',n===name);
@@ -537,8 +732,14 @@ function setSync(mode,cls,msg){const pfx=mode==='fill'?'fp':'sp';document.getEle
 function parseF(v){if(Array.isArray(v))return v;try{return JSON.parse(v);}catch{return[];}}
 
 // ── md → HTML ─────────────────────────────────────────────
+function styleCompletedConj(html){
+  return html.replace(/(<div class="completed-text">)([\s\S]*?)(<\/div>)/g,(_,open,inner,close)=>{
+    const s=inner.replace(/<strong>([^<]+)<\/strong>\[([^\]]+)\]/g,'<span class="conj"><strong>$1</strong><span class="conj-role">[$2]</span></span>');
+    return open+s+close;
+  });
+}
 function md2h(tx){
-  return String(tx||'')
+  let h=String(tx||'')
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/^#{2,3} (.+)$/gm,'<h3>$1</h3>')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
@@ -549,13 +750,64 @@ function md2h(tx){
     .replace(/((?:<li>[\s\S]*?<\/li>\n?)+)/g,'<ul>$1</ul>')
     .replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>')
     .replace(/「完全補完文」([\s\S]*?)(?=<h3>|$)/g,'<div class="completed-text">$1</div>')
-    .replace(/「Fully Supplemented Text」([\s\S]*?)(?=<h3>|$)/g,'<div class="completed-text">$1</div>');
+    .replace(/「Fully Supplemented Text」([\s\S]*?)(?=<h3>|$)/g,'<div class="completed-text">$1</div>')
+    .replace(/<h3>完全補完文<\/h3>([\s\S]*?)(?=<h3>|$)/g,'<h3>完全補完文</h3><div class="completed-text">$1</div>')
+    .replace(/<h3>Fully Supplemented Text<\/h3>([\s\S]*?)(?=<h3>|$)/g,'<h3>Fully Supplemented Text</h3><div class="completed-text">$1</div>');
+  return styleCompletedConj(h);
 }
 
 // ── APIキー ───────────────────────────────────────────────
-function loadApiKey(){const v=localStorage.getItem(APIKEY_KEY);if(v){document.getElementById('apikey').value=v;document.getElementById('api-saved').style.display='block';}}
-function saveApiKey(){const k=document.getElementById('apikey').value.trim();if(!k){alert(L[st.lang].noApiKey);return;}localStorage.setItem(APIKEY_KEY,k);document.getElementById('api-saved').style.display='block';showToast(L[st.lang].apiKeySaved);}
-function getKey(){const k=document.getElementById('apikey').value.trim();if(!k){alert(L[st.lang].noApiKey);return null;}return k;}
+function hasApiKey(){return !!document.getElementById('apikey')?.value.trim();}
+function updateApiKeyUI(){
+  const l=L[st.lang],busy=isBusy(),ok=hasApiKey();
+  ['f-gen-btn','s-gen-btn'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(!b)return;
+    b.disabled=busy||!ok;
+    b.classList.toggle('needs-apikey',!ok&&!busy);
+    b.title=!ok?l.apiKeyHint:'';
+  });
+  const sub=document.getElementById('f-submit');
+  if(sub){
+    const canGrade=ok&&!busy&&!!st.fill;
+    sub.disabled=!canGrade;
+    sub.classList.toggle('needs-apikey',!ok);
+    sub.title=!ok?l.apiKeyHint:(!st.fill?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+  }
+}
+function loadApiKey(){
+  const v=localStorage.getItem(APIKEY_KEY);
+  if(v)document.getElementById('apikey').value=v;
+  const saved=document.getElementById('api-saved');
+  if(v&&saved){saved.classList.add('visible');saved.style.display='';}
+  updateApiKeyUI();
+}
+function saveApiKey(){
+  const k=document.getElementById('apikey').value.trim();
+  if(!k){alert(L[st.lang].noApiKey);return;}
+  localStorage.setItem(APIKEY_KEY,k);
+  const bar=document.getElementById('api-bar');
+  const saved=document.getElementById('api-saved');
+  const btn=document.querySelector('.api-save-btn');
+  const lbl=document.getElementById('ui-save-btn');
+  saved.classList.add('visible');
+  saved.style.display='';
+  bar.classList.add('flash-saved');
+  btn.classList.add('saved');
+  if(lbl)lbl.textContent=L[st.lang].saveBtnDone;
+  showToast(L[st.lang].apiKeySaved);
+  updateApiKeyUI();
+  setTimeout(()=>{
+    bar.classList.remove('flash-saved');
+    btn.classList.remove('saved');
+    if(lbl)lbl.textContent=L[st.lang].saveBtn;
+  },2000);
+}
+function getKey(silent){
+  const k=document.getElementById('apikey').value.trim();
+  if(!k){if(!silent)alert(L[st.lang].noApiKey);return null;}
+  return k;
+}
 
 // ── Claude API ────────────────────────────────────────────
 async function callClaude(prompt,sys,maxTok=2500){
@@ -617,15 +869,15 @@ function getSumPrompts(){
 }
 
 async function generateFill(){
+  if(isBusy()||!hasApiKey())return;
   const themeIn=document.getElementById('f-theme').value.trim();
   const length=parseInt(document.getElementById('f-length').value)||300;
   const diff=st.fDiff;
   const blanks=calcBlanks(length,diff);
   const hasTheme=themeIn.length>0;
   const isEN=st.lang==='en';
-  document.getElementById('f-gen-btn').disabled=true;
   document.getElementById('fill-result').style.display='none';
-  document.getElementById('f-savebar').style.display='none';
+  if(!beginGen('fill'))return;
 
   const sys=isEN
     ?'You are an expert in logical writing and education. Respond ONLY in valid JSON format. No markdown, no explanation before or after the JSON.'
@@ -640,19 +892,21 @@ async function generateFill(){
 
   try{
     const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}`,sys,1500);
-    if(raw){
-      const p=safeJSON(raw);
-      if(!p.text||!Array.isArray(p.answers))throw new Error('Invalid JSON structure');
-      if(isEN){
-        let t=p.text;
-        for(let i=1;i<=p.answers.length;i++) t=t.replace(`[_${i}_]`,`【_${i}_】`);
-        p.text=t;
-      }
-      st.fill={...p,theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
-      renderFill(st.fill);
+    if(!raw)return;
+    setGenPhase('fill','process');
+    const p=safeJSON(raw);
+    if(!p.text||!Array.isArray(p.answers))throw new Error('Invalid JSON structure');
+    if(isEN){
+      let t=p.text;
+      for(let i=1;i<=p.answers.length;i++) t=t.replace(`[_${i}_]`,`【_${i}_】`);
+      p.text=t;
     }
+    st.fill={...p,id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
+    renderFill(st.fill);
+    try{await syncPastOnGen('fill',st.fill);}
+    catch(syncErr){setSync('fill','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].genFailed+'\n'+e.message);}
-  finally{document.getElementById('f-gen-btn').disabled=false;}
+  finally{endGen('fill');}
 }
 
 function renderFill(prob){
@@ -675,24 +929,26 @@ function renderFill(prob){
   document.getElementById('fs1').className='step done';
   document.getElementById('fs2').className='step active';
   document.getElementById('fs3').className='step';
+  updateApiKeyUI();
 }
 
 async function submitFill(){
+  if(isBusy()||!hasApiKey())return;
   const prob=st.fill;if(!prob)return;
   const ua=prob.answers.map((_,i)=>document.getElementById(`fans-${i}`)?.value.trim()||'—');
-  const btn=document.getElementById('f-submit');btn.disabled=true;
+  if(!beginGrade())return;
   const fb=document.getElementById('f-fb');
-  fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
   try{
+    setGradePhase('llm');
     const res=await gradeFill(prob,ua);if(!res)return;
-    fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
+    setGradePhase('process');
     prob.feedback=res;prob.userAnswers=ua;
+    fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
     document.getElementById('fs2').className='step done';
     document.getElementById('fs3').className='step done';
-    document.getElementById('f-savebar').style.display='flex';
     document.getElementById('f-pa-btn').style.display='';
   }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].gradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
+  finally{endGrade();}
 }
 
 async function gradeFill(prob,ua){
@@ -719,7 +975,9 @@ For each number, mark ✓ correct or ✗ incorrect. Explain why the conjunction 
 Key points about using logical conjunctions effectively.
 
 ## Fully Supplemented Text
-「Fully Supplemented Text」 — Rewrite the original text with ALL sentence boundaries supplemented with appropriate conjunctions (not just the blanks). Mark the supplemented conjunctions in **bold**.`
+「Fully Supplemented Text」 — Rewrite the original text with ALL sentence boundaries supplemented with appropriate conjunctions (not just the blanks).
+Format each supplemented conjunction as **conjunction**[role] (conjunction in bold, logical role in brackets immediately after).
+Examples: **however**[contrast], **and**[addition], **therefore**[cause]. Roles: [addition], [contrast], [cause], [concession], [example], [summary], [transition], etc.`
   :`穴埋め問題（難易度${prob.diff}/5）の添削をしてください。
 
 【問題文（正解入り）】${ct}
@@ -733,22 +991,35 @@ Key points about using logical conjunctions effectively.
 論理的接続詞の使い方に関する総合的なポイントを述べてください。
 
 ## 完全補完文
-「完全補完文」として、元の文章のすべての文と文の間（穴埋め箇所以外も含む）に接続詞を補完した、論理的に完全な文章を作成してください。補完した接続詞はすべて**太字**で示してください。`;
+「完全補完文」として、元の文章のすべての文と文の間（穴埋め箇所以外も含む）に接続詞を補完した、論理的に完全な文章を作成してください。
+補完した接続詞は必ず「**接続詞**[論理関係]」の形式で表記してください（接続詞を太字、直後に論理関係を角括弧で付記）。
+例：**しかし**[逆説]、**そして**[付加]、**したがって**[因果]
+論理関係の例：[順接] [逆接] [因果] [付加] [対比] [例示] [要約] [転換] など。`;
   return callClaude(prompt,sys,2500);
 }
 
-async function saveFill(){
-  const p=st.fill;if(!p?.feedback){alert(L[st.lang].noApiKey);return;}
-  setSync('fill','spin',L[st.lang].loading+'...');
-  const entry={id:Date.now(),sheet:'fill',theme:p.theme||'—',diff:p.diff,date:p.date,text:p.text,answers:p.answers,hints:p.hints||[],feedback:p.feedback,userAnswers:p.userAnswers||[],lang:p.lang||st.lang};
-  try{await gasPost(entry);st.fPast.unshift(entry);renderPL('fill');setSync('fill','ok',L[st.lang].savedOk);showToast(L[st.lang].savedOk);}
-  catch(e){setSync('fill','err',L[st.lang].syncFailed);showToast('Error: '+e.message,4000);}
+function buildFillEntry(prob){
+  return {id:prob.id||Date.now(),sheet:'fill',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text,answers:prob.answers,hints:prob.hints||[],feedback:prob.feedback||null,userAnswers:prob.userAnswers||[],lang:prob.lang||st.lang};
+}
+function buildSummaryEntry(prob){
+  return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,blocks:prob.blocks,ratio:prob.ratio,lang:prob.lang||st.lang};
+}
+async function syncPastOnGen(mode,prob){
+  const entry=mode==='fill'?buildFillEntry(prob):buildSummaryEntry(prob);
+  prob.id=entry.id;
+  setSync(mode,'spin',L[st.lang].genPhaseProcess+'...');
+  await gasPost(entry);
+  if(mode==='fill')st.fPast.unshift(entry);else st.sPast.unshift(entry);
+  renderPL(mode);
+  setSync(mode,'ok',(mode==='fill'?st.fPast:st.sPast).length+L[st.lang].syncItems);
+  showToast(mode==='fill'?L[st.lang].savedOk:L[st.lang].sSavedOk);
 }
 
 // ══════════════════════════════════════════════════════════
 // 要約
 // ══════════════════════════════════════════════════════════
 async function generateSummary(){
+  if(isBusy()||!hasApiKey())return;
   const themeIn=document.getElementById('s-theme').value.trim();
   const length=parseInt(document.getElementById('s-length').value)||400;
   const diff=st.sDiff;
@@ -756,9 +1027,8 @@ async function generateSummary(){
   const ratio=S_RATIO[diff];
   const hasTheme=themeIn.length>0;
   const isEN=st.lang==='en';
-  document.getElementById('s-gen-btn').disabled=true;
   document.getElementById('summary-result').style.display='none';
-  document.getElementById('s-savebar').style.display='none';
+  if(!beginGen('summary'))return;
 
   const sys=isEN
     ?'You are an expert in writing education. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
@@ -777,13 +1047,16 @@ async function generateSummary(){
   try{
     const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${blockNote}\n${jsonInst}`,sys,1800);
     if(!raw)return;
+    setGenPhase('summary','process');
     const p=safeJSON(raw);
     if(!Array.isArray(p.blocks)||p.blocks.length===0)throw new Error('Invalid JSON structure');
     const bks=p.blocks.map((text,i)=>({text,label:p.labels?.[i]||`${L[st.lang].blockLbl}${i+1}`,targetChars:Math.round(text.replace(/\s/g,'').length*ratio)}));
-    st.summary={theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blocks:bks,ratio,feedback:null,lang:st.lang};
+    st.summary={id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blocks:bks,ratio,feedback:null,lang:st.lang};
     renderSummary(st.summary);
+    try{await syncPastOnGen('summary',st.summary);}
+    catch(syncErr){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].genFailed+'\n'+e.message);}
-  finally{document.getElementById('s-gen-btn').disabled=false;}
+  finally{endGen('summary');}
 }
 
 function renderSummary(prob){
@@ -860,18 +1133,9 @@ async function submitSummary(){
     prob.feedback=res;
     document.getElementById('ss2').className='step done';
     document.getElementById('ss3').className='step done';
-    document.getElementById('s-savebar').style.display='flex';
     document.getElementById('s-pa-btn').style.display='';
   }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].gradingErr}: ${e.message}</p>`;}
   btn.disabled=false;
-}
-
-async function saveSummary(){
-  const p=st.summary;if(!p){return;}
-  setSync('summary','spin',L[st.lang].loading+'...');
-  const entry={id:Date.now(),sheet:'summary',theme:p.theme||'—',diff:p.diff,date:p.date,blocks:p.blocks,ratio:p.ratio,lang:p.lang||st.lang};
-  try{await gasPost(entry);st.sPast.unshift(entry);renderPL('summary');setSync('summary','ok',L[st.lang].sSavedOk);showToast(L[st.lang].sSavedOk);}
-  catch(e){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+e.message,4000);}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1116,11 +1380,10 @@ function init(){
   loadApiKey();
   applyLang();
   loadPast('fill');
-  // 文字数変更時にauto-infoを更新
+  document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
   document.getElementById('f-length').addEventListener('input',()=>updateDiffUI('f'));
   document.getElementById('s-length').addEventListener('input',()=>updateDiffUI('s'));
 }
-function loadApiKey(){const v=localStorage.getItem(APIKEY_KEY);if(v){document.getElementById('apikey').value=v;document.getElementById('api-saved').style.display='block';}}
 init();
 </script>
 </body>
