@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.1.2 / Logic Training</title>
+<title>論理トレーニング Ver.1.5 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 @media print {
@@ -51,6 +51,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .api-save-btn.saved{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
 @keyframes api-saved-pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .btn.needs-apikey{opacity:.45;cursor:not-allowed;}
+.sub-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border2);margin-bottom:1.25rem;}
+.sub-tab{padding:8px 20px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.sub-tab.active{color:var(--text);border-bottom-color:var(--purple);}
 .tabs{display:flex;gap:6px;margin-bottom:1.25rem;}
 .tab{flex:1;padding:9px 4px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;}
 .tab.active{background:var(--bg2);color:var(--text);}
@@ -79,13 +82,22 @@ textarea{resize:vertical;}
 .problem-box{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:15px;line-height:2.1;margin-bottom:1rem;}
 .blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;min-width:56px;text-align:center;padding:2px 6px;margin:0 2px;font-size:13px;color:var(--text2);}
 .answer-section{display:grid;gap:8px;margin-bottom:1rem;}
+.answer-item{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
 .answer-row{display:flex;align-items:center;gap:10px;}
 .answer-row label{margin:0;min-width:46px;font-size:13px;white-space:nowrap;}
 .answer-row input{flex:1;}
-.hint{font-size:12px;color:var(--text2);}
+.hint-text{font-size:11px;color:var(--text2);padding-left:54px;line-height:1.4;}
 .feedback-box{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:14px;line-height:1.85;margin-top:1rem;}
+.feedback-box h2{font-size:16px;font-weight:600;margin:1.2rem 0 .5rem;padding-bottom:.35rem;border-bottom:.5px solid var(--border);}
+.feedback-box h2:first-child{margin-top:0;}
 .feedback-box h3{font-size:15px;font-weight:500;margin:1.1rem 0 .45rem;padding-bottom:.3rem;border-bottom:.5px solid var(--border);}
 .feedback-box h3:first-child{margin-top:0;}
+.feedback-box h4{font-size:14px;font-weight:500;margin:.9rem 0 .35rem;color:var(--text);}
+.feedback-box hr{border:none;border-top:.5px solid var(--border2);margin:1rem 0;}
+.feedback-box table.md-table{width:100%;border-collapse:collapse;margin:.85rem 0 1rem;font-size:13px;line-height:1.6;}
+.feedback-box table.md-table th,.feedback-box table.md-table td{border:.5px solid var(--border2);padding:7px 10px;text-align:left;vertical-align:top;}
+.feedback-box table.md-table th{background:var(--bg2);font-weight:500;white-space:nowrap;}
+.feedback-box table.md-table tr:nth-child(even) td{background:rgba(255,255,255,.35);}
 .feedback-box p{margin-bottom:.55rem;}
 .feedback-box ol,.feedback-box ul{padding-left:1.4rem;margin-bottom:.55rem;}
 .feedback-box li{margin-bottom:.3rem;}
@@ -122,9 +134,11 @@ textarea{resize:vertical;}
 .theme-tag{display:inline-block;font-size:12px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-md);padding:3px 10px;margin-bottom:10px;color:var(--text2);}
 .mode-bar{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:.6rem 1rem;font-size:13px;color:var(--text2);margin-bottom:.75rem;display:flex;align-items:center;gap:8px;}
 .mode-bar strong{color:var(--text);}
-.sum-block{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
-.sum-block-lbl{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:.5rem;}
+.sum-block,.sum-q-block{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
+.sum-block-lbl,.sum-q-lbl{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:.5rem;}
+.q-type-badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border2);color:var(--text2);margin-left:6px;vertical-align:middle;}
 .sum-src{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1rem;font-size:14px;line-height:1.9;margin-bottom:.75rem;}
+.sum-q-text{font-size:14px;line-height:1.85;margin-bottom:.75rem;}
 .sum-ta{width:100%;border:.5px solid var(--border2);border-radius:var(--r-md);padding:10px;font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;resize:vertical;line-height:1.7;transition:border-color .15s;}
 .sum-ta.overlimit{border-color:#c0453a!important;}
 .cc{font-size:12px;text-align:right;margin-top:3px;color:var(--text2);}
@@ -132,6 +146,19 @@ textarea{resize:vertical;}
 .cc.ok2{color:var(--green);}
 .owarn{font-size:12px;color:#c0453a;margin-top:4px;display:none;}
 .owarn.show{display:block;}
+.review-toggle{display:flex;align-items:center;gap:6px;width:100%;margin:0 0 10px;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--bg2);color:var(--text2);font-size:13px;cursor:pointer;text-align:left;}
+.review-toggle:hover{color:var(--text);border-color:var(--border);}
+.review-toggle-icon{font-size:10px;line-height:1;transition:transform .15s;}
+.review-premise-body{margin-bottom:1rem;padding:0 2px;}
+.review-premise-body[hidden]{display:none!important;}
+.review-field{margin-bottom:.85rem;}
+.review-field label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px;}
+.review-images-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;}
+.review-img-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.review-img-thumb{position:relative;width:72px;height:72px;border-radius:var(--r-md);overflow:hidden;border:.5px solid var(--border2);background:var(--bg2);}
+.review-img-thumb img{width:100%;height:100%;object-fit:cover;}
+.review-img-thumb button{position:absolute;top:2px;right:2px;width:20px;height:20px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:1;cursor:pointer;padding:0;}
+.review-required::after{content:' *';color:#c0453a;font-weight:500;}
 .past-section{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-top:1rem;}
 .ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem;}
 .ph-title{font-size:15px;font-weight:500;}
@@ -171,6 +198,7 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
+      <p class="subtitle" id="ui-app-sub">Ver.1.5</p>
     </div>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -190,12 +218,21 @@ textarea{resize:vertical;}
 
   <div class="tabs no-print">
     <button class="tab active" onclick="switchTab('fill')"><i class="ti ti-puzzle"></i> <span id="ui-tab-fill">穴埋め</span></button>
-    <button class="tab" onclick="switchTab('review')"><i class="ti ti-checklist"></i> <span id="ui-tab-review">校閲</span></button>
     <button class="tab" onclick="switchTab('summary')"><i class="ti ti-align-left"></i> <span id="ui-tab-sum">要約</span></button>
+    <button class="tab" onclick="switchTab('review')"><i class="ti ti-checklist"></i> <span id="ui-tab-review">校閲</span></button>
   </div>
 
   <!-- 穴埋め -->
   <div id="fill-panel" class="panel active">
+    <div class="sub-tabs no-print" id="fill-sub-tabs">
+      <button class="sub-tab active" id="fill-sub-new" onclick="switchSub('fill','new')">
+        <i class="ti ti-plus"></i> <span id="ui-f-sub-new">新規生成</span>
+      </button>
+      <button class="sub-tab" id="fill-sub-past" onclick="switchSub('fill','past')">
+        <i class="ti ti-history"></i> <span id="ui-f-sub-past">過去問</span>
+      </button>
+    </div>
+    <div id="fill-new-area">
     <div class="card no-print">
       <div class="row2">
         <div><label id="ui-f-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-optional">（省略可）</span></label><input type="text" id="f-theme" placeholder="例: AI と社会"/></div>
@@ -243,8 +280,9 @@ textarea{resize:vertical;}
       </div>
       <div id="f-fb"></div>
     </div>
-    <div class="past-section no-print">
-      <div id="fp-list-view">
+    </div>
+    <div id="fill-past-area" class="no-print" style="display:none">
+<div id="fp-list-view">
         <div class="ph"><span class="ph-title" id="ui-f-past-title">穴埋め 過去問</span>
           <button class="btn btn-icon btn-sm" onclick="randomPast('fill')"><i class="ti ti-shuffle"></i> <span id="ui-f-rand">ランダム</span></button></div>
         <div class="pf-tabs" id="fp-tabs">
@@ -268,18 +306,17 @@ textarea{resize:vertical;}
     </div>
   </div>
 
-  <!-- 校閲 -->
-  <div id="review-panel" class="panel">
-    <div class="card no-print">
-      <label id="ui-r-lbl">校閲する文章を貼り付けてください</label>
-      <textarea id="r-text" style="min-height:180px;"></textarea>
-      <button class="btn" style="margin-top:12px;" id="r-btn" onclick="doReview()"><span id="ui-r-btn">接続詞・論理性をチェックする</span></button>
-    </div>
-    <div id="r-result" style="display:none;"><div class="feedback-box" id="r-fb"></div></div>
-  </div>
-
   <!-- 要約 -->
   <div id="summary-panel" class="panel">
+    <div class="sub-tabs no-print" id="summary-sub-tabs">
+      <button class="sub-tab active" id="summary-sub-new" onclick="switchSub('summary','new')">
+        <i class="ti ti-plus"></i> <span id="ui-s-sub-new">新規生成</span>
+      </button>
+      <button class="sub-tab" id="summary-sub-past" onclick="switchSub('summary','past')">
+        <i class="ti ti-history"></i> <span id="ui-s-sub-past">過去問</span>
+      </button>
+    </div>
+    <div id="summary-new-area">
     <div class="card no-print">
       <div class="row2">
         <div><label id="ui-s-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-s-opt">（省略可）</span></label><input type="text" id="s-theme" placeholder="例: 環境問題"/></div>
@@ -308,7 +345,9 @@ textarea{resize:vertical;}
       <div class="print-header" id="s-ph"></div>
       <div class="step-bar no-print"><div class="step done" id="ss1"></div><div class="step active" id="ss2"></div><div class="step" id="ss3"></div></div>
       <div id="s-theme-tag"></div>
-      <div id="s-blocks"></div>
+      <p class="slabel no-print" id="ui-s-inst">問題文を読み、各設問に答えてください</p>
+      <div class="problem-box" id="s-problem-text"></div>
+      <div id="s-questions"></div>
       <div id="s-owarn" class="owarn"></div>
       <div class="action-bar no-print" style="margin-top:1rem;">
         <button class="btn" id="s-submit" onclick="submitSummary()"><span id="ui-s-submit">添削してもらう</span></button>
@@ -319,8 +358,9 @@ textarea{resize:vertical;}
       </div>
       <div id="s-fb"></div>
     </div>
-    <div class="past-section no-print">
-      <div id="sp-list-view">
+    </div>
+    <div id="summary-past-area" class="no-print" style="display:none">
+<div id="sp-list-view">
         <div class="ph"><span class="ph-title" id="ui-s-past-title">要約 過去問</span>
           <button class="btn btn-icon btn-sm" onclick="randomPast('summary')"><i class="ti ti-shuffle"></i> <span id="ui-s-rand">ランダム</span></button></div>
         <div class="pf-tabs" id="sp-tabs">
@@ -343,6 +383,36 @@ textarea{resize:vertical;}
       </div>
     </div>
   </div>
+
+  <!-- 校閲 -->
+  <div id="review-panel" class="panel">
+    <div class="card no-print">
+      <button type="button" class="review-toggle" id="r-premise-toggle" onclick="toggleReviewPremise()" aria-expanded="false">
+        <span class="review-toggle-icon" id="r-premise-icon">▶</span>
+        <span id="ui-r-premise-toggle">前提情報を追加する（任意）</span>
+      </button>
+      <div id="r-premise-body" class="review-premise-body" hidden>
+        <div class="review-field">
+          <label id="ui-r-images-lbl">参考画像（複数可）</label>
+          <input type="file" id="r-images" accept="image/*" multiple onchange="onReviewImagesChange()">
+          <div id="r-image-preview" class="review-img-preview"></div>
+        </div>
+        <div class="review-field">
+          <label id="ui-r-premise-lbl">前提情報（テキスト）</label>
+          <textarea id="r-premise" class="sum-ta" style="min-height:100px;" placeholder="参考資料の説明や背景情報など"></textarea>
+        </div>
+      </div>
+      <div class="review-field">
+        <label id="ui-r-lbl" class="review-required">校閲する文章</label>
+        <textarea id="r-text" class="sum-ta" style="min-height:180px;"></textarea>
+        <div id="r-text-err" class="owarn"></div>
+      </div>
+      <button class="btn" style="margin-top:12px;" id="r-btn" onclick="doReview()"><span id="ui-r-btn">接続詞・論理性をチェックする</span></button>
+    </div>
+    <div id="r-result" style="display:none;"><div class="feedback-box" id="r-fb"></div></div>
+  </div>
+
+
 </div>
 <div class="toast" id="toast"></div>
 
@@ -354,25 +424,26 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',
+    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.5',
+    subNew:'新規生成',subPast:'過去問',
     apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
     fThemeLbl:'テーマ',optional:'（省略可）',fLenLbl:'文字数（目安）',
     sLenLbl:'問題文の文字数（目安）',diffLbl:'難易度',
-    dLabels:['やさしい','基礎','標準','難しい','東大レベル'],
+    dLabels:['入門','基礎','標準','上級','超難問'],
     fDescs:[
-      '日常的な接続詞のみ使用。ヒット付きで取り組みやすい内容です。',
-      '基本的な順接・逆接・因果の接続詞を使用。ヒントあり。',
-      '接続詞を補足なしで空欄にします。基本的な論理関係を問います。',
-      '似た意味の接続詞の使い分けが問われます。ヒントなし。',
-      '東京大学入試レベル以上。「しかるに」「蓋し」など高度な接続詞。ヒントなし。'
+      '中学〜高校レベルの平易な論説文。基本的な接続詞のみ。ヒントあり。',
+      '高校〜大学入試標準レベルの論説文。因果・逆接を含む接続詞。軽いヒントあり。',
+      '大学入試上位校レベルの評論文。類似する接続詞の精確な使い分けが問われる。ヒントなし。',
+      '最難関入試レベル。語彙は平易だが接続詞の選択が論旨を左右する精緻な構造。ヒントなし。',
+      '東京大学現代文レベル以上。専門的文体・文語的接続詞・多層的論証構造。ヒントなし。'
     ],
     sDescs:[
-      'やさしい説明文。要約目標は原文の約60%。',
-      '基礎的な論説文。要約目標は原文の約50%。',
-      '標準的な評論・論説文。要約目標は原文の約40%。',
-      '複雑な論述文。要約目標は原文の約30%。高度な抽象化が必要。',
-      '東京大学入試レベルの難解な評論文。要約目標は原文の約20%。'
+      '難易度1（基礎）: 高校教科書レベルの平易な論説文。各ブロックは約60%に要約できる内容。',
+      '難易度2（標準）: 大学入試レベルの論説・評論文。各ブロックは約50%に要約できる内容。',
+      '難易度3（応用）: 大学入試上位校レベルの評論文。抽象概念を含む。各ブロックは約40%に要約できる内容。',
+      '難易度4（上級）: 平易な語彙だが論理構造が精緻な評論文。各ブロックは約30%に要約できる内容。',
+      '難易度5（超難問）: 東京大学現代文レベル以上の難解な評論文。専門用語・複雑な論証を含む。各ブロックは約20%に要約できる内容。'
     ],
     genBtn:'問題を生成する',genBtnBusy:'生成中…',
     genPhaseLlm:'AIが問題を作成しています',genPhaseProcess:'問題を整理しています',
@@ -382,18 +453,21 @@ const L={
     pq:'問題を印刷',pa:'解説を印刷',
     fPastTitle:'穴埋め 過去問',sPastTitle:'要約 過去問',
     rand:'ランダム',ref:'更新',back:'一覧に戻る',all:'すべて',
-    rLbl:'校閲する文章を貼り付けてください',rBtn:'接続詞・論理性をチェックする',
-    sGenBtn:'問題を生成する',sInst:'問題文 — 以下の文章を指定文字数以内で要約してください',
-    yourSum:'あなたの要約',sSubmit:'添削してもらう',
-    autoFill:'穴埋め数（自動）：',autoBlocks:'ブロック数（自動）：',autoRatio:'要約目標：原文の',
+    rPremiseToggle:'前提情報を追加する（任意）',rPremiseClose:'前提情報を閉じる',
+    rImagesLbl:'参考画像（複数可）',rPremiseLbl:'前提情報（テキスト）',
+    rPremisePlaceholder:'参考資料の説明や背景情報など',
+    rLbl:'校閲する文章',rBtn:'接続詞・論理性をチェックする',rTextRequired:'校閲する文章を入力してください。',
+    sGenBtn:'問題を生成する',sInst:'問題文を読み、各設問に答えてください',
+    yourSum:'あなたの回答',sSubmit:'添削してもらう',
+    autoFill:'穴埋め数（自動）：',autoQuestions:'設問数（自動）：',
     offlineBtn:'オフライン採点（前回の解説を表示）',apiBtn:'APIで新たに添削してもらう',
     overwriteBtn:'この添削で上書き保存',overwriteNote:'※ APIで添削後に「上書き保存」も可能です',
     scoreResult:'採点結果',correctTxt:'正解文',prevFb:'前回の詳細添削',
     noPrevFb:'前回の詳細添削はありません。「APIで新たに添削」を使用してください。',
     gradingErr:'添削に失敗しました',
-    overWarn:'⚠ 文字数オーバーのブロックがあります。修正してから答え合わせしてください。',
+    overWarn:'⚠ 文字数オーバーの設問があります。修正してから添削してください。',
     charOver:'文字オーバーです',charOf:'文字',charTarget:'目標',charWithin:'文字以内',
-    blockLbl:'ブロック',blockInst:'文字以内で要約してください',
+    qLbl:'設問',qInst:'文字以内で答えてください',
     savedOk:'過去問を保存しました ✓',sSavedOk:'要約問題を保存しました ✓',
     deletedOk:'削除しました',overwriteOk:'添削を上書き保存しました ✓',
     delConfirm:'この過去問を削除しますか？',
@@ -402,33 +476,34 @@ const L={
     genFailed:'問題の生成に失敗しました。',reviewFailed:'校閲に失敗しました',
     apiKeySaved:'APIキーを保存しました ✓',
     fPrintInst:'指示：空欄（　　）に適切な接続詞を入れてください。',
-    sPrintInst:'指示：各ブロックを指定文字数以内で要約してください。',
+    sPrintInst:'指示：問題文を読み、各設問に指定文字数以内で答えてください。',
     loading:'添削中',syncItems:'件',syncFailed:'失敗',
     noData:'過去問はありません。',chooseGrading:'答え合わせ方法を選んでください',
     fThemePlaceholder:'例: AI と社会',sThemePlaceholder:'例: 環境問題',
-    rPlaceholder:'ここに文章を入力してください...',
+    rPlaceholder:'校閲したい文章を入力または貼り付けてください',
     theme:'テーマ：',diff:'難易度：',
   },
   en:{
-    appTitle:'Logic Training',
+    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.5',
+    subNew:'New Problem',subPast:'Past Problems',
     apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
     fThemeLbl:'Theme',optional:'(optional)',fLenLbl:'Length (approx.)',
     sLenLbl:'Problem text length (approx.)',diffLbl:'Difficulty',
-    dLabels:['Beginner','Basic','Standard','Hard','Advanced'],
+    dLabels:['Beginner','Basic','Standard','Advanced','Master'],
     fDescs:[
-      'Only everyday conjunctions (and, but, so…). Hints provided.',
-      'Basic additive / adversative / causal conjunctions. Hints provided.',
-      'All common conjunctions, no hints. Tests core logical relations.',
-      'Conjunctions with subtle nuance differences. No hints.',
-      'University entrance exam level. Highly academic conjunctions. No hints.'
+      'Simple essay at middle to high school level. Basic conjunctions only. Hints provided.',
+      'Standard university entrance exam essay. Causal and adversative conjunctions. Light hints.',
+      'Top-tier entrance exam level. Precise selection among similar conjunctions. No hints.',
+      'Elite exam level. Plain vocabulary, extremely precise logic. Conjunction choice is critical. No hints.',
+      'Beyond top university exam level. Academic prose, formal conjunctions, layered logic. No hints.'
     ],
     sDescs:[
-      'Simple explanatory text. Target: ~60% of original.',
-      'Basic argumentative text. Target: ~50% of original.',
-      'Standard essay / commentary. Target: ~40% of original.',
-      'Complex discourse. Target: ~30% of original. High abstraction needed.',
-      'Advanced-level academic essay. Target: ~20% of original.'
+      'Difficulty 1 (Basic): Plain argumentative text at high school level. Target: ~60% of original.',
+      'Difficulty 2 (Standard): University entrance exam level essay. Target: ~50% of original.',
+      'Difficulty 3 (Advanced): Top-tier entrance exam essay with abstract concepts. Target: ~40% of original.',
+      'Difficulty 4 (Expert): Plain vocabulary, precise logic. Target: ~30% of original.',
+      'Difficulty 5 (Master): Beyond top university exam level. Dense academic prose. Target: ~20% of original.'
     ],
     genBtn:'Generate Problem',genBtnBusy:'Generating…',
     genPhaseLlm:'AI is generating the problem',genPhaseProcess:'Organizing the problem',
@@ -438,18 +513,21 @@ const L={
     pq:'Print Problem',pa:'Print Explanation',
     fPastTitle:'Fill-in Past Problems',sPastTitle:'Summary Past Problems',
     rand:'Random',ref:'Refresh',back:'Back to List',all:'All',
-    rLbl:'Paste the text you want to proofread',rBtn:'Check Conjunctions & Logic',
-    sGenBtn:'Generate Problem',sInst:'Summarize the text within the word limit',
-    yourSum:'Your Summary',sSubmit:'Get Feedback',
-    autoFill:'Blanks (auto):',autoBlocks:'Blocks (auto):',autoRatio:'Summary target: ~',
+    rPremiseToggle:'Add context (optional)',rPremiseClose:'Hide context',
+    rImagesLbl:'Reference images (multiple allowed)',rPremiseLbl:'Context (text)',
+    rPremisePlaceholder:'Notes on reference materials, background, etc.',
+    rLbl:'Text to proofread',rBtn:'Check Conjunctions & Logic',rTextRequired:'Please enter the text to proofread.',
+    sGenBtn:'Generate Problem',sInst:'Read the passage and answer each question',
+    yourSum:'Your Answer',sSubmit:'Get Feedback',
+    autoFill:'Blanks (auto):',autoQuestions:'Questions (auto):',
     offlineBtn:'Offline Scoring (show previous feedback)',apiBtn:'Get New AI Feedback',
     overwriteBtn:'Save this feedback (overwrite)',overwriteNote:'※ You can overwrite after getting new AI feedback.',
     scoreResult:'Score',correctTxt:'Correct Text',prevFb:'Previous Feedback',
     noPrevFb:'No previous feedback. Use "Get New AI Feedback".',
     gradingErr:'Grading failed',
-    overWarn:'⚠ Some blocks exceed the limit. Please fix before submitting.',
+    overWarn:'⚠ Some questions exceed the limit. Please fix before submitting.',
     charOver:'chars over limit',charOf:'chars',charTarget:'Target',charWithin:'chars or less',
-    blockLbl:'Block',blockInst:'chars or less',
+    qLbl:'Q',qInst:'chars or less',
     savedOk:'Saved ✓',sSavedOk:'Summary saved ✓',
     deletedOk:'Deleted',overwriteOk:'Overwritten ✓',
     delConfirm:'Delete this past problem?',
@@ -458,14 +536,16 @@ const L={
     genFailed:'Failed to generate problem.',reviewFailed:'Review failed',
     apiKeySaved:'API key saved ✓',
     fPrintInst:'Fill in each blank with an appropriate conjunction.',
-    sPrintInst:'Summarize each block within the specified word count.',
+    sPrintInst:'Read the passage and answer each question within the specified word count.',
     loading:'Generating feedback',syncItems:' items',syncFailed:'Failed',
     noData:'No past problems found.',chooseGrading:'Choose how to check your answers',
     fThemePlaceholder:'e.g. AI and Society',sThemePlaceholder:'e.g. Climate Change',
-    rPlaceholder:'Paste your text here...',
+    rPlaceholder:'Enter or paste the text you want proofread',
     theme:'Theme: ',diff:'Difficulty: ',
   }
 };
+
+let _reviewImageFiles=[];
 
 // ── State ─────────────────────────────────────────────────
 const st={lang:'ja',fDiff:3,sDiff:3,fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
@@ -497,17 +577,81 @@ function calcBlocks(length,diff){
   const base=length/200;
   return Math.min(5,Math.max(1,Math.round(base*B_COEFF[diff])));
 }
+function getSumQuestionTypes(diff){
+  if(diff<=2)return ['語句説明','主張要約'];
+  if(diff===3)return ['語句説明','主張要約','理由説明'];
+  return ['語句説明','主張要約','理由説明','課題抽出','対比説明'];
+}
+const SUM_TYPE_LABELS={
+  ja:{'語句説明':'語句説明','主張要約':'主張要約','理由説明':'理由説明','課題抽出':'課題抽出','対比説明':'対比説明'},
+  en:{'語句説明':'Term','主張要約':'Main claim','理由説明':'Reason','課題抽出':'Issue','対比説明':'Contrast'}
+};
+function normSummaryProb(prob){
+  const questions=Array.isArray(prob.questions)?prob.questions:(parseF(prob.questions)||[]);
+  return {...prob,text:prob.text||'',questions};
+}
+function sumTypeLabel(type,lang){return(SUM_TYPE_LABELS[lang]||SUM_TYPE_LABELS.ja)[type]||type;}
+function buildSummaryQuestionHtml(q,i,lang,mode){
+  const l=L[lang]||L.ja;
+  const pfx=mode==='pp'?'pp-':'';
+  const tc=q.targetChars||50;
+  const lines=Math.max(4,Math.ceil(tc/18));
+const printLines=Array(lines).fill('<div style="border-bottom:1px solid #ccc;height:26px;margin-bottom:1px;"></div>').join('');
+  const taId=pfx?(pfx+'sans-'+i):('sans-'+i);
+  const lblId=pfx?(pfx+'lbl-'+i):('slbl-'+i);
+  const warnId=pfx?(pfx+'warn-'+i):('swarn-'+i);
+  const onCC=mode==='pp'?`ppCC(${i})`:`updateCC(${i})`;
+  const badge=sumTypeLabel(q.type,lang);
+  return `<div class="sum-q-block">
+    <div class="sum-q-lbl no-print">${l.qLbl}${q.id||i+1} <span class="q-type-badge">${esc(badge)}</span> <span style="font-size:11px;color:var(--text2);">（${l.charTarget} ${tc}${l.charWithin}）</span></div>
+    <p class="sum-q-text">${esc(q.question||'')}</p>
+    <div class="no-print">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+        <p class="slabel" style="margin:0;">${l.yourSum}</p>
+        <span id="${lblId}" class="cc">0 / ${tc}${l.charOf}</span>
+      </div>
+      <textarea class="sum-ta" id="${taId}" style="min-height:${Math.max(80,tc*1.6)}px" data-target="${tc}" oninput="${onCC}" onblur="${onCC}" placeholder="${tc}${l.qInst}"></textarea>
+      <div id="${warnId}" class="owarn"></div>
+    </div>
+    <div class="summary-block-print"><p style="font-size:10pt;font-weight:bold;margin-bottom:.3rem;">${l.qLbl}${q.id||i+1}（${tc}${l.charWithin}）</p>${printLines}</div>
+  </div>`;
+}
+function collectSummaryAnswers(prob,mode){
+  const pfx=mode==='pp'?'pp-':'';
+  return normSummaryProb(prob).questions.map((_,i)=>document.getElementById(pfx+'sans-'+i)?.value.trim()||'—');
+}
+function buildSummaryGradePrompt(prob,userTexts){
+  const pLang=prob.lang||st.lang;
+  const isEN=pLang==='en';
+  const p=normSummaryProb(prob);
+  const passage=isEN?`[Passage]\n${p.text}`:`【問題文】\n${p.text}`;
+  const qs=p.questions.map((q,i)=>{
+    const ut=userTexts[i]||'—';
+    const n=ut.replace(/\s/g,'').length;
+    return isEN
+      ?`[Question ${q.id||i+1}] Type: ${q.type}\n${q.question}\nCriteria: within ${q.targetChars} chars; evaluate accuracy, conciseness, and expression.\nLearner's answer (${n} chars):\n${ut}`
+      :`【設問${q.id||i+1}】タイプ: ${q.type}\n${q.question}\n模範解答の条件: ${q.targetChars}文字以内。内容の正確さ・簡潔さ・表現を評価すること。\n学習者の回答（${n}文字）:\n${ut}`;
+  }).join('\n\n---\n\n');
+  const body=isEN
+    ?`${passage}\n\n${qs}\n\nGrade each question individually (accuracy, conciseness, expression). Provide a model-answer direction per question.\n\n## Per-Question Evaluation\nFor each question: content accuracy, conciseness, expression, and an improved example within the limit.\n\n## Overall Feedback\nSummarize strengths and areas to improve.`
+    :`${passage}\n\n${qs}\n\n文章全体を踏まえ、各設問を個別に採点してください（内容の正確さ・簡潔さ・表現）。\n\n## 設問別評価\n各設問ごとに：内容の正確さ、簡潔さ、表現、改善例（文字数以内）\n\n## 総合講評\n全体の評価と学習アドバイス。`;
+  return body+(isEN?SUM_SCORE_NOTE_EN:SUM_SCORE_NOTE_JA);
+}
 
 // ── i18n 適用 ─────────────────────────────────────────────
-const DIFF_LABELS_JA={1:'★やさしい',2:'★★基礎',3:'★★★標準',4:'★★★★難しい',5:'★★★★★東大レベル'};
-const DIFF_LABELS_EN={1:'★Beginner',2:'★★Basic',3:'★★★Standard',4:'★★★★Hard',5:'★★★★★Advanced'};
+const DIFF_LABELS_JA={1:'★入門',2:'★★基礎',3:'★★★標準',4:'★★★★上級',5:'★★★★★超難問'};
+const DIFF_LABELS_EN={1:'★Beginner',2:'★★Basic',3:'★★★Standard',4:'★★★★Advanced',5:'★★★★★Master'};
+const FILL_HINT_NONE_NOTE_JA='\n\n重要：難易度3以上ではhintsフィールドはすべて必ず空文字列("")にしてください。ヒントを含む文字列を返してはいけません。';
+const FILL_HINT_NONE_NOTE_EN='\n\nIMPORTANT: For difficulty 3 and above, every hints field must be an empty string (""). Do not return any hint text.';
 function dlabel(d){return(st.lang==='ja'?DIFF_LABELS_JA:DIFF_LABELS_EN)[d]||'—';}
 const BADGE={1:'b1',2:'b2',3:'b3',4:'b4',5:'b5'};
 
 function ui(id,txt){const e=document.getElementById(id);if(e)e.textContent=txt;}
 function applyLang(){
   const l=L[st.lang];
-  ui('ui-app-title',l.appTitle);
+  ui('ui-app-title',l.appTitle);ui('ui-app-sub',l.appSub);
+  ui('ui-f-sub-new',l.subNew);ui('ui-f-sub-past',l.subPast);
+  ui('ui-s-sub-new',l.subNew);ui('ui-s-sub-past',l.subPast);
   ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);ui('ui-saved-msg',l.savedMsg);
   ui('ui-tab-fill',l.tabFill);ui('ui-tab-review',l.tabReview);ui('ui-tab-sum',l.tabSum);
   document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
@@ -516,10 +660,14 @@ function applyLang(){
   ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
   ui('ui-f-past-title',l.fPastTitle);ui('ui-f-rand',l.rand);ui('ui-f-ref',l.ref);
   ui('ui-f-back',l.back);ui('ui-fp-all',l.all);
+  ui('ui-r-premise-toggle',document.getElementById('r-premise-body')?.hidden!==false?l.rPremiseToggle:l.rPremiseClose);
+  ui('ui-r-images-lbl',l.rImagesLbl);ui('ui-r-premise-lbl',l.rPremiseLbl);
   ui('ui-r-lbl',l.rLbl);ui('ui-r-btn',l.rBtn);
+  const rp=document.getElementById('r-premise');
+  if(rp)rp.placeholder=l.rPremisePlaceholder;
   document.getElementById('ui-s-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
   ui('ui-s-len-lbl',l.sLenLbl);ui('ui-s-diff-lbl',l.diffLbl);
-  ui('ui-s-gen',l.sGenBtn);ui('ui-s-submit',l.sSubmit);
+  ui('ui-s-gen',l.sGenBtn);ui('ui-s-inst',l.sInst);ui('ui-s-submit',l.sSubmit);
   ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
   ui('ui-s-past-title',l.sPastTitle);ui('ui-s-rand',l.rand);ui('ui-s-ref',l.ref);
   ui('ui-s-back',l.back);ui('ui-sp-all',l.all);
@@ -535,6 +683,8 @@ function applyLang(){
   document.getElementById('f-theme').placeholder=l.fThemePlaceholder;
   document.getElementById('s-theme').placeholder=l.sThemePlaceholder;
   document.getElementById('r-text').placeholder=l.rPlaceholder;
+  const rte=document.getElementById('r-text-err');
+  if(rte&&!rte.classList.contains('show'))rte.textContent=l.rTextRequired;
   // lang buttons
   document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',i===(st.lang==='ja'?0:1)));
   document.documentElement.lang=st.lang;
@@ -573,7 +723,7 @@ function setGenPhase(mode,phase){
 function collectGenLockEls(mode){
   const panel='#'+(mode==='fill'?'fill':'summary')+'-panel';
   return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, '+panel+' .card button, '+panel+' .card input, '+panel+' .past-section button, '+panel+' .pf-tab, '+panel+' .pcard, '+panel+' .back-btn, '+panel+' .pcdel'
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, .sub-tab, '+panel+' .card button, '+panel+' .card input, #'+mode+'-past-area button, #'+mode+'-past-area .pf-tab, #'+mode+'-past-area .pcard, #'+mode+'-past-area .back-btn, #'+mode+'-past-area .pcdel'
   );
 }
 function lockEl(el,skipIds){
@@ -656,7 +806,7 @@ function setGradePhase(phase){
 }
 function collectGradeLockEls(){
   return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn, #fill-panel .pcdel'
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn, #fill-panel .pcdel'
   );
 }
 function beginGrade(){
@@ -698,15 +848,62 @@ function updateDiffUI(m){
     const b=calcBlanks(length,diff);
     document.getElementById('f-auto-info').textContent=l.autoFill+b+(st.lang==='ja'?'個':' blanks');
   } else {
-    const bl=calcBlocks(length,diff);
-    const r=Math.round(S_RATIO[diff]*100);
-    document.getElementById('s-auto-info').textContent=l.autoBlocks+bl+(st.lang==='ja'?'　':' | ')+l.autoRatio+r+'%';
+    const nq=calcBlocks(length,diff);
+    document.getElementById('s-auto-info').textContent=l.autoQuestions+nq+(st.lang==='ja'?'問':' questions');
   }
 }
 
+function resetUIOnLangSwitch(){
+  st.fill=null;
+  st.summary=null;
+  ['fill-result','summary-result','r-result'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='none';
+  });
+  ['f-fb','s-fb','r-fb'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML='';
+  });
+  ['f-savebar','s-savebar'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.style.display='none';
+  });
+  const fs1=document.getElementById('fs1'),fs2=document.getElementById('fs2'),fs3=document.getElementById('fs3');
+  if(fs1)fs1.className='step done';
+  if(fs2)fs2.className='step active';
+  if(fs3)fs3.className='step';
+  const ss1=document.getElementById('ss1'),ss2=document.getElementById('ss2'),ss3=document.getElementById('ss3');
+  if(ss1)ss1.className='step done';
+  if(ss2)ss2.className='step active';
+  if(ss3)ss3.className='step';
+  const fpa=document.getElementById('f-pa-btn'),spa=document.getElementById('s-pa-btn');
+  if(fpa)fpa.style.display='none';
+  if(spa)spa.style.display='none';
+  const spt=document.getElementById('s-problem-text'),sq=document.getElementById('s-questions');
+  if(spt)spt.innerHTML='';
+  if(sq)sq.innerHTML='';
+  const rt=document.getElementById('r-text'),rp=document.getElementById('r-premise'),ri=document.getElementById('r-images');
+  if(rt)rt.value='';
+  if(rp)rp.value='';
+  if(ri)ri.value='';
+  _reviewImageFiles=[];
+  renderReviewImagePreview();
+  const rb=document.getElementById('r-premise-body');
+  if(rb){rb.hidden=true;}
+  const rbtn=document.getElementById('r-premise-toggle');
+  if(rbtn)rbtn.setAttribute('aria-expanded','false');
+  const ric=document.getElementById('r-premise-icon');
+  if(ric)ric.textContent='▶';
+  const rte=document.getElementById('r-text-err');
+  if(rte){rte.textContent='';rte.classList.remove('show');}
+  updateApiKeyUI();
+}
 function setLang(lang){
   if(isBusy())return;
-  st.lang=lang;localStorage.setItem(LANG_KEY,lang);applyLang();
+  st.lang=lang;
+  localStorage.setItem(LANG_KEY,lang);
+  resetUIOnLangSwitch();
+  applyLang();
 }
 function setDiff(m,d){
   if(isBusy())return;
@@ -714,18 +911,59 @@ function setDiff(m,d){
   document.querySelectorAll('#'+(m==='f'?'f':'s')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
   updateDiffUI(m);
 }
+function switchSub(mode,sub){
+  document.getElementById(mode+'-sub-new').classList.toggle('active',sub==='new');
+  document.getElementById(mode+'-sub-past').classList.toggle('active',sub==='past');
+  const newArea=document.getElementById(mode+'-new-area');
+  const pastArea=document.getElementById(mode+'-past-area');
+  if(newArea)newArea.style.display=sub==='new'?'':'none';
+  if(pastArea)pastArea.style.display=sub==='past'?'':'none';
+  if(sub==='past')loadPast(mode);
+}
 function switchTab(name){
   if(isBusy())return;
-  ['fill','review','summary'].forEach((n,i)=>{
+  ['fill','summary','review'].forEach((n,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('active',n===name);
     document.getElementById(n+'-panel').classList.toggle('active',n===name);
   });
-  if(name==='fill')loadPast('fill');
-  if(name==='summary')loadPast('summary');
+  if(name==='fill')switchSub('fill','new');
+  if(name==='summary')switchSub('summary','new');
 }
 
 // ── Helpers ───────────────────────────────────────────────
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function calcFillScore(answers,ua){
+  const total=answers.length;
+  let correct=0;
+  answers.forEach((ans,i)=>{if(String(ua[i]||'').trim()===String(ans).trim())correct++;});
+  const pct=total?Math.round(correct/total*100):0;
+  return {correct,total,pct};
+}
+function fillScoreColor(pct){
+  if(pct>=80)return 'var(--green)';
+  if(pct>=60)return 'var(--amber)';
+  return '#c0453a';
+}
+function fillScoreHtml(correct,total,lang){
+  const pct=total?Math.round(correct/total*100):0;
+  const color=fillScoreColor(pct);
+  const isJa=(lang||st.lang)==='ja';
+  const text=isJa?`${correct} / ${total} 問正解（${pct}%）`:`${correct} / ${total} correct (${pct}%)`;
+  return `<p class="fill-score" style="font-size:18px;font-weight:600;color:${color};margin:0 0 1rem;">${text}</p>`;
+}
+const SUM_SCORE_NOTE_JA='\n\n【重要】フィードバック全体の最初の1行目に、総合スコアのみを「★X/5」の形式で記載してください（例：★4/5）。2行目から本文を書いてください。';
+const SUM_SCORE_NOTE_EN='\n\nIMPORTANT: The very first line of your entire response must be the overall score only, in the format ★X/5 (e.g. ★4/5). Start the rest of the feedback from the second line.';
+function formatSummaryFeedback(raw){
+  let text=String(raw||'').trim();
+  const m=text.match(/^★([1-5])\/5[^\n]*(?:\n|$)/);
+  let head='';
+  if(m){
+    const n=+m[1];
+    head=`<p class="sum-score" style="font-size:22px;font-weight:600;color:var(--purple);margin:0 0 1rem;">${'★'.repeat(n)}${'☆'.repeat(5-n)} <span style="font-size:16px;color:var(--text);">(${n}/5)</span></p>`;
+    text=text.slice(m[0].length).trim();
+  }
+  return head+md2h(text);
+}
 function fmtDate(s){if(!s)return'';const d=new Date(s);return`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;}
 function showToast(msg,ms=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
 function setSync(mode,cls,msg){const pfx=mode==='fill'?'fp':'sp';document.getElementById(pfx+'-dot').className='sdot'+(cls?' '+cls:'');document.getElementById(pfx+'-lbl').textContent=msg;}
@@ -738,21 +976,87 @@ function styleCompletedConj(html){
     return open+s+close;
   });
 }
-function md2h(tx){
-  let h=String(tx||'')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/^#{2,3} (.+)$/gm,'<h3>$1</h3>')
+function mdInline(s){
+  return String(s||'')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/✓/g,'<span class="ok">✓</span>')
-    .replace(/✗/g,'<span class="ng">✗</span>')
-    .replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
-    .replace(/^[-・] (.+)$/gm,'<li>$1</li>')
-    .replace(/((?:<li>[\s\S]*?<\/li>\n?)+)/g,'<ul>$1</ul>')
-    .replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>')
-    .replace(/「完全補完文」([\s\S]*?)(?=<h3>|$)/g,'<div class="completed-text">$1</div>')
-    .replace(/「Fully Supplemented Text」([\s\S]*?)(?=<h3>|$)/g,'<div class="completed-text">$1</div>')
-    .replace(/<h3>完全補完文<\/h3>([\s\S]*?)(?=<h3>|$)/g,'<h3>完全補完文</h3><div class="completed-text">$1</div>')
-    .replace(/<h3>Fully Supplemented Text<\/h3>([\s\S]*?)(?=<h3>|$)/g,'<h3>Fully Supplemented Text</h3><div class="completed-text">$1</div>');
+    .replace(/✗/g,'<span class="ng">✗</span>');
+}
+function isTableSepRow(line){
+  const cells=line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|');
+  return cells.length>0&&cells.every(c=>/^:?-{2,}:?$/.test(c.trim()));
+}
+function parseMdRow(line){
+  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim());
+}
+function renderMdTable(lines){
+  const header=parseMdRow(lines[0]);
+  const body=lines.slice(2).map(parseMdRow).filter(r=>r.some(c=>c.length));
+  let h='<table class="md-table"><thead><tr>';
+  header.forEach(c=>{h+=`<th>${mdInline(c)}</th>`;});
+  h+='</tr></thead><tbody>';
+  body.forEach(row=>{
+    h+='<tr>';
+    for(let i=0;i<header.length;i++) h+=`<td>${mdInline(row[i]||'')}</td>`;
+    h+='</tr>';
+  });
+  return h+'</tbody></table>';
+}
+function parseMdTables(text){
+  const lines=text.split('\n');
+  const out=[];
+  let i=0;
+  while(i<lines.length){
+    const tr=lines[i].trim();
+    if(tr.startsWith('|')&&tr.endsWith('|')){
+      const block=[];
+      while(i<lines.length){
+        const t=lines[i].trim();
+        if(!t.startsWith('|')||!t.endsWith('|'))break;
+        block.push(t);
+        i++;
+      }
+      if(block.length>=2&&isTableSepRow(block[1])) out.push(renderMdTable(block));
+      else out.push(...block);
+      continue;
+    }
+    out.push(lines[i]);
+    i++;
+  }
+  return out.join('\n');
+}
+function mdWrapTextBlocks(html){
+  const re=/(<table[\s\S]*?<\/table>|<hr>|<h2>[\s\S]*?<\/h2>|<h3>[\s\S]*?<\/h3>|<h4>[\s\S]*?<\/h4>|<ul>[\s\S]*?<\/ul>|<div class="completed-text">[\s\S]*?<\/div>)/gi;
+  return html.split(re).map(part=>{
+    if(!part||/^<(table|hr|h[234]|ul|div)/i.test(part.trim()))return part;
+    let p=part.trim();
+    if(!p)return '';
+    p=mdInline(p).replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
+    if(p&&!p.startsWith('<p>'))p='<p>'+p;
+    if(p&&!p.endsWith('</p>'))p+='</p>';
+    return p;
+  }).join('');
+}
+function md2h(tx){
+  let h=esc(String(tx||'').trim());
+  if(!h)return '';
+  h=parseMdTables(h);
+  h=h
+    .replace(/^#### (.+)$/gm,(_,t)=>'<h4>'+mdInline(t)+'</h4>')
+    .replace(/^### (.+)$/gm,(_,t)=>'<h3>'+mdInline(t)+'</h3>')
+    .replace(/^## (.+)$/gm,(_,t)=>'<h2>'+mdInline(t)+'</h2>')
+    .replace(/^# (.+)$/gm,(_,t)=>'<h2>'+mdInline(t)+'</h2>')
+    .replace(/^---+?\s*$/gm,'<hr>')
+    .replace(/^\d+\. (.+)$/gm,(_,t)=>'<li>'+mdInline(t)+'</li>')
+    .replace(/^[-*・] (.+)$/gm,(_,t)=>'<li>'+mdInline(t)+'</li>')
+    .replace(/((?:<li>[\s\S]*?<\/li>\s*)+)/g,'<ul>$1</ul>');
+  h=mdWrapTextBlocks(h);
+  const blockEnd='(?=<h[234]>|<table|<hr|<ul>|<div class="completed-text"|$)';
+  h=h
+    .replace(new RegExp('「完全補完文」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
+    .replace(new RegExp('「Fully Supplemented Text」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
+    .replace(/<h3>完全補完文<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>完全補完文</h3><div class="completed-text">$1</div>')
+    .replace(/<h3>Fully Supplemented Text<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>Fully Supplemented Text</h3><div class="completed-text">$1</div>');
   return styleCompletedConj(h);
 }
 
@@ -773,6 +1077,12 @@ function updateApiKeyUI(){
     sub.disabled=!canGrade;
     sub.classList.toggle('needs-apikey',!ok);
     sub.title=!ok?l.apiKeyHint:(!st.fill?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+  }
+  const rb=document.getElementById('r-btn');
+  if(rb){
+    rb.disabled=busy||!ok;
+    rb.classList.toggle('needs-apikey',!ok&&!busy);
+    rb.title=!ok?l.apiKeyHint:'';
   }
 }
 function loadApiKey(){
@@ -811,12 +1121,73 @@ function getKey(silent){
 
 // ── Claude API ────────────────────────────────────────────
 async function callClaude(prompt,sys,maxTok=2500){
+  return callClaudeMsg(sys,prompt,maxTok);
+}
+async function callClaudeMsg(sys,content,maxTok=2500){
   const key=getKey();if(!key)return null;
   const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTok,system:sys,messages:[{role:'user',content:prompt}]})});
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTok,system:sys,messages:[{role:'user',content}]})});
   if(!res.ok){let m='API error '+res.status;try{const e=await res.json();m=e.error?.message||m;}catch{}throw new Error(m);}
   const d=await res.json();return d.content?.[0]?.text||'';
+}
+function fileToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(String(r.result).split(',')[1]||'');
+    r.onerror=()=>reject(new Error('Failed to read image'));
+    r.readAsDataURL(file);
+  });
+}
+async function buildReviewImageBlocks(files){
+  const blocks=[];
+  for(const f of files){
+    if(!f.type||!f.type.startsWith('image/'))continue;
+    const data=await fileToBase64(f);
+    blocks.push({type:'image',source:{type:'base64',media_type:f.type,data}});
+  }
+  return blocks;
+}
+function toggleReviewPremise(){
+  const body=document.getElementById('r-premise-body');
+  const btn=document.getElementById('r-premise-toggle');
+  const icon=document.getElementById('r-premise-icon');
+  const l=L[st.lang];
+  if(!body||!btn)return;
+  const open=body.hidden;
+  body.hidden=!open;
+  btn.setAttribute('aria-expanded',open?'true':'false');
+  if(icon)icon.textContent=open?'▼':'▶';
+  ui('ui-r-premise-toggle',open?l.rPremiseClose:l.rPremiseToggle);
+}
+function onReviewImagesChange(){
+  const input=document.getElementById('r-images');
+  if(!input)return;
+  _reviewImageFiles=[...(_reviewImageFiles||[]),...input.files];
+  input.value='';
+  renderReviewImagePreview();
+}
+function renderReviewImagePreview(){
+  const box=document.getElementById('r-image-preview');
+  if(!box)return;
+  if(!_reviewImageFiles.length){box.innerHTML='';return;}
+  box.innerHTML=_reviewImageFiles.map((f,i)=>{
+    const url=URL.createObjectURL(f);
+    return `<div class="review-img-thumb" data-idx="${i}"><img src="${url}" alt=""><button type="button" onclick="removeReviewImage(${i})" title="×">×</button></div>`;
+  }).join('');
+}
+function removeReviewImage(idx){
+  _reviewImageFiles.splice(idx,1);
+  renderReviewImagePreview();
+}
+function buildReviewPrompt(text,premise,isEN){
+  const sections=isEN
+    ?`Proofread the text below. Focus on appropriate conjunction use and logical consistency. Use any provided images and context as reference.\n\n## Conjunction Supplement Suggestions\n## Conjunction Appropriateness Check\n## Logical Consistency Evaluation\n## Revision Suggestions\n## Fully Supplemented Text\n「Fully Supplemented Text」 — Add appropriate conjunctions at all sentence boundaries. Mark added conjunctions in **bold**.\n## 1/2 Summary\nSummarize the input text to about half its character count (by characters, not sentences).\n## 1/4 Summary\nSummarize the input text to about one quarter of its character count.\n## Overall Score (★1–5)`
+    :`以下の文章を校閲してください。「接続詞の適切な使用」と「文章の論理性」に焦点を当ててください。画像・前提情報がある場合は参考にしてください。\n\n## 接続詞の補完提案\n## 接続詞の適切性チェック\n## 論理的一貫性の評価\n## 改善案\n## 完全補完文\n「完全補完文」として、すべての文と文の間に適切な接続詞を補完した文章を作成してください。補完した接続詞は**太字**で示してください。\n## 1/2 要約\n入力文章を文字数ベースで約半分に要約してください。\n## 1/4 要約\n入力文章を文字数ベースで約1/4に要約してください。\n## 総評（★1〜5）`;
+  let body='';
+  if(premise)body+=isEN?`[Context]\n${premise}\n\n`:`【前提情報】\n${premise}\n\n`;
+  body+=isEN?`[Text to proofread]\n${text}\n\n${sections}`:`【校閲対象文章】\n${text}\n\n${sections}`;
+  return body;
 }
 function safeJSON(raw){const m=raw.match(/\{[\s\S]*\}/);if(!m)throw new Error('JSON not found');return JSON.parse(m[0]);}
 
@@ -833,38 +1204,138 @@ function doPrint(mode,part){
 // ══════════════════════════════════════════════════════════
 // 穴埋め
 // ══════════════════════════════════════════════════════════
+function autoThemeInst(length,isEN,forSummary){
+  if(isEN){
+    return `Choose a theme from the following categories:
+recent global economic topics (inflation, monetary policy, industrial transformation, etc.),
+cutting-edge science and technology (AI, quantum computing, space exploration, biotechnology, etc.),
+or health and medicine (public health, mental health, aging society, etc.).
+${forSummary?`Create one reading passage of approximately ${length} characters.`:`Write a logical text of approximately ${length} characters.`}`;
+  }
+  return `テーマは以下のカテゴリから適切なものを選んでください：
+最近の世界経済のトピック（インフレ・金融政策・産業転換など）、
+科学技術の最前線（AI・量子コンピュータ・宇宙開発・バイオテクノロジーなど）、
+健康・医療に関するトピック（公衆衛生・精神健康・老齢化社会など）。
+約${length}文字の${forSummary?'読解用文章（問題文）を1つ':'論理的な文章を'}作成してください。`;
+}
+function hasFillHint(h){return !!(h&&String(h).trim());}
+function buildFillAnswerItem(i,hint,inputId,placeholder,noPrint){
+  const item=document.createElement('div');
+  item.className='answer-item';
+  const row=document.createElement('div');
+  row.className='answer-row';
+  row.innerHTML=`<label>（${i+1}）</label><input type="text" id="${inputId}" placeholder="${esc(placeholder)}"/>`;
+  item.appendChild(row);
+  if(hasFillHint(hint)){
+    const ht=document.createElement('div');
+    ht.className='hint-text'+(noPrint?' no-print':'');
+    ht.textContent=hint;
+    item.appendChild(ht);
+  }
+  return item;
+}
 function getFillPrompts(){
   const l=st.lang;
   if(l==='ja') return {
-    1:'難易度1: 「そして」「でも」「だから」など日常的な接続詞のみ使用。ヒントは具体的に記載。',
-    2:'難易度2: 基本的な順接・逆接・因果の接続詞を使用。ヒントは軽めに記載。',
-    3:'難易度3: 一般的な接続詞全般を使用。ヒントは短く（前後の論理関係の種類程度）。',
-    4:'難易度4: 「ところが」「なお」「ただし」「むしろ」など微妙なニュアンスの違いがある接続詞を使用。hintsはすべて空文字列。',
-    5:'難易度5（東京大学入試レベル以上）: 東大国語レベルの評論文体。「しかるに」「もっとも」「翻って」「蓋し」「のみならず」など高度な接続詞。hintsはすべて空文字列。'
+    1:`難易度1（入門）:
+- 文体：中学〜高校教科書レベルの平易な説明文・論説文
+- 接続詞：「しかし」「そのため」「また」「一方」「つまり」など
+  中学生でも知っている基本的なもののみ
+- 構造：主張→根拠→まとめのシンプルな構成
+- ヒント：各空欄に「逆接」「順接」などの関係性を必ず明記すること`,
+    2:`難易度2（基礎）:
+- 文体：高校教科書〜大学入試標準レベルの論説文
+- 接続詞：「ところが」「したがって」「なぜなら」「それゆえ」など
+  因果・逆接・補足を含む標準的なもの
+- 構造：複数の論点を持ち、段落間の論理的接続が問われる
+- ヒント：前後の文脈から推測できる軽いヒントを付けること`,
+    3:`難易度3（標準）:
+- 文体：大学入試上位校レベルの評論文
+  語彙は平易だが抽象的な概念を含む
+- 接続詞：「もっとも」「ただし」「むしろ」「他方」など
+  似た意味の中から正確なものを選ぶ力が問われる
+- 構造：対比・譲歩・反論を含む複雑な論証構造
+- ヒント：なし（hintsはすべて空文字列）`,
+    4:`難易度4（上級）:
+- 文体：大学入試上位校〜最難関レベルの評論文
+  語彙レベルは難易度3と同等（平易な語彙を維持）だが
+  論理構造が極めて精緻で、接続詞の選択が論旨の成否を決める
+- 接続詞：「しかるに」「それゆえ」「のみならず」「ひいては」「翻って」など
+  高度に精密な論理的接続を要求する
+  類似する接続詞との差異が明確に問われるよう設計すること
+  接続詞を変えると論旨が崩れるよう文章を構成すること
+- 構造：複数の論点が複雑に絡み合う多層的な論証構造
+- ヒント：なし（hintsはすべて空文字列）`,
+    5:`難易度5（超難問）:
+- 文体：東京大学現代文レベル以上の難解な評論文
+  哲学・社会科学・自然科学の専門的文体を使い
+  難解な概念・専門用語を積極的に含める
+- 接続詞：「蓋し」「しかるに」「してみれば」「ないしは」「もとより」など
+  高度な文語的・論理的接続詞を使用
+  複数の解釈が成立しうる文脈に配置し
+  正答が一意に定まるよう緻密に設計すること
+- 構造：東大現代文の問題文を超える複雑さを目指す
+  論証の多層構造・逆説・留保を含む
+- ヒント：なし（hintsはすべて空文字列）`
   };
   return {
-    1:'Difficulty 1 (Beginner): Use only everyday conjunctions (and, but, so, however, therefore). Clear context. Provide helpful hints.',
-    2:'Difficulty 2 (Basic): Use basic additive, adversative, and causal conjunctions. Light hints.',
-    3:'Difficulty 3 (Standard): Use a variety of conjunctions. Minimal hints (logical relation type only).',
-    4:'Difficulty 4 (Hard): Use conjunctions with subtle nuance differences (nevertheless, whereas, albeit, thereby, notwithstanding). No hints.',
-    5:'Difficulty 5 (Advanced): Academic/philosophical text at university entrance exam level. Use highly formal conjunctions (insofar as, inasmuch as, hitherto, consequently, notwithstanding). No hints.'
+    1:`Difficulty 1 (Beginner):
+- Style: Simple explanatory/argumentative text at middle to high school level
+- Conjunctions: basic only (however, therefore, also, in contrast, in other words,
+  because, so, but) — familiar to any high school student
+- Structure: simple 3-part (claim → evidence → conclusion)
+- Hints: specify the logical relation (e.g. "adversative", "causal") for each blank`,
+    2:`Difficulty 2 (Basic):
+- Style: Standard university entrance exam level essay
+- Conjunctions: include causal, adversative, supplementary
+  (nevertheless, consequently, because, thus, furthermore, however)
+- Structure: multiple points with logical connections between paragraphs
+- Hints: light contextual hints`,
+    3:`Difficulty 3 (Standard):
+- Style: Top-tier university entrance exam essay
+  Plain vocabulary but includes abstract concepts
+- Conjunctions: precise selection required among similar options
+  (nonetheless, admittedly, rather, on the other hand, by contrast)
+- Structure: complex argumentation with contrast, concession, rebuttal
+- Hints: none (all hints must be empty strings)`,
+    4:`Difficulty 4 (Advanced):
+- Style: Highly selective university exam level essay
+  Vocabulary level same as Difficulty 3 (plain language maintained)
+  but logical structure is extremely precise
+- Conjunctions: highly precise logical connectors where substitution collapses the argument
+  (notwithstanding, insofar as, inasmuch as, by extension, conversely,
+  it follows that, in so doing)
+  Design sentences so that only one conjunction is logically correct
+- Structure: multiple intertwined arguments in a multi-layered structure
+- Hints: none (all hints must be empty strings)`,
+    5:`Difficulty 5 (Master):
+- Style: Beyond top university exam level
+  Dense academic prose with specialist terminology in
+  philosophy, social science, or natural science
+- Conjunctions: archaic or highly formal connectors
+  (hitherto, whereupon, inasmuch, albeit, notwithstanding, in contradistinction to)
+  placed in contexts with multiple plausible interpretations
+  but designed so only one is definitively correct
+- Structure: multi-layered argumentation with paradox and qualification
+  exceeding the complexity of top university entrance exams
+- Hints: none (all hints must be empty strings)`
   };
 }
 function getSumPrompts(){
   const l=st.lang;
   if(l==='ja') return {
-    1:'難易度1: 日常的な話題・具体的な事例を含む説明文。中学生が理解できるレベル。',
-    2:'難易度2: 高校教科書レベルの論説文。',
-    3:'難易度3: 大学入試頻出の評論文体。抽象的な概念を含む。',
-    4:'難易度4: 大学院入試レベルの論述文。高度な抽象化が必要。',
-    5:'難易度5（東京大学入試レベル以上）: 哲学・社会科学・自然科学の専門的評論文。複雑な論証構造。東大国語の問題文レベルを目指すこと。'
+    1:'難易度1（基礎）: 高校教科書レベルの平易な論説文。各ブロックは約60%に要約できる内容。',
+    2:'難易度2（標準）: 大学入試レベルの論説・評論文。各ブロックは約50%に要約できる内容。',
+    3:'難易度3（応用）: 大学入試上位校レベルの評論文。抽象概念を含む。各ブロックは約40%に要約できる内容。',
+    4:'難易度4（上級）: 平易な語彙だが論理構造が精緻な評論文。各ブロックは約30%に要約できる内容。',
+    5:'難易度5（超難問）: 東京大学現代文レベル以上の難解な評論文。専門用語・複雑な論証を含む。各ブロックは約20%に要約できる内容。'
   };
   return {
-    1:'Difficulty 1 (Beginner): Simple everyday explanatory text. Middle school level.',
-    2:'Difficulty 2 (Basic): High school level argumentative text.',
-    3:'Difficulty 3 (Standard): University entrance exam style commentary. Includes abstract concepts.',
-    4:'Difficulty 4 (Hard): Graduate school level discourse. High abstraction required.',
-    5:'Difficulty 5 (Advanced): Specialized academic essay in philosophy, social science, or natural science. Complex argumentation. Aim for top university entrance exam level.'
+    1:'Difficulty 1 (Basic): Plain argumentative text at high school level. Target: ~60% of original.',
+    2:'Difficulty 2 (Standard): University entrance exam level essay. Target: ~50% of original.',
+    3:'Difficulty 3 (Advanced): Top-tier entrance exam essay with abstract concepts. Target: ~40% of original.',
+    4:'Difficulty 4 (Expert): Plain vocabulary, precise logic. Target: ~30% of original.',
+    5:'Difficulty 5 (Master): Beyond top university exam level. Dense academic prose. Target: ~20% of original.'
   };
 }
 
@@ -883,12 +1354,13 @@ async function generateFill(){
     ?'You are an expert in logical writing and education. Respond ONLY in valid JSON format. No markdown, no explanation before or after the JSON.'
     :'あなたは論理的文章の作成と教育の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const themeInst=isEN
-    ?(hasTheme?`Write a logical text of about ${length} characters on the theme "${themeIn}".`:`Choose a topic freely (politics, science, philosophy, culture, etc.) and write a logical text of about ${length} characters.`)
-    :(hasTheme?`テーマ「${themeIn}」について、約${length}文字の論理的な文章を作成してください。`:`テーマは自由に選んでください（政治・経済・科学・哲学・文化など）。約${length}文字の論理的な文章を作成してください。`);
+    ?(hasTheme?`Write a logical text of about ${length} characters on the theme "${themeIn}".`:autoThemeInst(length,true,false))
+    :(hasTheme?`テーマ「${themeIn}」について、約${length}文字の論理的な文章を作成してください。`:autoThemeInst(length,false,false));
   const diffPrompt=getFillPrompts()[diff];
-  const jsonInst=isEN
+  let jsonInst=isEN
     ?`Replace ${blanks} conjunctions with placeholders [_1_][_2_]... Return ONLY this JSON:\n{"theme":"topic in 5 words or less","text":"problem text with placeholders","answers":["conj1","conj2"],"hints":["hint1","hint2"]}`
     :`その文章の中で接続詞のうち${blanks}個を選び、【_1_】【_2_】...のような番号付きプレースホルダーで置き換えてください。\n返答はJSON形式のみ：\n{"theme":"テーマを10文字以内で","text":"問題文","answers":["接続詞1"],"hints":["ヒント1"]}`;
+  if(diff>=3) jsonInst+=isEN?FILL_HINT_NONE_NOTE_EN:FILL_HINT_NONE_NOTE_JA;
 
   try{
     const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}`,sys,1500);
@@ -901,6 +1373,7 @@ async function generateFill(){
       for(let i=1;i<=p.answers.length;i++) t=t.replace(`[_${i}_]`,`【_${i}_】`);
       p.text=t;
     }
+    if(diff>=3) p.hints=(p.answers||[]).map(()=>'');
     st.fill={...p,id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
     renderFill(st.fill);
     try{await syncPastOnGen('fill',st.fill);}
@@ -918,10 +1391,7 @@ function renderFill(prob){
   document.getElementById('f-problem').innerHTML=html;
   const sec=document.getElementById('f-answers');sec.innerHTML=`<p class="slabel no-print">${l.answerBox}</p>`;
   prob.answers.forEach((_,i)=>{
-    const row=document.createElement('div');row.className='answer-row';
-    const hint=prob.hints?.[i];
-    row.innerHTML=`<label>（${i+1}）</label><input type="text" id="fans-${i}" placeholder="${l.tabFill}..."/>${hint?`<span class="hint no-print">${esc(hint)}</span>`:''}`;
-    sec.appendChild(row);
+    sec.appendChild(buildFillAnswerItem(i,prob.hints?.[i],`fans-${i}`,`${l.tabFill}...`,true));
   });
   document.getElementById('f-fb').innerHTML='';
   document.getElementById('f-pa-btn').style.display='none';
@@ -943,7 +1413,8 @@ async function submitFill(){
     const res=await gradeFill(prob,ua);if(!res)return;
     setGradePhase('process');
     prob.feedback=res;prob.userAnswers=ua;
-    fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
+    const {correct,total}=calcFillScore(prob.answers,ua);
+    fb.innerHTML=`<div class="feedback-box">${fillScoreHtml(correct,total,prob.lang)}${md2h(res)}</div>`;
     document.getElementById('fs2').className='step done';
     document.getElementById('fs3').className='step done';
     document.getElementById('f-pa-btn').style.display='';
@@ -1002,7 +1473,8 @@ function buildFillEntry(prob){
   return {id:prob.id||Date.now(),sheet:'fill',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text,answers:prob.answers,hints:prob.hints||[],feedback:prob.feedback||null,userAnswers:prob.userAnswers||[],lang:prob.lang||st.lang};
 }
 function buildSummaryEntry(prob){
-  return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,blocks:prob.blocks,ratio:prob.ratio,lang:prob.lang||st.lang};
+  const questions=prob.questions;
+  return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text||'',questions:typeof questions==='string'?questions:JSON.stringify(questions||[]),ratio:prob.ratio,lang:prob.lang||st.lang};
 }
 async function syncPastOnGen(mode,prob){
   const entry=mode==='fill'?buildFillEntry(prob):buildSummaryEntry(prob);
@@ -1023,7 +1495,7 @@ async function generateSummary(){
   const themeIn=document.getElementById('s-theme').value.trim();
   const length=parseInt(document.getElementById('s-length').value)||400;
   const diff=st.sDiff;
-  const blocks=calcBlocks(length,diff);
+  const numQ=calcBlocks(length,diff);
   const ratio=S_RATIO[diff];
   const hasTheme=themeIn.length>0;
   const isEN=st.lang==='en';
@@ -1031,27 +1503,29 @@ async function generateSummary(){
   if(!beginGen('summary'))return;
 
   const sys=isEN
-    ?'You are an expert in writing education. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
-    :'あなたは文章作成と教育の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+    ?'You are an expert in Japanese university entrance exam modern-text (現代文) education. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
+    :'あなたは大学受験・現代文の読解・記述指導の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const themeInst=isEN
-    ?(hasTheme?`Write a logical text of about ${length} characters on the theme "${themeIn}".`:`Choose a topic freely (politics, science, philosophy, culture, environment, etc.) and write a logical text of about ${length} characters.`)
-    :(hasTheme?`テーマ「${themeIn}」について、約${length}文字の論理的な文章を作成してください。`:`テーマは自由に選んでください（政治・経済・科学・哲学・文化・環境など）。約${length}文字の論理的な文章を作成してください。`);
+    ?(hasTheme?`Create one reading passage of about ${length} characters on the theme "${themeIn}".`:autoThemeInst(length,true,true))
+    :(hasTheme?`テーマ「${themeIn}」について、約${length}文字の読解用文章（問題文）を1つ作成してください。`:autoThemeInst(length,false,true));
   const diffPrompt=getSumPrompts()[diff];
-  const blockNote=isEN
-    ?(blocks===1?'Write the text as one unified passage.':`Divide the text into exactly ${blocks} clearly distinct blocks (paragraphs or topics).`)
-    :(blocks===1?'文章全体を1つのまとまりとして作成してください。':`文章を意味的に明確な${blocks}つのブロック（段落またはトピック）に分けて作成してください。`);
+  const types=getSumQuestionTypes(diff);
+  const typesList=types.join(isEN ? ', ' : '、');
+  const typeGuide=isEN
+    ?`Generate exactly ${numQ} questions about the passage. Choose types from: ${typesList}. Vary types when possible.\ntargetChars guide: 語句説明 ~50, 主張要約 80-150, 理由説明 ~100, 課題抽出 ~120, 対比説明 ~100. Use the Japanese type names in the "type" field.`
+    :`設問はちょうど${numQ}問。タイプは次から選ぶ: ${typesList}。可能ならタイプを分散させる。\ntargetCharsの目安: 語句説明50字、主張要約80〜150字、理由説明100字、課題抽出120字、対比説明100字。`;
   const jsonInst=isEN
-    ?`Return ONLY this JSON:\n{"theme":"topic in 5 words or less","blocks":["block1 text","block2 text"],"labels":["label1","label2"],"ratio":${ratio}}\nblocks must have exactly ${blocks} elements. labels: short 3-5 word label per block.`
-    :`返答はJSON形式のみ：\n{"theme":"テーマを10文字以内で","blocks":["ブロック1テキスト"],"labels":["ラベル1"],"ratio":${ratio}}\nblocksは${blocks}要素の配列にしてください。labelsは各ブロックの内容を5文字程度で表したラベル。`;
+    ?`Return ONLY this JSON:\n{"theme":"topic in 10 chars or less","text":"full passage ~${length} chars","questions":[{"id":1,"type":"語句説明","question":"...","targetChars":50}]}\nquestions must have exactly ${numQ} items. "text" is one unified passage (modern Japanese exam style).`
+    :`返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"約${length}文字の問題文","questions":[{"id":1,"type":"語句説明","question":"本文中の「〇〇」とは…50字以内で説明しなさい。","targetChars":50}]}\nquestionsは${numQ}要素。textは1つの文章全体（大学受験・現代文型）。`;
 
   try{
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${blockNote}\n${jsonInst}`,sys,1800);
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}`,sys,2800);
     if(!raw)return;
     setGenPhase('summary','process');
     const p=safeJSON(raw);
-    if(!Array.isArray(p.blocks)||p.blocks.length===0)throw new Error('Invalid JSON structure');
-    const bks=p.blocks.map((text,i)=>({text,label:p.labels?.[i]||`${L[st.lang].blockLbl}${i+1}`,targetChars:Math.round(text.replace(/\s/g,'').length*ratio)}));
-    st.summary={id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blocks:bks,ratio,feedback:null,lang:st.lang};
+    if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
+    const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張要約',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
+    st.summary={id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,feedback:null,lang:st.lang};
     renderSummary(st.summary);
     try{await syncPastOnGen('summary',st.summary);}
     catch(syncErr){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
@@ -1061,27 +1535,11 @@ async function generateSummary(){
 
 function renderSummary(prob){
   const l=L[st.lang];
-  document.getElementById('s-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
-  document.getElementById('s-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabSum}</h2><p>${l.theme}${esc(prob.theme||'—')}　${l.diff}${dlabel(prob.diff)}　${fmtDate(prob.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.sPrintInst}</p>`;
-  const cont=document.getElementById('s-blocks');cont.innerHTML='';
-  prob.blocks.forEach((blk,i)=>{
-    const lines=Math.max(4,Math.ceil(blk.targetChars/18));
-    const printLines=Array(lines).fill('<div style="border-bottom:1px solid #ccc;height:26px;margin-bottom:1px;"></div>').join('');
-    const div=document.createElement('div');div.className='sum-block';
-    div.innerHTML=`
-      <div class="sum-block-lbl no-print">${l.blockLbl}${i+1}${blk.label&&blk.label!==`${l.blockLbl}${i+1}`?' — '+esc(blk.label):''} <span style="font-size:11px;color:var(--text2);">（${l.charTarget} ${blk.targetChars}${l.charWithin}）</span></div>
-      <div class="sum-src">${esc(blk.text)}</div>
-      <div class="no-print">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-          <p class="slabel" style="margin:0;">${l.yourSum}</p>
-          <span id="slbl-${i}" class="cc">0 / ${blk.targetChars}${l.charOf}</span>
-        </div>
-        <textarea class="sum-ta" id="sans-${i}" style="min-height:${Math.max(80,blk.targetChars*1.6)}px" data-target="${blk.targetChars}" oninput="updateCC(${i})" onblur="updateCC(${i})" placeholder="${blk.targetChars}${l.blockInst}"></textarea>
-        <div id="swarn-${i}" class="owarn"></div>
-      </div>
-      <div class="summary-block-print"><p style="font-size:10pt;font-weight:bold;margin-bottom:.3rem;">${l.answerArea}（${blk.targetChars}${l.charWithin}）</p>${printLines}</div>`;
-    cont.appendChild(div);
-  });
+  const p=normSummaryProb(prob);
+  document.getElementById('s-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(p.theme||'—')}</span>`;
+  document.getElementById('s-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabSum}</h2><p>${l.theme}${esc(p.theme||'—')}　${l.diff}${dlabel(p.diff)}　${fmtDate(p.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.sPrintInst}</p>`;
+  document.getElementById('s-problem-text').innerHTML=esc(p.text);
+  document.getElementById('s-questions').innerHTML=p.questions.map((q,i)=>buildSummaryQuestionHtml(q,i,p.lang||st.lang,'live')).join('');
   document.getElementById('s-fb').innerHTML='';
   document.getElementById('s-pa-btn').style.display='none';
   document.getElementById('s-owarn').classList.remove('show');
@@ -1092,44 +1550,44 @@ function renderSummary(prob){
   document.getElementById('ss3').className='step';
 }
 
-function updateCC(i){
-  const ta=document.getElementById(`sans-${i}`);if(!ta)return;
+function updateSumCC(i,mode){
+  const taId=mode==='pp'?`pp-sans-${i}`:`sans-${i}`;
+  const lblId=mode==='pp'?`pp-lbl-${i}`:`slbl-${i}`;
+  const warnId=mode==='pp'?`pp-warn-${i}`:`swarn-${i}`;
+  const ta=document.getElementById(taId);if(!ta)return;
   const target=parseInt(ta.dataset.target)||0;
   const cnt=ta.value.replace(/\s/g,'').length;
-  const lbl=document.getElementById(`slbl-${i}`);
-  const warn=document.getElementById(`swarn-${i}`);
+  const lbl=document.getElementById(lblId);
+  const warn=document.getElementById(warnId);
   const l=L[st.lang];
   if(lbl){lbl.textContent=cnt+' / '+target+l.charOf;lbl.className='cc '+(cnt>target?'over':'ok2');}
   ta.classList.toggle('overlimit',cnt>target);
   if(warn){warn.textContent=cnt>target?`⚠ ${cnt-target}${l.charOver}`:'';warn.classList.toggle('show',cnt>target);}
-  const anyOver=[...document.querySelectorAll('[id^="sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
-  const gw=document.getElementById('s-owarn');
+  const sel=mode==='pp'?'[id^="pp-sans-"]':'[id^="sans-"]';
+  const anyOver=[...document.querySelectorAll(sel)].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
+  const gw=document.getElementById(mode==='pp'?'pp-owarn':'s-owarn');
   if(gw){gw.textContent=anyOver?l.overWarn:'';gw.classList.toggle('show',anyOver);}
-  document.getElementById('s-submit').disabled=anyOver;
+  const btn=document.getElementById(mode==='pp'?'pp-submit':'s-submit');
+  if(btn)btn.disabled=anyOver;
 }
+function updateCC(i){updateSumCC(i,'live');}
 
 async function submitSummary(){
   const prob=st.summary;if(!prob)return;
   const anyOver=[...document.querySelectorAll('[id^="sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
   if(anyOver){alert(L[st.lang].overWarn);return;}
-  const userTexts=prob.blocks.map((_,i)=>document.getElementById(`sans-${i}`)?.value.trim()||'—');
+  const userTexts=collectSummaryAnswers(prob,'live');
   const btn=document.getElementById('s-submit');btn.disabled=true;
   const fb=document.getElementById('s-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
   const isEN=prob.lang==='en';
   const sys=isEN
-    ?'You are an expert writing teacher. Give structured feedback in English using markdown (## headings, **bold**, numbered lists).'
-    :'あなたは日本語の文章指導の専門家です。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
-  const info=prob.blocks.map((blk,i)=>isEN
-    ?`[Block ${i+1}]\nOriginal (${blk.text.replace(/\s/g,'').length} chars):\n${blk.text}\n\nLearner's summary (${userTexts[i].replace(/\s/g,'').length} chars / target: ${blk.targetChars} or less):\n${userTexts[i]}`
-    :`【ブロック${i+1}】\n原文（${blk.text.replace(/\s/g,'').length}文字）:\n${blk.text}\n\n学習者の要約（${userTexts[i].replace(/\s/g,'').length}文字 / 目標${blk.targetChars}文字以内）:\n${userTexts[i]}`
-  ).join('\n\n---\n\n');
-  const prompt=isEN
-    ?`Grade this summarization exercise (Difficulty ${prob.diff}/5, ${prob.blocks.length} block(s)).\n\n${info}\n\n## Block-by-Block Evaluation\nFor each block:\n1. **Content**: Is the main point captured? Any missing key ideas?\n2. **Expression & Logic**: Logical flow and appropriate language.\n3. **Improved Example**: A better summary within the word limit.\n\n## Overall Feedback\nOverall score (★1–5) and general comments.`
-    :`以下の要約問題（難易度${prob.diff}/5、${prob.blocks.length}ブロック）について添削してください。\n\n${info}\n\n## ブロック別評価\n各ブロックごとに：\n1. **内容評価**：主旨・論点の捉え方（重要な論点の抜け漏れ指摘）\n2. **表現・論理性**：要約文の論理的な流れと表現の適切さ\n3. **改善案**：より良い要約の例（目標文字数以内）\n\n## 全体講評\n総合スコア（★1〜5）と全体的なコメントを記載してください。`;
+    ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. Give structured feedback in English using markdown (## headings, **bold**, numbered lists).'
+    :'あなたは大学受験・現代文の記述指導の専門家です。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
+  const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
-    const res=await callClaude(prompt,sys,2500);if(!res)return;
-    fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
+    const res=await callClaude(prompt,sys,2800);if(!res)return;
+    fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res)}</div>`;
     prob.feedback=res;
     document.getElementById('ss2').className='step done';
     document.getElementById('ss3').className='step done';
@@ -1162,7 +1620,7 @@ function renderPL(mode){
       <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
         <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span>
           <button class="pcdel" onclick="event.stopPropagation();deletePast('${mode}','${p.id}')">✕</button></div></div>
-      <div class="pc-pre">${esc(String(mode==='fill'?p.text:parseF(p.blocks)?.[0]?.text||'').replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
+      <div class="pc-pre">${esc(String(mode==='fill'?p.text:(p.text||'')).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
       <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
     </div>`).join('');
 }
@@ -1206,51 +1664,28 @@ function openPast(mode,id){
         <button class="btn btn-icon btn-sm" onclick="ppOverwrite('${id}')"><i class="ti ti-cloud-upload"></i> ${l.overwriteBtn}</button>
       </div>`;
     const sec=document.getElementById('pp-inputs');sec.innerHTML=`<p class="slabel">${l.answerBox}</p>`;
+    const noHints=(prob.diff||1)>=3;
     answers.forEach((_,i)=>{
-      const row=document.createElement('div');row.className='answer-row';
-      row.innerHTML=`<label>（${i+1}）</label><input type="text" id="ppans-${i}" placeholder="..."/>${hints[i]?`<span class="hint">${esc(hints[i])}</span>`:''}`;
-      sec.appendChild(row);
+      sec.appendChild(buildFillAnswerItem(i,noHints?'':hints[i],`ppans-${i}`,'...',false));
     });
   } else {
-    const blocks=parseF(prob.blocks);
-    const bHtml=blocks.map((blk,i)=>`
-      <div class="sum-block">
-        <div class="sum-block-lbl">${l.blockLbl}${i+1}${blk.label&&blk.label!==`${l.blockLbl}${i+1}`?' — '+esc(blk.label):''} <span style="font-size:11px;color:var(--text2);">（${l.charTarget} ${blk.targetChars}${l.charWithin}）</span></div>
-        <div class="sum-src">${esc(blk.text)}</div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-          <p class="slabel" style="margin:0;">${l.yourSum}</p>
-          <span id="pp-lbl-${i}" class="cc">0 / ${blk.targetChars}${l.charOf}</span>
-        </div>
-        <textarea class="sum-ta" id="pp-sans-${i}" style="min-height:${Math.max(80,blk.targetChars*1.6)}px" data-target="${blk.targetChars}" oninput="ppCC(${i})" onblur="ppCC(${i})" placeholder="${blk.targetChars}${l.blockInst}"></textarea>
-        <div id="pp-warn-${i}" class="owarn"></div>
-      </div>`).join('');
+    const p=normSummaryProb(prob);
+    const qHtml=p.questions.map((q,i)=>buildSummaryQuestionHtml(q,i,pLang,'pp')).join('');
     cnt.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
         <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
       <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
-      ${bHtml}
+      <p class="slabel">${l.sInst}</p>
+      <div class="problem-box">${esc(p.text)}</div>
+      ${qHtml}
       <div id="pp-owarn" class="owarn" style="margin-bottom:.5rem;"></div>
       <button class="btn" id="pp-submit" onclick="ppSummary('${id}')"><span>${l.sSubmit}</span></button>
       <div id="pp-fb"></div>`;
   }
 }
 
-function ppCC(i){
-  const ta=document.getElementById(`pp-sans-${i}`);if(!ta)return;
-  const target=parseInt(ta.dataset.target)||0;
-  const cnt=ta.value.replace(/\s/g,'').length;
-  const lbl=document.getElementById(`pp-lbl-${i}`);
-  const warn=document.getElementById(`pp-warn-${i}`);
-  const curLang=st.sPast.find(p=>document.getElementById(`pp-sans-0`))?.lang||st.lang;
-  const l=L[curLang]||L[st.lang];
-  if(lbl){lbl.textContent=cnt+' / '+target+l.charOf;lbl.className='cc '+(cnt>target?'over':'ok2');}
-  ta.classList.toggle('overlimit',cnt>target);
-  if(warn){warn.textContent=cnt>target?`⚠ ${cnt-target}${l.charOver}`:'';warn.classList.toggle('show',cnt>target);}
-  const allTas=[...document.querySelectorAll('[id^="pp-sans-"]')];
-  const anyOver=allTas.some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
-  const btn=document.getElementById('pp-submit');if(btn)btn.disabled=anyOver;
-  const gw=document.getElementById('pp-owarn');if(gw){gw.textContent=anyOver?l.overWarn:'';gw.classList.toggle('show',anyOver);}
-}
+function ppCC(i){updateSumCC(i,'pp');}
+
 
 function ppOffline(id){
   const prob=st.fPast.find(p=>String(p.id)===String(id));if(!prob)return;
@@ -1261,8 +1696,9 @@ function ppOffline(id){
   answers.forEach((ans,i)=>{const u=ua[i],ok=u===ans;if(ok)correct++;
     rows+=`<p style="margin-bottom:.5rem;">${ok?'<span class="ok">✓</span>':'<span class="ng">✗</span>'} <strong>（${i+1}）</strong> ${u} → ${esc(ans)}${hints[i]?` <span style="font-size:12px;color:var(--text2);">${esc(hints[i])}</span>`:''}</p>`;});
   const ct=answers.reduce((t,a,i)=>t.replace(`【_${i+1}_】`,`<strong>${esc(a)}</strong>`),esc(String(prob.text||'')));
-  const mbar=`<div class="mode-bar"><i class="ti ti-list-check"></i> <strong>${l.offlineGrading}</strong></div>`;
-  document.getElementById('pp-fb').innerHTML=`${mbar}<div class="feedback-box"><h3>${l.scoreResult}　${correct} / ${answers.length}</h3>${rows}<h3>${l.correctTxt}</h3><p style="line-height:2.1;">${ct}</p>${prob.feedback?`<h3>${l.prevFb}</h3>${md2h(prob.feedback)}`:`<p style="color:var(--text2);font-size:13px;">${l.noPrevFb}</p>`}</div>`;
+  const mbar=`<div class="mode-bar"><i class="ti ti-list-check"></i> <strong>${l.offlineBtn}</strong></div>`;
+  const scoreH=fillScoreHtml(correct,answers.length,pLang);
+  document.getElementById('pp-fb').innerHTML=`${mbar}<div class="feedback-box">${scoreH}${rows}<h3>${l.correctTxt}</h3><p style="line-height:2.1;">${ct}</p>${prob.feedback?`<h3>${l.prevFb}</h3>${md2h(prob.feedback)}`:`<p style="color:var(--text2);font-size:13px;">${l.noPrevFb}</p>`}</div>`;
   document.getElementById('pp-s2').className='step done';
   document.getElementById('pp-s3').className='step done';
   document.getElementById('pp-offline-btn').disabled=true;
@@ -1309,33 +1745,26 @@ async function ppOverwrite(id){
 async function ppSummary(id){
   const prob=st.sPast.find(p=>String(p.id)===String(id));if(!prob)return;
   const pLang=prob.lang||'ja';const l=L[pLang];
-  const blocks=parseF(prob.blocks);
-  const allTas=[...document.querySelectorAll('[id^="pp-sans-"]')];
-  const anyOver=allTas.some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
+  const anyOver=[...document.querySelectorAll('[id^="pp-sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
   if(anyOver){alert(l.overWarn);return;}
-  const userTexts=blocks.map((_,i)=>document.getElementById(`pp-sans-${i}`)?.value.trim()||'—');
+  const userTexts=collectSummaryAnswers(prob,'pp');
   const btn=document.getElementById('pp-submit');btn.disabled=true;
   const fb=document.getElementById('pp-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
   const isEN=pLang==='en';
   const sys=isEN
-    ?'You are an expert writing teacher. Give structured feedback in English using markdown.'
-    :'あなたは日本語の文章指導の専門家です。マークダウンを使って構造的に日本語でフィードバックしてください。';
-  const info=blocks.map((blk,i)=>isEN
-    ?`[Block ${i+1}]\nOriginal:\n${blk.text}\nSummary (${userTexts[i].replace(/\s/g,'').length} / ${blk.targetChars} chars):\n${userTexts[i]}`
-    :`【ブロック${i+1}】\n原文:\n${blk.text}\n要約（${userTexts[i].replace(/\s/g,'').length}文字 / 目標${blk.targetChars}文字以内）:\n${userTexts[i]}`
-  ).join('\n\n---\n\n');
-  const prompt=isEN
-    ?`Grade this summarization (Difficulty ${prob.diff}/5).\n\n${info}\n\n## Block-by-Block Evaluation\nContent, expression, improved example per block.\n## Overall Score (★1–5)`
-    :`以下の要約問題（難易度${prob.diff}/5）を添削してください。\n\n${info}\n\n## ブロック別評価\n内容・表現・改善案\n## 全体講評（★1〜5）`;
+    ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. Give structured feedback in English using markdown.'
+    :'あなたは大学受験・現代文の記述指導の専門家です。マークダウンを使って構造的に日本語でフィードバックしてください。';
+  const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
-    const res=await callClaude(prompt,sys,2000);if(!res)return;
-    fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
+    const res=await callClaude(prompt,sys,2800);if(!res)return;
+    fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res)}</div>`;
     document.getElementById('pp-s2').className='step done';
     document.getElementById('pp-s3').className='step done';
   }catch(e){fb.innerHTML=`<p class="err">${l.gradingErr}: ${e.message}</p>`;}
   btn.disabled=false;
 }
+
 
 function closePP(mode){
   document.getElementById((mode==='fill'?'fp':'sp')+'-list-view').style.display='';
@@ -1356,21 +1785,40 @@ async function deletePast(mode,id){
 
 // ── 校閲 ─────────────────────────────────────────────────
 async function doReview(){
-  const text=document.getElementById('r-text').value.trim();if(!text){return;}
-  document.getElementById('r-btn').disabled=true;document.getElementById('r-result').style.display='none';
+  const l=L[st.lang];
+  const text=document.getElementById('r-text').value.trim();
+  const errEl=document.getElementById('r-text-err');
+  if(!text){
+    if(errEl){errEl.textContent=l.rTextRequired;errEl.classList.add('show');}
+    document.getElementById('r-text')?.focus();
+    return;
+  }
+  if(errEl){errEl.textContent='';errEl.classList.remove('show');}
+  if(isBusy()||!hasApiKey())return;
+  const btn=document.getElementById('r-btn');
+  btn.disabled=true;
+  document.getElementById('r-result').style.display='none';
+  const fbEl=document.getElementById('r-fb');
+  fbEl.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
+  document.getElementById('r-result').style.display='block';
   const isEN=st.lang==='en';
+  const premise=document.getElementById('r-premise')?.value.trim()||'';
   const sys=isEN
-    ?'You are a professional English editor. Give structured feedback using markdown.'
-    :'あなたは日本語の論理的文章の専門編集者です。マークダウンを使って構造的に書いてください。';
-  const prompt=isEN
-    ?`Proofread the following text. Focus on appropriate conjunction use and logical consistency.\n\n[Text]\n${text}\n\n## Conjunction Supplement Suggestions\n## Conjunction Appropriateness Check\n## Logical Consistency Evaluation\n## Revision Suggestions\n## Fully Supplemented Text\n「Fully Supplemented Text」 — Add appropriate conjunctions at all sentence boundaries. Mark added conjunctions in **bold**.\n## Overall Score (★1–5)`
-    :`以下の文章を校閲してください。「接続詞の適切な使用」と「文章の論理性」に焦点を当ててください。\n【対象文章】${text}\n\n## 接続詞の補完提案\n## 接続詞の適切性チェック\n## 論理的一貫性の評価\n## 改善案\n## 完全補完文\n「完全補完文」として、すべての文と文の間に適切な接続詞を補完した文章を作成してください。補完した接続詞は**太字**で示してください。\n## 総評（★1〜5）`;
+    ?'You are a professional editor. Give structured feedback using markdown. When images are provided, use them as reference for context.'
+    :'あなたは日本語の論理的文章の専門編集者です。マークダウンを使って構造的に書いてください。画像が添付されている場合は前提情報として参照してください。';
+  const promptText=buildReviewPrompt(text,premise,isEN);
   try{
-    const fb=await callClaude(prompt,sys,2000);if(!fb)return;
-    document.getElementById('r-fb').innerHTML=md2h(fb);
-    document.getElementById('r-result').style.display='block';
-  }catch(e){alert(L[st.lang].reviewFailed+': '+e.message);}
-  document.getElementById('r-btn').disabled=false;
+    const images=await buildReviewImageBlocks(_reviewImageFiles||[]);
+    const content=images.length
+      ?[...images,{type:'text',text:promptText}]
+      :promptText;
+    const fb=await callClaudeMsg(sys,content,3000);if(!fb)return;
+    fbEl.innerHTML=md2h(fb);
+  }catch(e){
+    fbEl.innerHTML=`<p class="err">${l.reviewFailed}: ${esc(e.message)}</p>`;
+  }
+  btn.disabled=!hasApiKey();
+  updateApiKeyUI();
 }
 
 // ── Init ─────────────────────────────────────────────────
@@ -1379,7 +1827,8 @@ function init(){
   if(savedLang)st.lang=savedLang;
   loadApiKey();
   applyLang();
-  loadPast('fill');
+  switchSub('fill','new');
+  switchSub('summary','new');
   document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
   document.getElementById('f-length').addEventListener('input',()=>updateDiffUI('f'));
   document.getElementById('s-length').addEventListener('input',()=>updateDiffUI('s'));
