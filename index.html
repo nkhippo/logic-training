@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.2.0 / Logic Training</title>
+<title>論理トレーニング Ver.2.2 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 @media print {
@@ -32,24 +32,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .app{width:100%;max-width:700px;}
 .app-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;}
 .app-header h1{font-size:20px;font-weight:500;margin-bottom:.15rem;}
-.app-header .subtitle{font-size:13px;color:var(--text2);}
 .lang-sw{display:flex;border:.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;flex-shrink:0;}
 .lang-btn{padding:6px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;white-space:nowrap;}
 .lang-btn.active{background:var(--bg2);color:var(--text);}
 .lang-btn:first-child{border-right:.5px solid var(--border2);}
 .api-bar{background:var(--bg);border:.5px solid var(--border2);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1rem;}
+.api-bar-header{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);user-select:none;}
+.api-bar-status{font-size:12px;color:var(--green);flex:1;}
+.api-bar-body{overflow:hidden;transition:max-height .25s ease,opacity .2s ease;max-height:200px;opacity:1;}
+.api-bar-body.collapsed{max-height:0;opacity:0;}
+.api-bar-chevron.collapsed{transform:rotate(-90deg);}
 .api-row{display:flex;gap:8px;align-items:center;}
-.api-bar label{font-size:13px;color:var(--text2);white-space:nowrap;}
 .api-bar input[type=password]{flex:1;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:13px;background:var(--bg2);color:var(--text);}
 .api-save-btn{padding:7px 12px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:12px;color:var(--text2);white-space:nowrap;}
 .api-save-btn:hover{background:var(--bg2);}
 .api-note{font-size:12px;color:var(--text2);margin-top:8px;}
 .api-note a{color:var(--text2);}
-.api-saved{font-size:11px;color:var(--green);margin-top:8px;display:none;align-items:center;gap:5px;}
-.api-saved.visible{display:flex;animation:api-saved-pop .35s ease;}
 .api-bar.flash-saved{border-color:var(--green);box-shadow:0 0 0 2px rgba(45,122,92,.18);transition:border-color .3s,box-shadow .3s;}
 .api-save-btn.saved{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
-@keyframes api-saved-pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .btn.needs-apikey{opacity:.45;cursor:not-allowed;}
 .sub-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border2);margin-bottom:1.25rem;width:100%;}
 .sub-tab{flex:1;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
@@ -210,7 +210,6 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
-      <p class="subtitle" id="ui-app-sub">Ver.2.0</p>
     </div>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -219,13 +218,25 @@ textarea{resize:vertical;}
   </div>
 
   <div class="api-bar no-print" id="api-bar">
-    <div class="api-row">
-      <label id="ui-api-lbl">Claude APIキー</label>
-      <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="current-password"/>
-      <button class="api-save-btn" onclick="saveApiKey()"><i class="ti ti-device-floppy"></i> <span id="ui-save-btn">保存</span></button>
+    <div class="api-bar-header" onclick="toggleApiBar()">
+      <span id="ui-api-lbl">Claude APIキー</span>
+      <span class="api-bar-status" id="api-bar-status"></span>
+      <i class="ti ti-chevron-down api-bar-chevron" id="api-bar-chevron"
+         style="font-size:14px;color:var(--text2);transition:transform .2s;"></i>
     </div>
-    <div class="api-saved" id="api-saved"><i class="ti ti-check"></i> <span id="ui-saved-msg">このブラウザに保存済み</span></div>
-    <p class="api-note"><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys</p>
+    <div class="api-bar-body" id="api-bar-body">
+      <div class="api-row" style="margin-top:10px;">
+        <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="current-password"/>
+        <button class="api-save-btn" onclick="saveApiKey()">
+          <i class="ti ti-device-floppy"></i>
+          <span id="ui-save-btn">保存</span>
+        </button>
+      </div>
+      <p class="api-note">
+        <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+        → API Keys
+      </p>
+    </div>
   </div>
 
   <div class="tabs no-print">
@@ -473,9 +484,9 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.2.0',
+    appTitle:'論理トレーニング',
     subNew:'新規生成',subPast:'過去問',
-    apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
+    apiLbl:'Claude APIキー',saveBtn:'保存',saved:'保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
     fThemeLbl:'テーマ',optional:'（省略可）',fLenLbl:'文字数（目安）',
     sLenLbl:'問題文の文字数（目安）',diffLbl:'難易度',
@@ -534,9 +545,9 @@ const L={
     sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
   },
   en:{
-    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.2.0',
+    appTitle:'Logic Training',
     subNew:'New Problem',subPast:'Past Problems',
-    apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
+    apiLbl:'Claude API Key',saveBtn:'Save',saved:'Saved',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
     fThemeLbl:'Theme',optional:'(optional)',fLenLbl:'Length (approx.)',
     sLenLbl:'Problem text length (approx.)',diffLbl:'Difficulty',
@@ -711,10 +722,14 @@ const BADGE={1:'b1',2:'b2',3:'b3',4:'b4',5:'b5'};
 function ui(id,txt){const e=document.getElementById(id);if(e)e.textContent=txt;}
 function applyLang(){
   const l=L[st.lang];
-  ui('ui-app-title',l.appTitle);ui('ui-app-sub',l.appSub);
+  ui('ui-app-title',l.appTitle);
   ui('ui-f-sub-new',l.subNew);ui('ui-f-sub-past',l.subPast);
   ui('ui-s-sub-new',l.subNew);ui('ui-s-sub-past',l.subPast);
-  ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);ui('ui-saved-msg',l.savedMsg);
+  ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);
+  if(localStorage.getItem(APIKEY_KEY)){
+    const statusEl=document.getElementById('api-bar-status');
+    if(statusEl)statusEl.textContent='✓ '+l.saved;
+  }
   ui('ui-tab-fill',l.tabFill);ui('ui-tab-review',l.tabReview);ui('ui-tab-sum',l.tabSum);
   document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
   ui('ui-f-diff-lbl',l.diffLbl);
@@ -1126,8 +1141,15 @@ function mdWrapTextBlocks(html){
   }).join('');
 }
 function md2h(tx){
-  let h=esc(String(tx||'').trim());
-  if(!h)return '';
+  let raw=String(tx||'').trim();
+  if(!raw)return '';
+  const blockquotes=[];
+  raw=raw.replace(/^> (.+)$/gm,(_,line)=>{
+    blockquotes.push('<blockquote>'+esc(line)+'</blockquote>');
+    return `\x01BQ${blockquotes.length-1}\x01`;
+  });
+  let h=esc(raw);
+  blockquotes.forEach((bq,i)=>{h=h.replace(`\x01BQ${i}\x01`,bq);});
   h=parseMdTables(h);
   h=h
     .replace(/^#### (.+)$/gm,(_,t)=>'<h4>'+mdInline(t)+'</h4>')
@@ -1145,6 +1167,7 @@ function md2h(tx){
     .replace(new RegExp('「Fully Supplemented Text」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
     .replace(/<h3>完全補完文<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>完全補完文</h3><div class="completed-text">$1</div>')
     .replace(/<h3>Fully Supplemented Text<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>Fully Supplemented Text</h3><div class="completed-text">$1</div>');
+  h=h.replace(/⁽(\d+)⁾/g,'<sup style="font-size:10px;color:var(--text2);">($1)</sup>');
   return styleCompletedConj(h);
 }
 
@@ -1173,11 +1196,27 @@ function updateApiKeyUI(){
     rb.title=!ok?l.apiKeyHint:'';
   }
 }
+function toggleApiBar(){
+  const body=document.getElementById('api-bar-body');
+  const chevron=document.getElementById('api-bar-chevron');
+  const isCollapsed=body.classList.contains('collapsed');
+  body.classList.toggle('collapsed',!isCollapsed);
+  chevron.classList.toggle('collapsed',!isCollapsed);
+}
+function collapseApiBar(){
+  const statusEl=document.getElementById('api-bar-status');
+  if(statusEl)statusEl.textContent='✓ '+L[st.lang].saved;
+  const body=document.getElementById('api-bar-body');
+  const chevron=document.getElementById('api-bar-chevron');
+  if(body)body.classList.add('collapsed');
+  if(chevron)chevron.classList.add('collapsed');
+}
 function loadApiKey(){
   const v=localStorage.getItem(APIKEY_KEY);
-  if(v)document.getElementById('apikey').value=v;
-  const saved=document.getElementById('api-saved');
-  if(v&&saved){saved.classList.add('visible');saved.style.display='';}
+  if(v){
+    document.getElementById('apikey').value=v;
+    collapseApiBar();
+  }
   updateApiKeyUI();
 }
 function saveApiKey(){
@@ -1185,15 +1224,13 @@ function saveApiKey(){
   if(!k){alert(L[st.lang].noApiKey);return;}
   localStorage.setItem(APIKEY_KEY,k);
   const bar=document.getElementById('api-bar');
-  const saved=document.getElementById('api-saved');
   const btn=document.querySelector('.api-save-btn');
   const lbl=document.getElementById('ui-save-btn');
-  saved.classList.add('visible');
-  saved.style.display='';
   bar.classList.add('flash-saved');
   btn.classList.add('saved');
   if(lbl)lbl.textContent=L[st.lang].saveBtnDone;
   showToast(L[st.lang].apiKeySaved);
+  collapseApiBar();
   updateApiKeyUI();
   setTimeout(()=>{
     bar.classList.remove('flash-saved');
@@ -1611,33 +1648,27 @@ ${prob.answers.map((a,i)=>`(${i+1}) ${a}`).join('\n')}
 [Learner's answers]
 ${ua.map((a,i)=>`(${i+1}) ${a}`).join('\n')}
 
+## Fully Supplemented Text
+「Fully Supplemented Text」 — Rewrite the original text with ALL sentence boundaries supplemented with appropriate conjunctions (not just the blanks). Show every supplemented conjunction in **bold**.
+For conjunctions that correspond to the fill-in-the-blank answers, add the question number as a superscript immediately after the conjunction. Example: "however⁽¹⁾"
+
 ## Individual Question Feedback
 For each number, mark ✓ correct or ✗ incorrect. Explain why the conjunction is appropriate and the logical relationship between sentences. Suggest alternatives if any.
-
-## Overall Feedback
-Key points about using logical conjunctions effectively.
-
-## Fully Supplemented Text
-「Fully Supplemented Text」 — Rewrite the original text with ALL sentence boundaries supplemented with appropriate conjunctions (not just the blanks).
-Format each supplemented conjunction as **conjunction**[role] (conjunction in bold, logical role in brackets immediately after).
-Examples: **however**[contrast], **and**[addition], **therefore**[cause]. Roles: [addition], [contrast], [cause], [concession], [example], [summary], [transition], etc.`
+At the end of each question's explanation, provide 2 short example sentences (20 words or less each) using the correct conjunction in plain everyday contexts. Do not provide example sentences for alternative conjunctions.`
   :`穴埋め問題（難易度${prob.diff}/5）の添削をしてください。
 
 【問題文（正解入り）】${ct}
 【正解】${prob.answers.map((a,i)=>`（${i+1}）${a}`).join('\n')}
 【学習者の回答】${ua.map((a,i)=>`（${i+1}）${a}`).join('\n')}
 
-## 各設問の正誤と解説
-各番号について ✓正解 または ✗不正解 を明示し、なぜその接続詞が適切か前後の論理関係を説明してください。代替接続詞があれば添えてください。
-
-## 全体講評
-論理的接続詞の使い方に関する総合的なポイントを述べてください。
-
 ## 完全補完文
 「完全補完文」として、元の文章のすべての文と文の間（穴埋め箇所以外も含む）に接続詞を補完した、論理的に完全な文章を作成してください。
-補完した接続詞は必ず「**接続詞**[論理関係]」の形式で表記してください（接続詞を太字、直後に論理関係を角括弧で付記）。
-例：**しかし**[逆説]、**そして**[付加]、**したがって**[因果]
-論理関係の例：[順接] [逆接] [因果] [付加] [対比] [例示] [要約] [転換] など。`;
+補完した接続詞はすべて**太字**で示してください。
+穴埋め問題の空欄に対応する接続詞には、補完した接続詞の直後に上付き文字で設問番号を示してください。例：「しかるに⁽¹⁾」のように記述してください。
+
+## 各設問の正誤と解説
+各番号について ✓正解 または ✗不正解 を明示し、なぜその接続詞が適切か前後の論理関係を説明してください。代替接続詞があれば添えてください。
+各設問の解説の末尾に、正解の接続詞を使った端的で平易な例文を2つ示してください。例文は短く（20字以内）、日常的な文脈で使えるものにしてください。代替接続詞の例文は不要です。`;
   const length=F_LENGTH[prob.diff]||500;
   const gradeMaxTokens=Math.round(length*4.0);
   return callClaude(prompt,sys,gradeMaxTokens);
