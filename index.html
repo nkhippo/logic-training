@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.1.8 / Logic Training</title>
+<title>論理トレーニング Ver.1.9 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 @media print {
@@ -51,8 +51,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sa
 .api-save-btn.saved{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
 @keyframes api-saved-pop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .btn.needs-apikey{opacity:.45;cursor:not-allowed;}
-.sub-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border2);margin-bottom:1.25rem;}
-.sub-tab{padding:8px 20px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.sub-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border2);margin-bottom:1.25rem;width:100%;}
+.sub-tab{flex:1;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
 .sub-tab.active{color:var(--text);border-bottom-color:var(--purple);}
 .tabs{display:flex;gap:6px;margin-bottom:1.25rem;}
 .tab{flex:1;padding:9px 4px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;}
@@ -203,7 +203,7 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
-      <p class="subtitle" id="ui-app-sub">Ver.1.8</p>
+      <p class="subtitle" id="ui-app-sub">Ver.1.9</p>
     </div>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -288,20 +288,21 @@ textarea{resize:vertical;}
     </div>
     <div id="fill-past-area" class="no-print" style="display:none">
 <div id="fp-list-view">
-        <div class="ph"><span class="ph-title" id="ui-f-past-title">穴埋め 過去問</span>
-          <button class="btn btn-icon btn-sm" onclick="randomPast('fill')"><i class="ti ti-shuffle"></i> <span id="ui-f-rand">ランダム</span></button></div>
-        <div class="pf-tabs" id="fp-tabs">
-          <button class="pf-tab active" data-f="all" onclick="filterPast('fill','all')" id="ui-fp-all">すべて</button>
-          <button class="pf-tab" data-f="1" onclick="filterPast('fill','1')">★1</button>
-          <button class="pf-tab" data-f="2" onclick="filterPast('fill','2')">★2</button>
-          <button class="pf-tab" data-f="3" onclick="filterPast('fill','3')">★3</button>
-          <button class="pf-tab" data-f="4" onclick="filterPast('fill','4')">★4</button>
-          <button class="pf-tab" data-f="5" onclick="filterPast('fill','5')">★5</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <div class="pf-tabs" id="fp-tabs" style="margin-bottom:0;flex:1;">
+            <button class="pf-tab active" data-f="all" onclick="filterPast('fill','all')" id="ui-fp-all">すべて</button>
+            <button class="pf-tab" data-f="1" onclick="filterPast('fill','1')">★1</button>
+            <button class="pf-tab" data-f="2" onclick="filterPast('fill','2')">★2</button>
+            <button class="pf-tab" data-f="3" onclick="filterPast('fill','3')">★3</button>
+            <button class="pf-tab" data-f="4" onclick="filterPast('fill','4')">★4</button>
+            <button class="pf-tab" data-f="5" onclick="filterPast('fill','5')">★5</button>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="randomPast('fill')" style="flex-shrink:0;margin-left:8px;">
+            <i class="ti ti-arrows-shuffle"></i>
+            <span id="ui-f-rand">ランダム出題</span>
+          </button>
         </div>
-        <div class="ptoolbar">
-          <div class="ssync"><div class="sdot" id="fp-dot"></div><span id="fp-lbl">—</span></div>
-          <button class="btn btn-icon btn-sm" onclick="loadPast('fill')"><i class="ti ti-refresh"></i> <span id="ui-f-ref">更新</span></button>
-        </div>
+        <div class="ssync" style="margin-bottom:.75rem;"><div class="sdot" id="fp-dot"></div><span id="fp-lbl">—</span></div>
         <div class="plist" id="fp-list"></div>
       </div>
       <div id="fp-play" style="display:none;">
@@ -383,20 +384,21 @@ textarea{resize:vertical;}
     </div>
     <div id="summary-past-area" class="no-print" style="display:none">
 <div id="sp-list-view">
-        <div class="ph"><span class="ph-title" id="ui-s-past-title">要約 過去問</span>
-          <button class="btn btn-icon btn-sm" onclick="randomPast('summary')"><i class="ti ti-shuffle"></i> <span id="ui-s-rand">ランダム</span></button></div>
-        <div class="pf-tabs" id="sp-tabs">
-          <button class="pf-tab active" data-f="all" onclick="filterPast('summary','all')" id="ui-sp-all">すべて</button>
-          <button class="pf-tab" data-f="1" onclick="filterPast('summary','1')">★1</button>
-          <button class="pf-tab" data-f="2" onclick="filterPast('summary','2')">★2</button>
-          <button class="pf-tab" data-f="3" onclick="filterPast('summary','3')">★3</button>
-          <button class="pf-tab" data-f="4" onclick="filterPast('summary','4')">★4</button>
-          <button class="pf-tab" data-f="5" onclick="filterPast('summary','5')">★5</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <div class="pf-tabs" id="sp-tabs" style="margin-bottom:0;flex:1;">
+            <button class="pf-tab active" data-f="all" onclick="filterPast('summary','all')" id="ui-sp-all">すべて</button>
+            <button class="pf-tab" data-f="1" onclick="filterPast('summary','1')">★1</button>
+            <button class="pf-tab" data-f="2" onclick="filterPast('summary','2')">★2</button>
+            <button class="pf-tab" data-f="3" onclick="filterPast('summary','3')">★3</button>
+            <button class="pf-tab" data-f="4" onclick="filterPast('summary','4')">★4</button>
+            <button class="pf-tab" data-f="5" onclick="filterPast('summary','5')">★5</button>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="randomPast('summary')" style="flex-shrink:0;margin-left:8px;">
+            <i class="ti ti-arrows-shuffle"></i>
+            <span id="ui-s-rand">ランダム出題</span>
+          </button>
         </div>
-        <div class="ptoolbar">
-          <div class="ssync"><div class="sdot" id="sp-dot"></div><span id="sp-lbl">—</span></div>
-          <button class="btn btn-icon btn-sm" onclick="loadPast('summary')"><i class="ti ti-refresh"></i> <span id="ui-s-ref">更新</span></button>
-        </div>
+        <div class="ssync" style="margin-bottom:.75rem;"><div class="sdot" id="sp-dot"></div><span id="sp-lbl">—</span></div>
         <div class="plist" id="sp-list"></div>
       </div>
       <div id="sp-play" style="display:none;">
@@ -446,7 +448,7 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.8',
+    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.9',
     subNew:'新規生成',subPast:'過去問',
     apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
@@ -474,7 +476,7 @@ const L={
     answerBox:'回答欄',submitBtn:'答え合わせをする',submitBtnBusy:'答え合わせ中…',
     pq:'問題を印刷',pa:'解説を印刷',
     fPastTitle:'穴埋め 過去問',sPastTitle:'要約 過去問',
-    rand:'ランダム',ref:'更新',back:'一覧に戻る',all:'すべて',
+    rand:'ランダム出題',syncLoading:'集計中...',back:'一覧に戻る',all:'すべて',
     rPremiseToggle:'前提情報を追加する（任意）',rPremiseClose:'前提情報を閉じる',
     rImagesLbl:'参考画像（複数可）',rPremiseLbl:'前提情報（テキスト）',
     rPremisePlaceholder:'参考資料の説明や背景情報など',
@@ -507,7 +509,7 @@ const L={
     sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
   },
   en:{
-    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.8',
+    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.9',
     subNew:'New Problem',subPast:'Past Problems',
     apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
@@ -535,7 +537,7 @@ const L={
     answerBox:'Answers',submitBtn:'Check Answers',submitBtnBusy:'Checking…',
     pq:'Print Problem',pa:'Print Explanation',
     fPastTitle:'Fill-in Past Problems',sPastTitle:'Summary Past Problems',
-    rand:'Random',ref:'Refresh',back:'Back to List',all:'All',
+    rand:'Random Problem',syncLoading:'Loading...',back:'Back to List',all:'All',
     rPremiseToggle:'Add context (optional)',rPremiseClose:'Hide context',
     rImagesLbl:'Reference images (multiple allowed)',rPremiseLbl:'Context (text)',
     rPremisePlaceholder:'Notes on reference materials, background, etc.',
@@ -689,7 +691,7 @@ function applyLang(){
   ui('ui-f-diff-lbl',l.diffLbl);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
   ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
-  ui('ui-f-past-title',l.fPastTitle);ui('ui-f-rand',l.rand);ui('ui-f-ref',l.ref);
+  ui('ui-f-rand',l.rand);
   ui('ui-f-back',l.back);ui('ui-fp-all',l.all);
   ui('ui-r-premise-toggle',document.getElementById('r-premise-body')?.hidden!==false?l.rPremiseToggle:l.rPremiseClose);
   ui('ui-r-images-lbl',l.rImagesLbl);ui('ui-r-premise-lbl',l.rPremiseLbl);
@@ -705,7 +707,7 @@ function applyLang(){
   ui('ui-vol-long-chars',fmtVolChars(S_LENGTH_VARIABLE.long.chars));
   ui('ui-s-gen',l.sGenBtn);ui('ui-s-inst',l.sInst);ui('ui-s-submit',l.sSubmit);
   ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
-  ui('ui-s-past-title',l.sPastTitle);ui('ui-s-rand',l.rand);ui('ui-s-ref',l.ref);
+  ui('ui-s-rand',l.rand);
   ui('ui-s-back',l.back);ui('ui-sp-all',l.all);
   // diff labels
   for(let d=1;d<=5;d++){
@@ -757,7 +759,7 @@ function setGenPhase(mode,phase){
 function collectGenLockEls(mode){
   const panel='#'+(mode==='fill'?'fill':'summary')+'-panel';
   return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, .sub-tab, '+panel+' .card button, '+panel+' .card input, #'+mode+'-past-area button, #'+mode+'-past-area .pf-tab, #'+mode+'-past-area .pcard, #'+mode+'-past-area .back-btn, #'+mode+'-past-area .pcdel'
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, .sub-tab, '+panel+' .card button, '+panel+' .card input, #'+mode+'-past-area button, #'+mode+'-past-area .pf-tab, #'+mode+'-past-area .pcard, #'+mode+'-past-area .back-btn, #'+mode+'-past-area .back-btn'
   );
 }
 function lockEl(el,skipIds){
@@ -840,7 +842,7 @@ function setGradePhase(phase){
 }
 function collectGradeLockEls(){
   return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn, #fill-panel .pcdel'
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn, #fill-panel .back-btn'
   );
 }
 function beginGrade(){
@@ -938,6 +940,8 @@ function setLang(lang){
   localStorage.setItem(LANG_KEY,lang);
   resetUIOnLangSwitch();
   applyLang();
+  if(document.getElementById('fill-sub-past')?.classList.contains('active'))renderPL('fill');
+  if(document.getElementById('summary-sub-past')?.classList.contains('active'))renderPL('summary');
 }
 function setVolume(v){
   if(isBusy())return;
@@ -1697,21 +1701,21 @@ function filterPast(mode,f){
   renderPL(mode);
 }
 async function loadPast(mode){
-  setSync(mode,'spin',L[st.lang].loading+'...');
+  setSync(mode,'spin',L[st.lang].syncLoading);
   try{const d=await gasGet(mode);if(mode==='fill')st.fPast=d;else st.sPast=d;setSync(mode,'ok',d.length+L[st.lang].syncItems);renderPL(mode);}
   catch(e){setSync(mode,'err',L[st.lang].syncFailed);document.getElementById((mode==='fill'?'fp':'sp')+'-list').innerHTML=`<div class="pempty">${esc(e.message)}</div>`;}
 }
 function renderPL(mode){
   const all=mode==='fill'?st.fPast:st.sPast;
   const f=mode==='fill'?st.fFilter:st.sFilter;
-  const list=f==='all'?all:all.filter(p=>String(p.diff)===f);
+  const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
+  const list=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   const c=document.getElementById((mode==='fill'?'fp':'sp')+'-list');
   if(!list.length){c.innerHTML=`<div class="pempty"><i class="ti ti-inbox" style="font-size:26px;display:block;margin-bottom:.4rem;"></i>${L[st.lang].noData}</div>`;return;}
   c.innerHTML=list.map(p=>`
     <div class="pcard" onclick="openPast('${mode}','${p.id}')">
       <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
-        <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span>
-          <button class="pcdel" onclick="event.stopPropagation();deletePast('${mode}','${p.id}')">✕</button></div></div>
+        <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span></div></div>
       <div class="pc-pre">${esc(String(mode==='fill'?p.text:(p.text||'')).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
       <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
     </div>`).join('');
@@ -1719,7 +1723,8 @@ function renderPL(mode){
 function randomPast(mode){
   const all=mode==='fill'?st.fPast:st.sPast;
   const f=mode==='fill'?st.fFilter:st.sFilter;
-  const pool=f==='all'?all:all.filter(p=>String(p.diff)===f);
+  const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
+  const pool=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   if(!pool.length){alert(L[st.lang].noData);return;}
   openPast(mode,pool[Math.floor(Math.random()*pool.length)].id);
 }
