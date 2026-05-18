@@ -1341,13 +1341,34 @@ function safeJSON(raw){const m=raw.match(/\{[\s\S]*\}/);if(!m)throw new Error('J
 // ── GAS ──────────────────────────────────────────────────
 async function gasGet(sheet){const r=await fetch(GAS_URL+'?sheet='+sheet+'&t='+Date.now());if(!r.ok)throw new Error('Load failed '+r.status);return r.json();}
 async function gasPost(data){const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});if(!r.ok)throw new Error('Write failed '+r.status);return r.json();}
-async function gasPing(){try{const r=await fetch(GAS_URL+'?ping=1&t='+Date.now());if(!r.ok)return null;return r.json();}catch{return null;}}
+let gasV3Ok=null;
+async function gasPing(){
+  try{
+    const r=await fetch(GAS_URL+'?ping=1&t='+Date.now(),{redirect:'follow'});
+    if(r.status>=400)return null;
+    const text=await r.text();
+    if(!text)return null;
+    try{return JSON.parse(text);}catch{
+      const m=text.match(/\{[\s\S]*\}/);
+      return m?JSON.parse(m[0]):null;
+    }
+  }catch{return null;}
+}
+function isGasV3Payload(p){
+  return !!(p&&(Number(p.version)===3||(Array.isArray(p.summaryCols)&&p.summaryCols.includes('text'))));
+}
 async function ensureGasV3(){
+  if(gasV3Ok===true)return true;
   const p=await gasPing();
-  if(p&&p.version===3)return true;
+  if(isGasV3Payload(p)){gasV3Ok=true;return true;}
+  if(p===null){
+    // ping が CORS/リダイレクトで失敗しても POST は通ることがある → 保存は試す
+    return true;
+  }
+  gasV3Ok=false;
   const msg=st.lang==='ja'
-    ?'GASがv3ではありません。Apps Scriptに gas-script-v3.js を貼り「新しいデプロイ」してください。'
-    :'GAS is not v3. Paste gas-script-v3.js in Apps Script and create a new deployment.';
+    ?'GASがv3ではありません。Apps Scriptに gas-script-v3.js を貼り「新しいデプロイ」し、index.html の GAS_URL を新URLに合わせてください。'
+    :'GAS is not v3. Redeploy gas-script-v3.js and set GAS_URL to the new web app URL.';
   alert(msg);
   return false;
 }
@@ -1718,7 +1739,8 @@ async function syncPastOnGen(mode,prob){
   const entry=mode==='fill'?buildFillEntry(prob):buildSummaryEntry(prob);
   prob.id=entry.id;
   setSync(mode,'spin',L[st.lang].genPhaseProcess+'...');
-  await gasPost(entry);
+  const res=await gasPost(entry);
+  if(isGasV3Payload(res))gasV3Ok=true;
   if(mode==='fill')st.fPast.unshift(entry);else st.sPast.unshift(entry);
   renderPL(mode);
   setSync(mode,'ok',(mode==='fill'?st.fPast:st.sPast).length+L[st.lang].syncItems);
