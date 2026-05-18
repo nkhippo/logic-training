@@ -6,16 +6,40 @@
  *   Who has access: Anyone
  *
  * Spreadsheet: bind this script to your spreadsheet (Extensions > Apps Script)
- * Sheets (auto-created if missing):
+ * Sheets (canonical names — auto-created if missing):
  *   fill    — id, theme, diff, date, text, answers, hints, feedback, userAnswers, lang
- *   summary — id, theme, diff, date, text, questions, ratio
+ *   summary — id, theme, diff, date, text, questions, ratio, lang
+ * Legacy aliases (read-only merge): 穴埋め → fill, 要約 → summary
  */
 
 const FILL_COLS = ['id', 'theme', 'diff', 'date', 'text', 'answers', 'hints', 'feedback', 'userAnswers', 'lang'];
-const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'ratio'];
+const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'ratio', 'lang'];
+const SHEET_ALIASES = {
+  fill: ['fill', '穴埋め'],
+  summary: ['summary', '要約']
+};
 
 function getSs_() {
   return SpreadsheetApp.getActiveSpreadsheet();
+}
+
+function ensureHeaders_(sh, cols) {
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(cols);
+    return;
+  }
+  const width = Math.max(sh.getLastColumn(), cols.length);
+  let header = sh.getRange(1, 1, 1, width).getValues()[0].map(String);
+  while (header.length && header[header.length - 1] === '') header.pop();
+  if (!header.length || header[0] !== cols[0]) {
+    sh.insertRowBefore(1);
+    sh.getRange(1, 1, 1, cols.length).setValues([cols]);
+    return;
+  }
+  if (header.length < cols.length) {
+    const merged = cols.map((c, i) => (i < header.length && header[i] ? header[i] : c));
+    sh.getRange(1, 1, 1, cols.length).setValues([merged]);
+  }
 }
 
 function getSh_(name, cols) {
@@ -26,15 +50,41 @@ function getSh_(name, cols) {
     sh.appendRow(cols);
     return sh;
   }
-  if (sh.getLastRow() === 0) {
-    sh.appendRow(cols);
-    return sh;
-  }
-  const header = sh.getRange(1, 1, 1, cols.length).getValues()[0].map(String);
-  if (header[0] !== cols[0]) {
-    sh.insertRowBefore(1, cols);
-  }
+  ensureHeaders_(sh, cols);
   return sh;
+}
+
+function rowScore_(o, cols) {
+  return cols.reduce((n, c) => n + (o[c] !== undefined && o[c] !== null && String(o[c]) !== '' ? 1 : 0), 0);
+}
+
+function readAllRows_(logical) {
+  const cols = logical === 'summary' ? SUMMARY_COLS : FILL_COLS;
+  const ss = getSs_();
+  const names = SHEET_ALIASES[logical] || [logical];
+  const byId = {};
+
+  names.forEach((name) => {
+    const sh = ss.getSheetByName(name);
+    if (!sh || sh.getLastRow() < 2) return;
+    ensureHeaders_(sh, cols);
+    const values = sh.getDataRange().getValues();
+    const headers = values[0].map(String);
+    values.slice(1)
+      .filter((r) => r[0] !== '' && r[0] !== null && r[0] !== undefined)
+      .forEach((r) => {
+        let o = rowToObj_(headers, r);
+        if (logical === 'summary') o = normalizeSummaryRow_(o);
+        const id = String(o.id);
+        if (!byId[id] || rowScore_(o, cols) > rowScore_(byId[id], cols)) {
+          byId[id] = o;
+        }
+      });
+  });
+
+  return Object.keys(byId)
+    .map((id) => byId[id])
+    .sort((a, b) => Number(b.id) - Number(a.id));
 }
 
 function rowToObj_(headers, row) {
@@ -45,20 +95,22 @@ function rowToObj_(headers, row) {
   return o;
 }
 
+/** 旧7列・ヘッダー typo などでずれた summary 行を補正 */
+function normalizeSummaryRow_(o) {
+  if (o.rang && !o.lang) o.lang = o.rang;
+  const q = String(o.questions || '').trim();
+  const looksLikeRatio = q && /^0?\.\d+$/.test(q) && !q.startsWith('[') && !q.startsWith('{');
+  if (looksLikeRatio && !o.ratio) {
+    o.ratio = q;
+    o.questions = '';
+  }
+  return o;
+}
+
 function doGet(e) {
   const sheetName = String(e.parameter.sheet || 'fill').toLowerCase();
   const isSummary = sheetName === 'summary';
-  const cols = isSummary ? SUMMARY_COLS : FILL_COLS;
-  const sh = getSh_(isSummary ? 'summary' : 'fill', cols);
-  const values = sh.getDataRange().getValues();
-  if (values.length < 2) {
-    return jsonOut_([]);
-  }
-  const headers = values[0].map(String);
-  const rows = values.slice(1)
-    .filter(r => r[0] !== '' && r[0] !== null && r[0] !== undefined)
-    .map(r => rowToObj_(headers, r))
-    .reverse();
+  const rows = readAllRows_(isSummary ? 'summary' : 'fill');
   return jsonOut_(rows);
 }
 
@@ -104,14 +156,18 @@ function writeSummary_(data) {
 
 function deleteById_(sheetName, id) {
   const isSummary = String(sheetName).toLowerCase() === 'summary';
-  const cols = isSummary ? SUMMARY_COLS : FILL_COLS;
-  const sh = getSh_(isSummary ? 'summary' : 'fill', cols);
-  const values = sh.getDataRange().getValues();
-  for (let i = values.length - 1; i >= 1; i--) {
-    if (String(values[i][0]) === String(id)) {
-      sh.deleteRow(i + 1);
+  const names = SHEET_ALIASES[isSummary ? 'summary' : 'fill'];
+  const ss = getSs_();
+  names.forEach((name) => {
+    const sh = ss.getSheetByName(name);
+    if (!sh) return;
+    const values = sh.getDataRange().getValues();
+    for (let i = values.length - 1; i >= 1; i--) {
+      if (String(values[i][0]) === String(id)) {
+        sh.deleteRow(i + 1);
+      }
     }
-  }
+  });
 }
 
 function jsonOut_(obj) {

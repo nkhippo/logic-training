@@ -656,8 +656,30 @@ const SUM_TYPE_LABELS={
   en:{'語句説明':'Term','主張要約':'Main claim','理由説明':'Reason','課題抽出':'Issue','対比説明':'Contrast'}
 };
 function normSummaryProb(prob){
-  const questions=Array.isArray(prob.questions)?prob.questions:(parseF(prob.questions)||[]);
-  return {...prob,text:prob.text||'',questions};
+  const lang=prob.lang||prob.rang||st.lang;
+  let text=String(prob.text||'').trim();
+  let questions=Array.isArray(prob.questions)?prob.questions:(parseF(prob.questions)||[]);
+  const qRaw=String(prob.questions||'').trim();
+  if(!questions.length&&qRaw&&/^0?\.\d+$/.test(qRaw)&&!prob.ratio){
+    prob={...prob,ratio:qRaw,questions:''};
+  }
+  const blocks=parseF(prob.blocks);
+  if(!text&&blocks&&blocks.length){
+    text=blocks.map(b=>(typeof b==='string'?b:(b&&b.text)||'')).filter(Boolean).join('\n\n');
+  }
+  if(!questions.length&&blocks&&blocks.length){
+    questions=blocks.map((b,i)=>{
+      const o=typeof b==='object'&&b?b:{};
+      const label=o.label||'';
+      return {
+        id:i+1,
+        type:label||'主張要約',
+        question:label?(lang==='en'?`Summarize: ${label}`:`「${label}」を要約しなさい。`):((lang==='en'?'Question ':'設問')+(i+1)),
+        targetChars:parseInt(o.targetChars,10)||50
+      };
+    });
+  }
+  return {...prob,text,questions};
 }
 function sumTypeLabel(type,lang){return(SUM_TYPE_LABELS[lang]||SUM_TYPE_LABELS.ja)[type]||type;}
 function buildSummaryQuestionHtml(q,i,lang,mode){
@@ -1831,7 +1853,7 @@ function renderPL(mode){
     <div class="pcard" onclick="openPast('${mode}','${p.id}')">
       <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
         <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span></div></div>
-      <div class="pc-pre">${esc(String(mode==='fill'?p.text:(p.text||'')).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
+      <div class="pc-pre">${esc(String(mode==='fill'?p.text:normSummaryProb(p).text).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
       <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
     </div>`).join('');
 }
