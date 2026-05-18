@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.1.5 / Logic Training</title>
+<title>論理トレーニング Ver.1.7 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 @media print {
@@ -80,7 +80,11 @@ textarea{resize:vertical;}
 .diff-desc{font-size:12px;color:var(--text2);margin-bottom:12px;padding:6px 10px;background:var(--bg2);border-radius:var(--r-md);line-height:1.5;}
 .auto-info{font-size:12px;color:var(--amber);margin-bottom:12px;padding:5px 10px;background:#fdf5e6;border:.5px solid var(--amber);border-radius:var(--r-md);}
 .problem-box{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:15px;line-height:2.1;margin-bottom:1rem;}
-.blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;min-width:56px;text-align:center;padding:2px 6px;margin:0 2px;font-size:13px;color:var(--text2);}
+.blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;width:5em;min-width:5em;text-align:center;padding:2px 4px;font-size:13px;color:var(--text2);overflow:hidden;white-space:nowrap;vertical-align:middle;margin:0 2px;}
+.volume-row{display:flex;gap:8px;}
+.vol-btn{flex:1;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;text-align:center;font-size:13px;font-weight:500;color:var(--text2);display:flex;flex-direction:column;gap:3px;transition:all .15s;}
+.vol-btn.active{background:var(--bg2);color:var(--text);border-color:var(--purple);}
+.vol-chars{font-size:11px;color:var(--text2);}
 .answer-section{display:grid;gap:8px;margin-bottom:1rem;}
 .answer-item{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
 .answer-row{display:flex;align-items:center;gap:10px;}
@@ -198,7 +202,7 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
-      <p class="subtitle" id="ui-app-sub">Ver.1.5</p>
+      <p class="subtitle" id="ui-app-sub">Ver.1.7</p>
     </div>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -234,9 +238,9 @@ textarea{resize:vertical;}
     </div>
     <div id="fill-new-area">
     <div class="card no-print">
-      <div class="row2">
-        <div><label id="ui-f-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-optional">（省略可）</span></label><input type="text" id="f-theme" placeholder="例: AI と社会"/></div>
-        <div><label id="ui-f-len-lbl">文字数（目安）</label><input type="number" id="f-length" value="300" min="100" max="800" step="50"/></div>
+      <div style="margin-bottom:12px;">
+        <label id="ui-f-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-optional">（省略可）</span></label>
+        <input type="text" id="f-theme" placeholder=""/>
       </div>
       <label id="ui-f-diff-lbl">難易度</label>
       <div class="diff-row" id="f-diff-row">
@@ -318,9 +322,26 @@ textarea{resize:vertical;}
     </div>
     <div id="summary-new-area">
     <div class="card no-print">
-      <div class="row2">
-        <div><label id="ui-s-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-s-opt">（省略可）</span></label><input type="text" id="s-theme" placeholder="例: 環境問題"/></div>
-        <div><label id="ui-s-len-lbl">問題文の文字数（目安）</label><input type="number" id="s-length" value="400" min="200" max="1000" step="50"/></div>
+      <div style="margin-bottom:12px;">
+        <label id="ui-s-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-s-opt">（省略可）</span></label>
+        <input type="text" id="s-theme" placeholder=""/>
+      </div>
+      <div id="s-volume-selector" style="display:none; margin-bottom:12px;">
+        <label id="ui-s-vol-lbl">ボリューム</label>
+        <div class="volume-row">
+          <button type="button" class="vol-btn active" data-v="short" onclick="setVolume('short')">
+            <span id="ui-vol-short">さくっと</span>
+            <span class="vol-chars" id="ui-vol-short-chars">500字</span>
+          </button>
+          <button type="button" class="vol-btn" data-v="mid" onclick="setVolume('mid')">
+            <span id="ui-vol-mid">普通</span>
+            <span class="vol-chars" id="ui-vol-mid-chars">2,000字</span>
+          </button>
+          <button type="button" class="vol-btn" data-v="long" onclick="setVolume('long')">
+            <span id="ui-vol-long">じっくり</span>
+            <span class="vol-chars" id="ui-vol-long-chars">4,000字</span>
+          </button>
+        </div>
       </div>
       <label id="ui-s-diff-lbl">難易度</label>
       <div class="diff-row" id="s-diff-row">
@@ -399,7 +420,7 @@ textarea{resize:vertical;}
         </div>
         <div class="review-field">
           <label id="ui-r-premise-lbl">前提情報（テキスト）</label>
-          <textarea id="r-premise" class="sum-ta" style="min-height:100px;" placeholder="参考資料の説明や背景情報など"></textarea>
+          <textarea id="r-premise" class="sum-ta" style="min-height:100px;" placeholder=""></textarea>
         </div>
       </div>
       <div class="review-field">
@@ -424,7 +445,7 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.5',
+    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.7',
     subNew:'新規生成',subPast:'過去問',
     apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
@@ -482,9 +503,10 @@ const L={
     fThemePlaceholder:'例: AI と社会',sThemePlaceholder:'例: 環境問題',
     rPlaceholder:'校閲したい文章を入力または貼り付けてください',
     theme:'テーマ：',diff:'難易度：',
+    sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
   },
   en:{
-    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.5',
+    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.7',
     subNew:'New Problem',subPast:'Past Problems',
     apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
@@ -542,13 +564,14 @@ const L={
     fThemePlaceholder:'e.g. AI and Society',sThemePlaceholder:'e.g. Climate Change',
     rPlaceholder:'Enter or paste the text you want proofread',
     theme:'Theme: ',diff:'Difficulty: ',
+    sVolLbl:'Volume',volShort:'Quick',volMid:'Normal',volLong:'Deep',
   }
 };
 
 let _reviewImageFiles=[];
 
 // ── State ─────────────────────────────────────────────────
-const st={lang:'ja',fDiff:3,sDiff:3,fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
+const st={lang:'ja',fDiff:3,sDiff:3,sVolume:'short',fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
 let _genLockedEls=[];
 let _gradeLockedEls=[];
 function isBusy(){return st.genBusy||st.gradeBusy;}
@@ -562,20 +585,27 @@ function setAppBusyClass(){document.querySelector('.app').classList.toggle('is-b
 const F_COEFF={1:.7,2:.85,3:1.0,4:1.1,5:1.2};
 // ブロック数の係数（要約）
 const B_COEFF={1:.7,2:.85,3:1.0,4:1.1,5:1.2};
+const F_LENGTH={1:200,2:350,3:500,4:700,5:800};
+const S_LENGTH_FIXED={1:300,2:400,3:500};
+const S_LENGTH_VARIABLE={
+  short:{ja:'さくっと',en:'Quick',chars:500},
+  mid:{ja:'普通',en:'Normal',chars:2000},
+  long:{ja:'じっくり',en:'Deep',chars:4000}
+};
+function getSummaryLength(diff){
+  if(diff<=3) return S_LENGTH_FIXED[diff];
+  const vol=st.sVolume||'short';
+  return S_LENGTH_VARIABLE[vol].chars;
+}
 const S_RATIO={1:.6,2:.5,3:.4,4:.3,5:.2};
 
 function calcBlanks(length,diff){
-  // base = 文字数 / 100（300文字でbase3、200文字でbase2）
-  // 200文字×難易度5 → 2×1.2=2.4→round=2 ✓
-  // 300文字×難易度3 → 3×1.0=3.0→round=3 ✓
-  // 500文字×難易度3 → 5×1.0=5.0→round=5 ✓
   const base=length/150;
-  return Math.min(10,Math.max(2,Math.round(base*F_COEFF[diff])));
+  return Math.min(5,Math.max(2,Math.round(base*F_COEFF[diff])+1));
 }
 function calcBlocks(length,diff){
-  // base = 文字数 / 200（400文字でbase2、200文字でbase1）
   const base=length/200;
-  return Math.min(5,Math.max(1,Math.round(base*B_COEFF[diff])));
+  return Math.min(4,Math.max(1,Math.round(base*B_COEFF[diff])));
 }
 function getSumQuestionTypes(diff){
   if(diff<=2)return ['語句説明','主張要約'];
@@ -610,7 +640,7 @@ const printLines=Array(lines).fill('<div style="border-bottom:1px solid #ccc;hei
         <p class="slabel" style="margin:0;">${l.yourSum}</p>
         <span id="${lblId}" class="cc">0 / ${tc}${l.charOf}</span>
       </div>
-      <textarea class="sum-ta" id="${taId}" style="min-height:${Math.max(80,tc*1.6)}px" data-target="${tc}" oninput="${onCC}" onblur="${onCC}" placeholder="${tc}${l.qInst}"></textarea>
+      <textarea class="sum-ta" id="${taId}" style="min-height:${Math.max(80,tc*1.6)}px" data-target="${tc}" oninput="${onCC}" onblur="${onCC}" placeholder=""></textarea>
       <div id="${warnId}" class="owarn"></div>
     </div>
     <div class="summary-block-print"><p style="font-size:10pt;font-weight:bold;margin-bottom:.3rem;">${l.qLbl}${q.id||i+1}（${tc}${l.charWithin}）</p>${printLines}</div>
@@ -655,7 +685,7 @@ function applyLang(){
   ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);ui('ui-saved-msg',l.savedMsg);
   ui('ui-tab-fill',l.tabFill);ui('ui-tab-review',l.tabReview);ui('ui-tab-sum',l.tabSum);
   document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-f-len-lbl',l.fLenLbl);ui('ui-f-diff-lbl',l.diffLbl);
+  ui('ui-f-diff-lbl',l.diffLbl);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
   ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
   ui('ui-f-past-title',l.fPastTitle);ui('ui-f-rand',l.rand);ui('ui-f-ref',l.ref);
@@ -664,9 +694,14 @@ function applyLang(){
   ui('ui-r-images-lbl',l.rImagesLbl);ui('ui-r-premise-lbl',l.rPremiseLbl);
   ui('ui-r-lbl',l.rLbl);ui('ui-r-btn',l.rBtn);
   const rp=document.getElementById('r-premise');
-  if(rp)rp.placeholder=l.rPremisePlaceholder;
+  if(rp)rp.placeholder='';
   document.getElementById('ui-s-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-s-len-lbl',l.sLenLbl);ui('ui-s-diff-lbl',l.diffLbl);
+  ui('ui-s-diff-lbl',l.diffLbl);
+  ui('ui-s-vol-lbl',l.sVolLbl);ui('ui-vol-short',l.volShort);ui('ui-vol-mid',l.volMid);ui('ui-vol-long',l.volLong);
+  const fmtVolChars=n=>st.lang==='ja'?n.toLocaleString('ja-JP')+'字':n.toLocaleString('en-US')+' chars';
+  ui('ui-vol-short-chars',fmtVolChars(S_LENGTH_VARIABLE.short.chars));
+  ui('ui-vol-mid-chars',fmtVolChars(S_LENGTH_VARIABLE.mid.chars));
+  ui('ui-vol-long-chars',fmtVolChars(S_LENGTH_VARIABLE.long.chars));
   ui('ui-s-gen',l.sGenBtn);ui('ui-s-inst',l.sInst);ui('ui-s-submit',l.sSubmit);
   ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
   ui('ui-s-past-title',l.sPastTitle);ui('ui-s-rand',l.rand);ui('ui-s-ref',l.ref);
@@ -679,10 +714,8 @@ function applyLang(){
   }
   // diff desc & auto info
   updateDiffUI('f');updateDiffUI('s');
-  // placeholders
-  document.getElementById('f-theme').placeholder=l.fThemePlaceholder;
-  document.getElementById('s-theme').placeholder=l.sThemePlaceholder;
-  document.getElementById('r-text').placeholder=l.rPlaceholder;
+  // placeholders removed
+  ['f-theme','s-theme','r-text'].forEach(id=>{const el=document.getElementById(id);if(el)el.placeholder='';});
   const rte=document.getElementById('r-text-err');
   if(rte&&!rte.classList.contains('show'))rte.textContent=l.rTextRequired;
   // lang buttons
@@ -842,7 +875,7 @@ function endGrade(){
 function updateDiffUI(m){
   const l=L[st.lang];
   const diff=m==='f'?st.fDiff:st.sDiff;
-  const length=parseInt(document.getElementById(m==='f'?'f-length':'s-length').value)||300;
+  const length=m==='f'?F_LENGTH[diff]:getSummaryLength(diff);
   document.getElementById(m+'-diff-desc').textContent=m==='f'?l.fDescs[diff-1]:l.sDescs[diff-1];
   if(m==='f'){
     const b=calcBlanks(length,diff);
@@ -905,10 +938,20 @@ function setLang(lang){
   resetUIOnLangSwitch();
   applyLang();
 }
+function setVolume(v){
+  if(isBusy())return;
+  st.sVolume=v;
+  document.querySelectorAll('#s-volume-selector .vol-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
+  updateDiffUI('s');
+}
 function setDiff(m,d){
   if(isBusy())return;
   if(m==='f')st.fDiff=d;else st.sDiff=d;
   document.querySelectorAll('#'+(m==='f'?'f':'s')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
+  if(m==='s'){
+    const vs=document.getElementById('s-volume-selector');
+    if(vs) vs.style.display=d>=4?'':'none';
+  }
   updateDiffUI(m);
 }
 function switchSub(mode,sub){
@@ -1219,12 +1262,15 @@ ${forSummary?`Create one reading passage of approximately ${length} characters.`
 約${length}文字の${forSummary?'読解用文章（問題文）を1つ':'論理的な文章を'}作成してください。`;
 }
 function hasFillHint(h){return !!(h&&String(h).trim());}
-function buildFillAnswerItem(i,hint,inputId,placeholder,noPrint){
+function buildFillAnswerItem(i,hint,inputId,noPrint){
   const item=document.createElement('div');
   item.className='answer-item';
   const row=document.createElement('div');
   row.className='answer-row';
-  row.innerHTML=`<label>（${i+1}）</label><input type="text" id="${inputId}" placeholder="${esc(placeholder)}"/>`;
+  const num=i+1;
+  row.innerHTML=`<label>（${num}）</label><input type="text" id="${inputId}" placeholder=""
+    oninput="syncBlank(${num}, this.value)"
+    onblur="syncBlank(${num}, this.value)"/>`;
   item.appendChild(row);
   if(hasFillHint(hint)){
     const ht=document.createElement('div');
@@ -1233,6 +1279,18 @@ function buildFillAnswerItem(i,hint,inputId,placeholder,noPrint){
     item.appendChild(ht);
   }
   return item;
+}
+function syncBlank(num,value){
+  const blankEl=document.getElementById(`blank-${num}`);
+  if(!blankEl) return;
+  if(value.trim()===''){
+    blankEl.textContent=`（${num}）`;
+    blankEl.style.color='var(--text2)';
+  }else{
+    const display=value.length>5?value.slice(0,5)+'…':value;
+    blankEl.textContent=display;
+    blankEl.style.color='var(--text)';
+  }
 }
 function getFillPrompts(){
   const l=st.lang;
@@ -1342,8 +1400,8 @@ function getSumPrompts(){
 async function generateFill(){
   if(isBusy()||!hasApiKey())return;
   const themeIn=document.getElementById('f-theme').value.trim();
-  const length=parseInt(document.getElementById('f-length').value)||300;
   const diff=st.fDiff;
+  const length=F_LENGTH[diff];
   const blanks=calcBlanks(length,diff);
   const hasTheme=themeIn.length>0;
   const isEN=st.lang==='en';
@@ -1363,7 +1421,8 @@ async function generateFill(){
   if(diff>=3) jsonInst+=isEN?FILL_HINT_NONE_NOTE_EN:FILL_HINT_NONE_NOTE_JA;
 
   try{
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}`,sys,1500);
+    const genMaxTokens=Math.round(length*3.5);
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}`,sys,genMaxTokens);
     if(!raw)return;
     setGenPhase('fill','process');
     const p=safeJSON(raw);
@@ -1387,11 +1446,11 @@ function renderFill(prob){
   document.getElementById('f-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
   document.getElementById('f-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabFill}</h2><p>${l.theme}${esc(prob.theme||'—')}　${l.diff}${dlabel(prob.diff)}　${fmtDate(prob.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.fPrintInst}</p>`;
   let html=esc(prob.text);
-  for(let i=1;i<=prob.answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank">（${i}）</span>`);
+  for(let i=1;i<=prob.answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank" id="blank-${i}">（${i}）</span>`);
   document.getElementById('f-problem').innerHTML=html;
   const sec=document.getElementById('f-answers');sec.innerHTML=`<p class="slabel no-print">${l.answerBox}</p>`;
   prob.answers.forEach((_,i)=>{
-    sec.appendChild(buildFillAnswerItem(i,prob.hints?.[i],`fans-${i}`,`${l.tabFill}...`,true));
+    sec.appendChild(buildFillAnswerItem(i,prob.hints?.[i],`fans-${i}`,true));
   });
   document.getElementById('f-fb').innerHTML='';
   document.getElementById('f-pa-btn').style.display='none';
@@ -1466,7 +1525,9 @@ Examples: **however**[contrast], **and**[addition], **therefore**[cause]. Roles:
 補完した接続詞は必ず「**接続詞**[論理関係]」の形式で表記してください（接続詞を太字、直後に論理関係を角括弧で付記）。
 例：**しかし**[逆説]、**そして**[付加]、**したがって**[因果]
 論理関係の例：[順接] [逆接] [因果] [付加] [対比] [例示] [要約] [転換] など。`;
-  return callClaude(prompt,sys,2500);
+  const length=F_LENGTH[prob.diff]||500;
+  const gradeMaxTokens=Math.round(length*4.0);
+  return callClaude(prompt,sys,gradeMaxTokens);
 }
 
 function buildFillEntry(prob){
@@ -1493,8 +1554,10 @@ async function syncPastOnGen(mode,prob){
 async function generateSummary(){
   if(isBusy()||!hasApiKey())return;
   const themeIn=document.getElementById('s-theme').value.trim();
-  const length=parseInt(document.getElementById('s-length').value)||400;
   const diff=st.sDiff;
+  let length;
+  if(diff<=3){length=S_LENGTH_FIXED[diff];}
+  else{const vol=st.sVolume||'short';length=S_LENGTH_VARIABLE[vol].chars;}
   const numQ=calcBlocks(length,diff);
   const ratio=S_RATIO[diff];
   const hasTheme=themeIn.length>0;
@@ -1519,13 +1582,14 @@ async function generateSummary(){
     :`返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"約${length}文字の問題文","questions":[{"id":1,"type":"語句説明","question":"本文中の「〇〇」とは…50字以内で説明しなさい。","targetChars":50}]}\nquestionsは${numQ}要素。textは1つの文章全体（大学受験・現代文型）。`;
 
   try{
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}`,sys,2800);
+    const genMaxTokens=length<=500?1200:length<=2000?3000:6000;
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}`,sys,genMaxTokens);
     if(!raw)return;
     setGenPhase('summary','process');
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
     const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張要約',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
-    st.summary={id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,feedback:null,lang:st.lang};
+    st.summary={id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||'short'):null,feedback:null,lang:st.lang};
     renderSummary(st.summary);
     try{await syncPastOnGen('summary',st.summary);}
     catch(syncErr){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
@@ -1586,7 +1650,10 @@ async function submitSummary(){
     :'あなたは大学受験・現代文の記述指導の専門家です。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
   const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
-    const res=await callClaude(prompt,sys,2800);if(!res)return;
+    const diff=prob.diff||st.sDiff;
+    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
+    const gradeMaxTokens=length<=500?1500:length<=2000?3500:7000;
+    const res=await callClaude(prompt,sys,gradeMaxTokens);if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res)}</div>`;
     prob.feedback=res;
     document.getElementById('ss2').className='step done';
@@ -1643,7 +1710,7 @@ function openPast(mode,id){
   if(mode==='fill'){
     const answers=parseF(prob.answers);const hints=parseF(prob.hints);
     let html=esc(prob.text);
-    for(let i=1;i<=answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank">（${i}）</span>`);
+    for(let i=1;i<=answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank" id="blank-${i}">（${i}）</span>`);
     cnt.innerHTML=`
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
         <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
@@ -1666,7 +1733,7 @@ function openPast(mode,id){
     const sec=document.getElementById('pp-inputs');sec.innerHTML=`<p class="slabel">${l.answerBox}</p>`;
     const noHints=(prob.diff||1)>=3;
     answers.forEach((_,i)=>{
-      sec.appendChild(buildFillAnswerItem(i,noHints?'':hints[i],`ppans-${i}`,'...',false));
+      sec.appendChild(buildFillAnswerItem(i,noHints?'':hints[i],`ppans-${i}`,false));
     });
   } else {
     const p=normSummaryProb(prob);
@@ -1757,7 +1824,10 @@ async function ppSummary(id){
     :'あなたは大学受験・現代文の記述指導の専門家です。マークダウンを使って構造的に日本語でフィードバックしてください。';
   const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
-    const res=await callClaude(prompt,sys,2800);if(!res)return;
+    const diff=prob.diff||st.sDiff;
+    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
+    const gradeMaxTokens=length<=500?1500:length<=2000?3500:7000;
+    const res=await callClaude(prompt,sys,gradeMaxTokens);if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res)}</div>`;
     document.getElementById('pp-s2').className='step done';
     document.getElementById('pp-s3').className='step done';
@@ -1830,8 +1900,7 @@ function init(){
   switchSub('fill','new');
   switchSub('summary','new');
   document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
-  document.getElementById('f-length').addEventListener('input',()=>updateDiffUI('f'));
-  document.getElementById('s-length').addEventListener('input',()=>updateDiffUI('s'));
+  setDiff('s',st.sDiff);
 }
 init();
 </script>
