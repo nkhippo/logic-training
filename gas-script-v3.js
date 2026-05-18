@@ -5,18 +5,23 @@
  *   Execute as: Me
  *   Who has access: Anyone
  *
+ * 確認: WebアプリURLに ?ping=1 を付けると { "version": 3 } が返る
+ *
  * Spreadsheet: bind this script to your spreadsheet (Extensions > Apps Script)
- * Sheets (canonical names — auto-created if missing):
+ * Sheets (この2枚だけを使用):
  *   fill    — id, theme, diff, date, text, answers, hints, feedback, userAnswers, lang
  *   summary — id, theme, diff, date, text, questions, ratio, lang
- * Legacy aliases (read-only merge): 穴埋め → fill, 要約 → summary
+ *
+ * ※「要約」「穴埋め」タブは v3 では作りません。残っている場合は削除してください。
  */
 
+const GAS_VERSION = 3;
 const FILL_COLS = ['id', 'theme', 'diff', 'date', 'text', 'answers', 'hints', 'feedback', 'userAnswers', 'lang'];
 const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'ratio', 'lang'];
-const SHEET_ALIASES = {
-  fill: ['fill', '穴埋め'],
-  summary: ['summary', '要約']
+/** 削除時のみ参照（読み書きは fill / summary のみ） */
+const LEGACY_SHEET_NAMES = {
+  fill: ['穴埋め'],
+  summary: ['要約']
 };
 
 function getSs_() {
@@ -58,30 +63,33 @@ function rowScore_(o, cols) {
   return cols.reduce((n, c) => n + (o[c] !== undefined && o[c] !== null && String(o[c]) !== '' ? 1 : 0), 0);
 }
 
+function readSheetRows_(sheetName, logical) {
+  const cols = logical === 'summary' ? SUMMARY_COLS : FILL_COLS;
+  const sh = getSs_().getSheetByName(sheetName);
+  if (!sh || sh.getLastRow() < 2) return [];
+  ensureHeaders_(sh, cols);
+  const values = sh.getDataRange().getValues();
+  const headers = values[0].map(String);
+  return values.slice(1)
+    .filter((r) => r[0] !== '' && r[0] !== null && r[0] !== undefined)
+    .map((r) => {
+      let o = rowToObj_(headers, r);
+      if (logical === 'summary') o = normalizeSummaryRow_(o);
+      return o;
+    });
+}
+
 function readAllRows_(logical) {
   const cols = logical === 'summary' ? SUMMARY_COLS : FILL_COLS;
-  const ss = getSs_();
-  const names = SHEET_ALIASES[logical] || [logical];
+  const sheetName = logical === 'summary' ? 'summary' : 'fill';
+  const rows = readSheetRows_(sheetName, logical);
   const byId = {};
-
-  names.forEach((name) => {
-    const sh = ss.getSheetByName(name);
-    if (!sh || sh.getLastRow() < 2) return;
-    ensureHeaders_(sh, cols);
-    const values = sh.getDataRange().getValues();
-    const headers = values[0].map(String);
-    values.slice(1)
-      .filter((r) => r[0] !== '' && r[0] !== null && r[0] !== undefined)
-      .forEach((r) => {
-        let o = rowToObj_(headers, r);
-        if (logical === 'summary') o = normalizeSummaryRow_(o);
-        const id = String(o.id);
-        if (!byId[id] || rowScore_(o, cols) > rowScore_(byId[id], cols)) {
-          byId[id] = o;
-        }
-      });
+  rows.forEach((o) => {
+    const id = String(o.id);
+    if (!byId[id] || rowScore_(o, cols) > rowScore_(byId[id], cols)) {
+      byId[id] = o;
+    }
   });
-
   return Object.keys(byId)
     .map((id) => byId[id])
     .sort((a, b) => Number(b.id) - Number(a.id));
@@ -108,6 +116,13 @@ function normalizeSummaryRow_(o) {
 }
 
 function doGet(e) {
+  if (String(e.parameter.ping || '') === '1') {
+    return jsonOut_({
+      version: GAS_VERSION,
+      fillCols: FILL_COLS,
+      summaryCols: SUMMARY_COLS
+    });
+  }
   const sheetName = String(e.parameter.sheet || 'fill').toLowerCase();
   const isSummary = sheetName === 'summary';
   const rows = readAllRows_(isSummary ? 'summary' : 'fill');
@@ -126,7 +141,7 @@ function doPost(e) {
   } else {
     writeFill_(data);
   }
-  return jsonOut_({ ok: true, id: data.id });
+  return jsonOut_({ ok: true, id: data.id, version: GAS_VERSION });
 }
 
 function writeFill_(data) {
@@ -141,6 +156,14 @@ function writeFill_(data) {
 }
 
 function writeSummary_(data) {
+  const text = String(data.text || '').trim();
+  const questions = data.questions;
+  const hasQ = Array.isArray(questions)
+    ? questions.length > 0
+    : (typeof questions === 'string' && questions.trim().length > 2);
+  if (!text || !hasQ) {
+    throw new Error('summary requires non-empty text and questions (v3 schema)');
+  }
   const sh = getSh_('summary', SUMMARY_COLS);
   const row = SUMMARY_COLS.map(c => {
     if (c === 'questions') {
@@ -156,7 +179,9 @@ function writeSummary_(data) {
 
 function deleteById_(sheetName, id) {
   const isSummary = String(sheetName).toLowerCase() === 'summary';
-  const names = SHEET_ALIASES[isSummary ? 'summary' : 'fill'];
+  const names = [isSummary ? 'summary' : 'fill'].concat(
+    isSummary ? LEGACY_SHEET_NAMES.summary : LEGACY_SHEET_NAMES.fill
+  );
   const ss = getSs_();
   names.forEach((name) => {
     const sh = ss.getSheetByName(name);

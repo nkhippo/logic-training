@@ -1341,6 +1341,16 @@ function safeJSON(raw){const m=raw.match(/\{[\s\S]*\}/);if(!m)throw new Error('J
 // ── GAS ──────────────────────────────────────────────────
 async function gasGet(sheet){const r=await fetch(GAS_URL+'?sheet='+sheet+'&t='+Date.now());if(!r.ok)throw new Error('Load failed '+r.status);return r.json();}
 async function gasPost(data){const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});if(!r.ok)throw new Error('Write failed '+r.status);return r.json();}
+async function gasPing(){try{const r=await fetch(GAS_URL+'?ping=1&t='+Date.now());if(!r.ok)return null;return r.json();}catch{return null;}}
+async function ensureGasV3(){
+  const p=await gasPing();
+  if(p&&p.version===3)return true;
+  const msg=st.lang==='ja'
+    ?'GASがv3ではありません。Apps Scriptに gas-script-v3.js を貼り「新しいデプロイ」してください。'
+    :'GAS is not v3. Paste gas-script-v3.js in Apps Script and create a new deployment.';
+  alert(msg);
+  return false;
+}
 
 // ── 印刷 ─────────────────────────────────────────────────
 function doPrint(mode,part){
@@ -1704,6 +1714,7 @@ function buildSummaryEntry(prob){
   return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text||'',questions:typeof questions==='string'?questions:JSON.stringify(questions||[]),ratio:prob.ratio,lang:prob.lang||st.lang};
 }
 async function syncPastOnGen(mode,prob){
+  if(!await ensureGasV3())return;
   const entry=mode==='fill'?buildFillEntry(prob):buildSummaryEntry(prob);
   prob.id=entry.id;
   setSync(mode,'spin',L[st.lang].genPhaseProcess+'...');
@@ -1839,7 +1850,10 @@ function filterPast(mode,f){
 }
 async function loadPast(mode){
   setSync(mode,'spin',L[st.lang].syncLoading);
-  try{const d=await gasGet(mode);if(mode==='fill')st.fPast=d;else st.sPast=d;setSync(mode,'ok',d.length+L[st.lang].syncItems);renderPL(mode);}
+  try{
+    if(!await ensureGasV3()){setSync(mode,'err',L[st.lang].syncFailed);return;}
+    const d=await gasGet(mode);if(mode==='fill')st.fPast=d;else st.sPast=d;setSync(mode,'ok',d.length+L[st.lang].syncItems);renderPL(mode);
+  }
   catch(e){setSync(mode,'err',L[st.lang].syncFailed);document.getElementById((mode==='fill'?'fp':'sp')+'-list').innerHTML=`<div class="pempty">${esc(e.message)}</div>`;}
 }
 function renderPL(mode){
