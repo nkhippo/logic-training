@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.1.9 / Logic Training</title>
+<title>論理トレーニング Ver.2.0 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 @media print {
@@ -79,13 +79,20 @@ textarea{resize:vertical;}
 .diff-btn[data-d="5"].sel{background:#fce8e8;border-color:#c0453a;color:#701510;}
 .diff-desc{font-size:12px;color:var(--text2);margin-bottom:12px;padding:6px 10px;background:var(--bg2);border-radius:var(--r-md);line-height:1.5;}
 .auto-info{font-size:12px;color:var(--amber);margin-bottom:12px;padding:5px 10px;background:#fdf5e6;border:.5px solid var(--amber);border-radius:var(--r-md);}
-.problem-box{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:15px;line-height:2.1;margin-bottom:1rem;}
+.problem-box{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:15px;line-height:2.1;margin-bottom:1rem;white-space:pre-wrap;word-break:break-all;}
 .blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;width:5.5em;min-width:5.5em;max-width:5.5em;text-align:center;padding:2px 4px;font-size:13px;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;vertical-align:middle;margin:0 2px;transition:color .15s,background .15s;}
 .blank.filled{color:var(--text);background:var(--bg2);border-color:var(--purple);}
 .volume-row{display:flex;gap:8px;}
 .vol-btn{flex:1;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;text-align:center;font-size:13px;font-weight:500;color:var(--text2);display:flex;flex-direction:column;gap:3px;transition:all .15s;}
 .vol-btn.active{background:var(--bg2);color:var(--text);border-color:var(--purple);}
 .vol-chars{font-size:11px;color:var(--text2);}
+.theme-mode-toggle{display:flex;gap:0;border:.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;margin-bottom:8px;width:fit-content;}
+.mode-btn{padding:5px 16px;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all .15s;}
+.mode-btn.active{background:var(--bg2);color:var(--text);}
+.mode-btn:first-child{border-right:.5px solid var(--border2);}
+.gen-loading{display:flex;align-items:center;gap:10px;padding:.75rem 0;color:var(--text2);font-size:14px;}
+.gen-loading .spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:gen-spin .7s linear infinite;flex-shrink:0;}
+
 .answer-section{display:grid;gap:8px;margin-bottom:1rem;}
 .answer-item{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
 .answer-row{display:flex;align-items:center;gap:10px;}
@@ -203,7 +210,7 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
-      <p class="subtitle" id="ui-app-sub">Ver.1.9</p>
+      <p class="subtitle" id="ui-app-sub">Ver.2.0</p>
     </div>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -241,7 +248,17 @@ textarea{resize:vertical;}
     <div class="card no-print">
       <div style="margin-bottom:12px;">
         <label id="ui-f-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-optional">（省略可）</span></label>
-        <input type="text" id="f-theme" placeholder=""/>
+        <div class="theme-mode-toggle" id="f-theme-mode">
+          <button type="button" class="mode-btn active" data-mode="keyword" onclick="setThemeMode('f','keyword')">
+            <span id="ui-f-mode-keyword">キーワード</span>
+          </button>
+          <button type="button" class="mode-btn" data-mode="question" onclick="setThemeMode('f','question')">
+            <span id="ui-f-mode-question">課題・疑問</span>
+          </button>
+        </div>
+        <textarea id="f-theme" rows="1"
+          style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
+          oninput="autoResize(this)"></textarea>
       </div>
       <label id="ui-f-diff-lbl">難易度</label>
       <div class="diff-row" id="f-diff-row">
@@ -254,12 +271,9 @@ textarea{resize:vertical;}
       <div class="diff-desc" id="f-diff-desc"></div>
       <div class="auto-info" id="f-auto-info"></div>
       <button class="btn" id="f-gen-btn" onclick="generateFill()"><span id="ui-f-gen">問題を生成する</span></button>
-      <div class="gen-status" id="f-gen-status" hidden aria-live="polite">
-        <div class="gen-status-hd"><span class="gen-spinner" aria-hidden="true"></span><span id="f-gen-status-title"></span></div>
-        <ol class="gen-steps">
-          <li class="gen-step pending" id="f-gen-step-llm"><span class="gen-step-mark" aria-hidden="true"></span><span id="f-gen-lbl-llm"></span></li>
-          <li class="gen-step pending" id="f-gen-step-process"><span class="gen-step-mark" aria-hidden="true"></span><span id="f-gen-lbl-process"></span></li>
-        </ol>
+      <div id="f-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="ui-f-gen-loading">問題を生成中...</span>
       </div>
     </div>
     <div id="fill-result" style="display:none;">
@@ -269,6 +283,9 @@ textarea{resize:vertical;}
       <p class="slabel no-print" id="ui-f-inst">問題文 — 空欄に当てはまる接続詞を答えてください</p>
       <div class="problem-box" id="f-problem"></div>
       <div class="answer-section" id="f-answers"></div>
+      <div class="action-bar no-print" id="f-print-area" style="display:none;">
+        <button class="btn btn-icon btn-sm" onclick="doPrint('fill','q')"><i class="ti ti-printer"></i> <span id="ui-f-pq">問題を印刷</span></button>
+      </div>
       <div class="action-bar no-print">
         <button class="btn" id="f-submit" onclick="submitFill()"><span id="ui-f-submit">答え合わせをする</span></button>
       </div>
@@ -280,7 +297,6 @@ textarea{resize:vertical;}
         </ol>
       </div>
       <div class="action-bar no-print" style="margin-top:8px;">
-        <button class="btn btn-icon btn-sm" onclick="doPrint('fill','q')"><i class="ti ti-printer"></i> <span id="ui-f-pq">問題を印刷</span></button>
         <button class="btn btn-icon btn-sm" id="f-pa-btn" style="display:none;" onclick="doPrint('fill','a')"><i class="ti ti-printer"></i> <span id="ui-f-pa">解説を印刷</span></button>
       </div>
       <div id="f-fb"></div>
@@ -326,7 +342,17 @@ textarea{resize:vertical;}
     <div class="card no-print">
       <div style="margin-bottom:12px;">
         <label id="ui-s-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-s-opt">（省略可）</span></label>
-        <input type="text" id="s-theme" placeholder=""/>
+        <div class="theme-mode-toggle" id="s-theme-mode">
+          <button type="button" class="mode-btn active" data-mode="keyword" onclick="setThemeMode('s','keyword')">
+            <span id="ui-s-mode-keyword">キーワード</span>
+          </button>
+          <button type="button" class="mode-btn" data-mode="question" onclick="setThemeMode('s','question')">
+            <span id="ui-s-mode-question">課題・疑問</span>
+          </button>
+        </div>
+        <textarea id="s-theme" rows="1"
+          style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
+          oninput="autoResize(this)"></textarea>
       </div>
       <div id="s-volume-selector" style="display:none; margin-bottom:12px;">
         <label id="ui-s-vol-lbl">ボリューム</label>
@@ -356,12 +382,9 @@ textarea{resize:vertical;}
       <div class="diff-desc" id="s-diff-desc"></div>
       <div class="auto-info" id="s-auto-info"></div>
       <button class="btn" id="s-gen-btn" onclick="generateSummary()"><span id="ui-s-gen">問題を生成する</span></button>
-      <div class="gen-status" id="s-gen-status" hidden aria-live="polite">
-        <div class="gen-status-hd"><span class="gen-spinner" aria-hidden="true"></span><span id="s-gen-status-title"></span></div>
-        <ol class="gen-steps">
-          <li class="gen-step pending" id="s-gen-step-llm"><span class="gen-step-mark" aria-hidden="true"></span><span id="s-gen-lbl-llm"></span></li>
-          <li class="gen-step pending" id="s-gen-step-process"><span class="gen-step-mark" aria-hidden="true"></span><span id="s-gen-lbl-process"></span></li>
-        </ol>
+      <div id="s-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+        <span class="spinner" aria-hidden="true"></span>
+        <span id="ui-s-gen-loading">問題を生成中...</span>
       </div>
     </div>
     <div id="summary-result" style="display:none;">
@@ -372,11 +395,13 @@ textarea{resize:vertical;}
       <div class="problem-box" id="s-problem-text"></div>
       <div id="s-questions"></div>
       <div id="s-owarn" class="owarn"></div>
+      <div class="action-bar no-print" id="s-print-area" style="display:none;">
+        <button class="btn btn-icon btn-sm" onclick="doPrint('summary','q')"><i class="ti ti-printer"></i> <span id="ui-s-pq">問題を印刷</span></button>
+      </div>
       <div class="action-bar no-print" style="margin-top:1rem;">
         <button class="btn" id="s-submit" onclick="submitSummary()"><span id="ui-s-submit">添削してもらう</span></button>
       </div>
       <div class="action-bar no-print" style="margin-top:8px;">
-        <button class="btn btn-icon btn-sm" onclick="doPrint('summary','q')"><i class="ti ti-printer"></i> <span id="ui-s-pq">問題を印刷</span></button>
         <button class="btn btn-icon btn-sm" id="s-pa-btn" style="display:none;" onclick="doPrint('summary','a')"><i class="ti ti-printer"></i> <span id="ui-s-pa">解説を印刷</span></button>
       </div>
       <div id="s-fb"></div>
@@ -448,7 +473,7 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.9',
+    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.2.0',
     subNew:'新規生成',subPast:'過去問',
     apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
@@ -469,7 +494,7 @@ const L={
       '難易度4（上級）: 平易な語彙だが論理構造が精緻な評論文。各ブロックは約30%に要約できる内容。',
       '難易度5（超難問）: 東京大学現代文レベル以上の難解な評論文。専門用語・複雑な論証を含む。各ブロックは約20%に要約できる内容。'
     ],
-    genBtn:'問題を生成する',genBtnBusy:'生成中…',
+    genBtn:'問題を生成する',genBtnBusy:'生成中…',genLoading:'問題を生成中...',gradingLoading:'答え合わせ中...',modeKeyword:'キーワード',modeQuestion:'課題・疑問',
     genPhaseLlm:'AIが問題を作成しています',genPhaseProcess:'問題を整理しています',
     gradePhaseLlm:'AIが答え合わせしています',gradePhaseProcess:'解説を表示しています',
     fInst:'問題文 — 空欄に当てはまる接続詞を答えてください',
@@ -509,7 +534,7 @@ const L={
     sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
   },
   en:{
-    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.9',
+    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.2.0',
     subNew:'New Problem',subPast:'Past Problems',
     apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
@@ -530,7 +555,7 @@ const L={
       'Difficulty 4 (Expert): Plain vocabulary, precise logic. Target: ~30% of original.',
       'Difficulty 5 (Master): Beyond top university exam level. Dense academic prose. Target: ~20% of original.'
     ],
-    genBtn:'Generate Problem',genBtnBusy:'Generating…',
+    genBtn:'Generate Problem',genBtnBusy:'Generating…',genLoading:'Generating problem...',gradingLoading:'Grading...',modeKeyword:'Keyword',modeQuestion:'Question',
     genPhaseLlm:'AI is generating the problem',genPhaseProcess:'Organizing the problem',
     gradePhaseLlm:'AI is checking your answers',gradePhaseProcess:'Preparing your feedback',
     fInst:'Fill in the blanks with the appropriate conjunctions',
@@ -574,7 +599,7 @@ const L={
 let _reviewImageFiles=[];
 
 // ── State ─────────────────────────────────────────────────
-const st={lang:'ja',fDiff:3,sDiff:3,sVolume:'short',fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
+const st={lang:'ja',fDiff:3,sDiff:3,sVolume:'short',fThemeMode:'keyword',sThemeMode:'keyword',fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
 let _genLockedEls=[];
 let _gradeLockedEls=[];
 function isBusy(){return st.genBusy||st.gradeBusy;}
@@ -676,6 +701,10 @@ const DIFF_LABELS_JA={1:'★入門',2:'★★基礎',3:'★★★標準',4:'★�
 const DIFF_LABELS_EN={1:'★Beginner',2:'★★Basic',3:'★★★Standard',4:'★★★★Advanced',5:'★★★★★Master'};
 const FILL_HINT_NONE_NOTE_JA='\n\n重要：難易度3以上ではhintsフィールドはすべて必ず空文字列("")にしてください。ヒントを含む文字列を返してはいけません。';
 const FILL_HINT_NONE_NOTE_EN='\n\nIMPORTANT: For difficulty 3 and above, every hints field must be an empty string (""). Do not return any hint text.';
+const FILL_FORMAT_NOTE_JA='文章の書式ルール：\n- 段落の冒頭は全角スペース「　」を1つ入れてインデントすること\n- 段落の区切りには改行を入れること\n- 読みやすさを重視し、1段落は3〜5文程度にまとめること';
+const FILL_FORMAT_NOTE_EN='Formatting rules:\n- Indent the first line of each paragraph with a single space or em-space\n- Add a line break between paragraphs\n- Keep each paragraph to 3-5 sentences for readability';
+const SUM_FORMAT_NOTE_JA='文章の書式ルール：\n- 段落の冒頭は全角スペース「　」を1つ入れてインデントすること\n- 段落の区切りには改行を入れること';
+const SUM_FORMAT_NOTE_EN='Formatting rules:\n- Indent the first line of each paragraph\n- Add a line break between paragraphs';
 function dlabel(d){return(st.lang==='ja'?DIFF_LABELS_JA:DIFF_LABELS_EN)[d]||'—';}
 const BADGE={1:'b1',2:'b2',3:'b3',4:'b4',5:'b5'};
 
@@ -691,6 +720,8 @@ function applyLang(){
   ui('ui-f-diff-lbl',l.diffLbl);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
   ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
+  ui('ui-f-mode-keyword',l.modeKeyword);ui('ui-f-mode-question',l.modeQuestion);
+  ui('ui-f-gen-loading',l.genLoading);
   ui('ui-f-rand',l.rand);
   ui('ui-f-back',l.back);ui('ui-fp-all',l.all);
   ui('ui-r-premise-toggle',document.getElementById('r-premise-body')?.hidden!==false?l.rPremiseToggle:l.rPremiseClose);
@@ -707,6 +738,8 @@ function applyLang(){
   ui('ui-vol-long-chars',fmtVolChars(S_LENGTH_VARIABLE.long.chars));
   ui('ui-s-gen',l.sGenBtn);ui('ui-s-inst',l.sInst);ui('ui-s-submit',l.sSubmit);
   ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
+  ui('ui-s-mode-keyword',l.modeKeyword);ui('ui-s-mode-question',l.modeQuestion);
+  ui('ui-s-gen-loading',l.genLoading);
   ui('ui-s-rand',l.rand);
   ui('ui-s-back',l.back);ui('ui-sp-all',l.all);
   // diff labels
@@ -726,6 +759,8 @@ function applyLang(){
   document.documentElement.lang=st.lang;
   if(st.genBusy)updateGenStatusUI(st.genBusy);
   if(st.gradeBusy)updateGradeStatusUI(st.gradeBusy);
+  setThemeMode('f',st.fThemeMode||'keyword');
+  setThemeMode('s',st.sThemeMode||'keyword');
   updateApiKeyUI();
 }
 
@@ -759,7 +794,7 @@ function setGenPhase(mode,phase){
 function collectGenLockEls(mode){
   const panel='#'+(mode==='fill'?'fill':'summary')+'-panel';
   return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, .sub-tab, '+panel+' .card button, '+panel+' .card input, #'+mode+'-past-area button, #'+mode+'-past-area .pf-tab, #'+mode+'-past-area .pcard, #'+mode+'-past-area .back-btn, #'+mode+'-past-area .back-btn'
+    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, .sub-tab, '+panel+' .card button, '+panel+' .card input, '+panel+' .card textarea, '+panel+' .mode-btn, #'+mode+'-past-area button, #'+mode+'-past-area .pf-tab, #'+mode+'-past-area .pcard, #'+mode+'-past-area .back-btn, #'+mode+'-past-area .back-btn'
   );
 }
 function lockEl(el,skipIds){
@@ -789,9 +824,10 @@ function beginGen(mode){
   st.genBusy=mode;
   const p=genPrefix(mode);
   setAppBusyClass();
-  document.getElementById(p+'-gen-status').hidden=false;
-  updateGenStatusUI(mode);
-  setGenPhase(mode,'llm');
+  const loadEl=document.getElementById(p+'-gen-loading');
+  if(loadEl)loadEl.style.display='flex';
+  ui(p+'-gen-loading',L[st.lang].genLoading);
+
   const btn=document.getElementById(p+'-gen-btn');
   btn.disabled=true;
   btn.classList.add('is-loading');
@@ -805,7 +841,8 @@ function endGen(mode){
   st.genPhase=null;
   const p=genPrefix(mode);
   setAppBusyClass();
-  document.getElementById(p+'-gen-status').hidden=true;
+  const loadEl=document.getElementById(p+'-gen-loading');
+  if(loadEl)loadEl.style.display='none';
   const btn=document.getElementById(p+'-gen-btn');
   btn.classList.remove('is-loading');
   btn.querySelector('span').textContent=mode==='fill'?L[st.lang].genBtn:L[st.lang].sGenBtn;
@@ -823,7 +860,7 @@ function updateGradeStatusUI(){
   if(btn&&st.gradeBusy)btn.querySelector('span').textContent=l.submitBtnBusy;
   if(st.gradePhase){
     const title=document.getElementById('f-grade-status-title');
-    if(title)title.textContent=st.gradePhase==='llm'?l.gradePhaseLlm:l.gradePhaseProcess;
+    if(title)title.textContent=st.gradePhase==='llm'?l.gradingLoading:l.gradePhaseProcess;
   }
 }
 function setGradePhase(phase){
@@ -915,6 +952,9 @@ function resetUIOnLangSwitch(){
   const fpa=document.getElementById('f-pa-btn'),spa=document.getElementById('s-pa-btn');
   if(fpa)fpa.style.display='none';
   if(spa)spa.style.display='none';
+  const fpq=document.getElementById('f-print-area'),spq=document.getElementById('s-print-area');
+  if(fpq)fpq.style.display='none';
+  if(spq)spq.style.display='none';
   const spt=document.getElementById('s-problem-text'),sq=document.getElementById('s-questions');
   if(spt)spt.innerHTML='';
   if(sq)sq.innerHTML='';
@@ -1252,6 +1292,50 @@ function doPrint(mode,part){
 // ══════════════════════════════════════════════════════════
 // 穴埋め
 // ══════════════════════════════════════════════════════════
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=el.scrollHeight+'px';
+}
+function setThemeMode(m,mode){
+  const key=m+'ThemeMode';
+  st[key]=mode;
+  document.querySelectorAll(`#${m}-theme-mode .mode-btn`).forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  const input=document.getElementById(`${m}-theme`);
+  if(!input)return;
+  input.placeholder='';
+  if(mode==='keyword'){
+    input.rows=1;
+    input.style.height='';
+    autoResize(input);
+  }else{
+    input.style.height='72px';
+  }
+}
+function buildThemeInst(themeIn,themeMode,length,isEN,forSummary){
+  if(!themeIn){
+    if(isEN){
+      return forSummary
+        ?`Choose a theme from: recent global economic topics, cutting-edge science and technology, or health and medicine. Create one reading passage of approximately ${length} characters.`
+        :`Choose a theme from: recent global economic topics, cutting-edge science and technology, or health and medicine. Write a logical text of approximately ${length} characters.`;
+    }
+    return `テーマは以下のカテゴリから選んでください：最近の世界経済のトピック、科学技術の最前線、健康・医療に関するトピック。約${length}文字の${forSummary?'読解用文章（問題文）を1つ':'論理的な文章を'}作成してください。`;
+  }
+  if(themeMode==='keyword'){
+    return isEN
+      ?(forSummary?`Create one reading passage of about ${length} characters on the theme "${themeIn}".`:`Write a logical text of about ${length} characters on the theme "${themeIn}".`)
+      :(forSummary?`テーマ「${themeIn}」について、約${length}文字の読解用文章（問題文）を1つ作成してください。`:`テーマ「${themeIn}」について、約${length}文字の論理的な文章を作成してください。`);
+  }
+  return isEN
+    ?`The user has the following question or problem: "${themeIn}"
+Write a logical argumentative text of about ${length} characters that explores and answers this question.
+The text should naturally lead the reader toward understanding the answer through logical reasoning.
+The answer to the question should be embedded within the text's argument, not stated directly as a simple conclusion.`
+    :`ユーザーが気になっている課題・疑問：「${themeIn}」
+この課題・疑問に対して論理的に展開した約${length}文字の文章を作成してください。
+文章は課題への回答を直接述べるのではなく、論拠を積み重ねながら読者が自然に答えにたどり着けるよう構成してください。
+問題文中では課題への言及は冒頭の文脈設定程度に留め、主に論理的な論証の展開を重視してください。`;
+}
 function autoThemeInst(length,isEN,forSummary){
   if(isEN){
     return `Choose a theme from the following categories:
@@ -1426,21 +1510,20 @@ function getSumPrompts(){
 
 async function generateFill(){
   if(isBusy()||!hasApiKey())return;
+  const themeMode=st.fThemeMode||'keyword';
   const themeIn=document.getElementById('f-theme').value.trim();
   const diff=st.fDiff;
   const length=F_LENGTH[diff];
   const blanks=calcBlanks(length,diff);
-  const hasTheme=themeIn.length>0;
   const isEN=st.lang==='en';
   document.getElementById('fill-result').style.display='none';
+  const fpa=document.getElementById('f-print-area');if(fpa)fpa.style.display='none';
   if(!beginGen('fill'))return;
 
   const sys=isEN
     ?'You are an expert in logical writing and education. Respond ONLY in valid JSON format. No markdown, no explanation before or after the JSON.'
     :'あなたは論理的文章の作成と教育の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
-  const themeInst=isEN
-    ?(hasTheme?`Write a logical text of about ${length} characters on the theme "${themeIn}".`:autoThemeInst(length,true,false))
-    :(hasTheme?`テーマ「${themeIn}」について、約${length}文字の論理的な文章を作成してください。`:autoThemeInst(length,false,false));
+  const themeInst=buildThemeInst(themeIn,themeMode,length,isEN,false);
   const diffPrompt=getFillPrompts()[diff];
   let jsonInst=isEN
     ?`Replace ${blanks} conjunctions with placeholders [_1_][_2_]... Return ONLY this JSON:\n{"theme":"topic in 5 words or less","text":"problem text with placeholders","answers":["conj1","conj2"],"hints":["hint1","hint2"]}`
@@ -1449,9 +1532,9 @@ async function generateFill(){
 
   try{
     const genMaxTokens=Math.round(length*3.5);
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}`,sys,genMaxTokens);
+    const formatNote=isEN?FILL_FORMAT_NOTE_EN:FILL_FORMAT_NOTE_JA;
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}\n${formatNote}`,sys,genMaxTokens);
     if(!raw)return;
-    setGenPhase('fill','process');
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.answers))throw new Error('Invalid JSON structure');
     if(isEN){
@@ -1460,7 +1543,7 @@ async function generateFill(){
       p.text=t;
     }
     if(diff>=3) p.hints=(p.answers||[]).map(()=>'');
-    st.fill={...p,id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
+    st.fill={...p,id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
     renderFill(st.fill);
     try{await syncPastOnGen('fill',st.fill);}
     catch(syncErr){setSync('fill','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
@@ -1482,6 +1565,7 @@ function renderFill(prob){
   });
   document.getElementById('f-fb').innerHTML='';
   document.getElementById('f-pa-btn').style.display='none';
+  document.getElementById('f-print-area').style.display='flex';
   document.getElementById('fill-result').style.display='block';
   document.getElementById('fs1').className='step done';
   document.getElementById('fs2').className='step active';
@@ -1589,17 +1673,16 @@ async function generateSummary(){
   else{const vol=st.sVolume||'short';length=S_LENGTH_VARIABLE[vol].chars;}
   const numQ=calcBlocks(length,diff);
   const ratio=S_RATIO[diff];
-  const hasTheme=themeIn.length>0;
+  const themeMode=st.sThemeMode||'keyword';
   const isEN=st.lang==='en';
   document.getElementById('summary-result').style.display='none';
+  const spa=document.getElementById('s-print-area');if(spa)spa.style.display='none';
   if(!beginGen('summary'))return;
 
   const sys=isEN
     ?'You are an expert in Japanese university entrance exam modern-text (現代文) education. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
     :'あなたは大学受験・現代文の読解・記述指導の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
-  const themeInst=isEN
-    ?(hasTheme?`Create one reading passage of about ${length} characters on the theme "${themeIn}".`:autoThemeInst(length,true,true))
-    :(hasTheme?`テーマ「${themeIn}」について、約${length}文字の読解用文章（問題文）を1つ作成してください。`:autoThemeInst(length,false,true));
+  const themeInst=buildThemeInst(themeIn,themeMode,length,isEN,true);
   const diffPrompt=getSumPrompts()[diff];
   const types=getSumQuestionTypes(diff);
   const typesList=types.join(isEN ? ', ' : '、');
@@ -1612,13 +1695,13 @@ async function generateSummary(){
 
   try{
     const genMaxTokens=length<=500?1200:length<=2000?3000:6000;
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}`,sys,genMaxTokens);
+    const formatNote=isEN?SUM_FORMAT_NOTE_EN:SUM_FORMAT_NOTE_JA;
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}\n${formatNote}`,sys,genMaxTokens);
     if(!raw)return;
-    setGenPhase('summary','process');
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
     const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張要約',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
-    st.summary={id:Date.now(),theme:p.theme||(hasTheme?themeIn:''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||'short'):null,feedback:null,lang:st.lang};
+    st.summary={id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||'short'):null,feedback:null,lang:st.lang};
     renderSummary(st.summary);
     try{await syncPastOnGen('summary',st.summary);}
     catch(syncErr){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
@@ -1637,6 +1720,7 @@ function renderSummary(prob){
   document.getElementById('s-pa-btn').style.display='none';
   document.getElementById('s-owarn').classList.remove('show');
   document.getElementById('s-submit').disabled=false;
+  document.getElementById('s-print-area').style.display='flex';
   document.getElementById('summary-result').style.display='block';
   document.getElementById('ss1').className='step done';
   document.getElementById('ss2').className='step active';
@@ -1755,6 +1839,12 @@ function openPast(mode,id){
       <div class="action-bar" style="margin-top:8px;">
         <button class="btn btn-icon btn-outline" id="pp-api-btn" onclick="ppAPI('${id}')"><i class="ti ti-sparkles"></i> ${l.apiBtn}</button>
       </div>
+      <div class="action-bar" style="margin-top:8px;">
+        <button class="btn btn-icon btn-sm" onclick="window.print()">
+          <i class="ti ti-printer"></i>
+          <span>${l.pq}</span>
+        </button>
+      </div>
       <p style="font-size:11px;color:var(--text2);margin-top:6px;">${l.overwriteNote}</p>
       <div id="pp-fb" style="margin-top:.5rem;"></div>
       <div id="pp-ow-bar" class="action-bar" style="display:none;margin-top:.5rem;">
@@ -1777,6 +1867,12 @@ function openPast(mode,id){
       ${qHtml}
       <div id="pp-owarn" class="owarn" style="margin-bottom:.5rem;"></div>
       <button class="btn" id="pp-submit" onclick="ppSummary('${id}')"><span>${l.sSubmit}</span></button>
+      <div class="action-bar" style="margin-top:8px;">
+        <button class="btn btn-icon btn-sm" onclick="window.print()">
+          <i class="ti ti-printer"></i>
+          <span>${l.pq}</span>
+        </button>
+      </div>
       <div id="pp-fb"></div>`;
   }
 }
@@ -1931,6 +2027,8 @@ function init(){
   switchSub('summary','new');
   document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
   setDiff('s',st.sDiff);
+  setThemeMode('f',st.fThemeMode||'keyword');
+  setThemeMode('s',st.sThemeMode||'keyword');
 }
 init();
 </script>
