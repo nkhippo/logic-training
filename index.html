@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.1.7 / Logic Training</title>
+<title>論理トレーニング Ver.1.8 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <style>
 @media print {
@@ -80,7 +80,8 @@ textarea{resize:vertical;}
 .diff-desc{font-size:12px;color:var(--text2);margin-bottom:12px;padding:6px 10px;background:var(--bg2);border-radius:var(--r-md);line-height:1.5;}
 .auto-info{font-size:12px;color:var(--amber);margin-bottom:12px;padding:5px 10px;background:#fdf5e6;border:.5px solid var(--amber);border-radius:var(--r-md);}
 .problem-box{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:15px;line-height:2.1;margin-bottom:1rem;}
-.blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;width:5em;min-width:5em;text-align:center;padding:2px 4px;font-size:13px;color:var(--text2);overflow:hidden;white-space:nowrap;vertical-align:middle;margin:0 2px;}
+.blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;width:5.5em;min-width:5.5em;max-width:5.5em;text-align:center;padding:2px 4px;font-size:13px;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;vertical-align:middle;margin:0 2px;transition:color .15s,background .15s;}
+.blank.filled{color:var(--text);background:var(--bg2);border-color:var(--purple);}
 .volume-row{display:flex;gap:8px;}
 .vol-btn{flex:1;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;text-align:center;font-size:13px;font-weight:500;color:var(--text2);display:flex;flex-direction:column;gap:3px;transition:all .15s;}
 .vol-btn.active{background:var(--bg2);color:var(--text);border-color:var(--purple);}
@@ -202,7 +203,7 @@ textarea{resize:vertical;}
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
-      <p class="subtitle" id="ui-app-sub">Ver.1.7</p>
+      <p class="subtitle" id="ui-app-sub">Ver.1.8</p>
     </div>
     <div class="lang-sw">
       <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
@@ -445,7 +446,7 @@ const LANG_KEY='logic_v10_lang';
 // ── i18n ─────────────────────────────────────────────────
 const L={
   ja:{
-    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.7',
+    appTitle:'論理トレーニング',appSub:'接続詞の使い方を磨く　Ver.1.8',
     subNew:'新規生成',subPast:'過去問',
     apiLbl:'Claude APIキー',saveBtn:'保存',savedMsg:'このブラウザに保存済み',
     tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
@@ -506,7 +507,7 @@ const L={
     sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
   },
   en:{
-    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.7',
+    appTitle:'Logic Training',appSub:'Sharpen your conjunctions　Ver.1.8',
     subNew:'New Problem',subPast:'Past Problems',
     apiLbl:'Claude API Key',saveBtn:'Save',savedMsg:'Saved in this browser',
     tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
@@ -1283,14 +1284,36 @@ function buildFillAnswerItem(i,hint,inputId,noPrint){
 function syncBlank(num,value){
   const blankEl=document.getElementById(`blank-${num}`);
   if(!blankEl) return;
-  if(value.trim()===''){
+  blankEl.style.borderColor='';
+  blankEl.style.background='';
+  blankEl.style.color='';
+  const v=value.trim();
+  if(v===''){
     blankEl.textContent=`（${num}）`;
-    blankEl.style.color='var(--text2)';
+    blankEl.classList.remove('filled');
   }else{
-    const display=value.length>5?value.slice(0,5)+'…':value;
-    blankEl.textContent=display;
-    blankEl.style.color='var(--text)';
+    blankEl.textContent=v.length>5?v.slice(0,5)+'…':v;
+    blankEl.classList.add('filled');
   }
+}
+function resetBlankStyles(){
+  document.querySelectorAll('.blank').forEach(el=>{
+    el.style.borderColor='';
+    el.style.background='';
+    el.style.color='';
+    el.classList.remove('filled');
+  });
+}
+function applyFillBlankGrade(prob){
+  prob.answers.forEach((ans,i)=>{
+    const blankEl=document.getElementById(`blank-${i+1}`);
+    if(!blankEl) return;
+    const userAns=prob.userAnswers?.[i]||'';
+    const isCorrect=String(userAns).trim()===String(ans).trim();
+    blankEl.style.borderColor=isCorrect?'var(--green)':'#c0453a';
+    blankEl.style.background=isCorrect?'var(--green-bg)':'#fce8e8';
+    blankEl.style.color=isCorrect?'var(--green-text)':'#701510';
+  });
 }
 function getFillPrompts(){
   const l=st.lang;
@@ -1442,6 +1465,7 @@ async function generateFill(){
 }
 
 function renderFill(prob){
+  resetBlankStyles();
   const l=L[st.lang];
   document.getElementById('f-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
   document.getElementById('f-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabFill}</h2><p>${l.theme}${esc(prob.theme||'—')}　${l.diff}${dlabel(prob.diff)}　${fmtDate(prob.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.fPrintInst}</p>`;
@@ -1474,6 +1498,7 @@ async function submitFill(){
     prob.feedback=res;prob.userAnswers=ua;
     const {correct,total}=calcFillScore(prob.answers,ua);
     fb.innerHTML=`<div class="feedback-box">${fillScoreHtml(correct,total,prob.lang)}${md2h(res)}</div>`;
+    applyFillBlankGrade(prob);
     document.getElementById('fs2').className='step done';
     document.getElementById('fs3').className='step done';
     document.getElementById('f-pa-btn').style.display='';
