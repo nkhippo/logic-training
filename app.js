@@ -1323,7 +1323,9 @@ function renderMdTable(lines){
     for(let k=i+1;k<j;k++)skipMergeCell[k]=true;
     i=j;
   }
-  let h='<table class="md-table"><thead><tr>';
+  const isAppealTable=header[0]==='フェーズ'&&header[1]==='論理の要素';
+  const tableCls='md-table'+(isAppealTable?' md-table-appeal':'');
+  let h=`<table class="${tableCls}"><thead><tr>`;
   header.forEach(c=>{h+=`<th>${mdInline(c)}</th>`;});
   h+='</tr></thead><tbody>';
   body.forEach((row,ri)=>{
@@ -1400,11 +1402,18 @@ function md2h(tx){
     .replace(/^\d+\. (.+)$/gm,(_,t)=>'<li>'+mdInline(t)+'</li>')
     .replace(/^[-*・] (.+)$/gm,(_,t)=>'<li>'+mdInline(t)+'</li>')
     .replace(/((?:<li>[\s\S]*?<\/li>\s*)+)/g,'<ul>$1</ul>');
+  h=h
+    .replace(/採点後に「完全補完文」([\s\S]*?)(?=\n\n各設問)/g,(_,tail)=>{
+      const body=String(tail||'').trim().replace(/\n/g,'<br>');
+      return`<div class="completed-text"><p>採点後に<strong>「完全補完文」</strong>${mdInline(body)}</p></div>`;
+    })
+    .replace(/After grading, "Fully Supplemented Text"([\s\S]*?)(?=\n\nEach question|\n\n## |$)/gi,(_,tail)=>{
+      const body=String(tail||'').trim().replace(/\n/g,'<br>');
+      return`<div class="completed-text"><p>After grading, <strong>"Fully Supplemented Text"</strong>${mdInline(body)}</p></div>`;
+    });
   h=mdWrapTextBlocks(h);
   const blockEnd='(?=<h[234]>|<table|<hr|<ul>|<div class="completed-text"|$)';
   h=h
-    .replace(new RegExp('「完全補完文」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
-    .replace(new RegExp('「Fully Supplemented Text」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
     .replace(/<h3>完全補完文<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>完全補完文</h3><div class="completed-text">$1</div>')
     .replace(/<h3>Fully Supplemented Text<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>Fully Supplemented Text</h3><div class="completed-text">$1</div>');
   h=h.replace(/⁽(\d+)⁾/g,'<sup style="font-size:10px;color:var(--text2);">($1)</sup>');

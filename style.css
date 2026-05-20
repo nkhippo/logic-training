@@ -270,11 +270,11 @@ label.upload-zone{cursor:pointer;display:block;}
 .guide-close-btn:hover{background:var(--bg2);}
 .guide-tabs{
   display:flex;gap:0;border-bottom:.5px solid var(--border2);
-  padding:0 1.25rem;flex-shrink:0;overflow-x:auto;
+  padding:0;flex-shrink:0;width:100%;
 }
 .guide-tab{
-  padding:8px 14px;border:none;background:transparent;
-  cursor:pointer;font-size:12px;font-weight:500;
+  flex:1;min-width:0;padding:8px 4px;border:none;background:transparent;
+  cursor:pointer;font-size:12px;font-weight:500;text-align:center;
   color:var(--text2);border-bottom:2px solid transparent;
   margin-bottom:-1px;white-space:nowrap;transition:all .15s;
 }
@@ -289,9 +289,17 @@ label.upload-zone{cursor:pointer;display:block;}
 .guide-body p{margin-bottom:.6rem;}
 .guide-body table{width:100%;border-collapse:collapse;font-size:12px;margin:.75rem 0 1rem;}
 .guide-body th,.guide-body td{border:.5px solid var(--border2);padding:6px 10px;text-align:left;vertical-align:top;}
+.guide-body table.md-table-appeal{table-layout:fixed;}
+.guide-body table.md-table-appeal th:nth-child(1),
+.guide-body table.md-table-appeal td:nth-child(1){width:11%;}
+.guide-body table.md-table-appeal th:nth-child(2),
+.guide-body table.md-table-appeal td:nth-child(2){width:25%;}
+.guide-body table.md-table-appeal th:nth-child(n+3),
+.guide-body table.md-table-appeal td:nth-child(n+3){width:12.8%;text-align:center;}
 .guide-body td.md-cell-merged{vertical-align:middle;background:var(--bg2);font-weight:500;}
 .guide-body th{background:var(--bg2);font-weight:500;white-space:nowrap;}
 .guide-body td.center{text-align:center;}
+.guide-body .completed-text{margin:.5rem 0 1rem;}
 .guide-body ul{padding-left:1.4rem;margin-bottom:.6rem;}
 .guide-body li{margin-bottom:.25rem;}
 .guide-loading{color:var(--text2);font-size:13px;padding:1rem 0;}
