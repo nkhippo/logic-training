@@ -13,17 +13,17 @@
  *   summary  — id, theme, diff, date, text, questions, ratio, lang
  *   critique — id, theme, diff, date, text, questions, feedback, form, lang
  *   ame      — id, theme, diff, date, law, article, constraint, questions, feedback, form, lang
- *   kibari   — id, theme, diff, scene, date, situation, readers, points, constraint, firstAnswer, feedback, lang
+ *   kibari   — id, theme, diff, scene, date, industry, situation, readers, points, constraint, writeInstruction, rewriteInstruction, openingPhrase, closingPhrase, firstAnswer, feedback, lang
  *
  * ※「要約」「穴埋め」タブは v3 では作りません。残っている場合は削除してください。
  */
 
 const GAS_VERSION = 3;
-const FILL_COLS = ['id', 'theme', 'diff', 'date', 'text', 'answers', 'hints', 'feedback', 'userAnswers', 'lang'];
-const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'ratio', 'lang'];
-const CRITIQUE_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'feedback', 'form', 'lang'];
-const AME_COLS = ['id', 'theme', 'diff', 'date', 'law', 'article', 'constraint', 'questions', 'feedback', 'form', 'lang'];
-const KIBARI_COLS = ['id', 'theme', 'diff', 'scene', 'date', 'situation', 'readers', 'points', 'constraint', 'firstAnswer', 'feedback', 'lang'];
+const FILL_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'answers', 'hints', 'feedback', 'userAnswers', 'lang'];
+const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'questions', 'ratio', 'lang'];
+const CRITIQUE_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'questions', 'feedback', 'form', 'lang'];
+const AME_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'law', 'article', 'constraint', 'questions', 'feedback', 'form', 'lang'];
+const KIBARI_COLS = ['id', 'theme', 'diff', 'scene', 'date', 'industry', 'situation', 'readers', 'points', 'constraint', 'writeInstruction', 'rewriteInstruction', 'openingPhrase', 'closingPhrase', 'firstAnswer', 'feedback', 'lang'];
 /** 旧シート名（読み書きは fill / summary / critique / ame） */
 const LEGACY_SHEET_NAMES = {
   fill: ['穴埋め'],

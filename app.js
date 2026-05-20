@@ -1,5 +1,6 @@
-const GAS_URL='https://script.google.com/macros/s/AKfycbwqGTZGuX-jpbQfurBHA2JSH3chZ2tL9j-SXJtgothPfSiblHX8xgVjzQXEOMFUE_e-/exec';
-const APIKEY_KEY='logic_v10_apikey';
+const GAS_URL='https://script.google.com/macros/s/AKfycbycJDxRlZphGIUgivaBXLsAgpzJX3stFw5Is8_FRmhHsqC-POzl_QaDhhA1F1Qb8Xvl/exec';
+const CLAUDE_API_KEY='';
+const API_KEY_STORAGE='logic_claude_api_key';
 const LANG_KEY='logic_v10_lang';
 
 // ── i18n ─────────────────────────────────────────────────
@@ -11,26 +12,39 @@ const L={
     gTabOverview:'概要',gTabFill:'穴埋め',gTabSummary:'要約',gTabCritique:'批判読み',gTabAme:'空雨傘',gTabKibari:'気配り',
     apiLbl:'Claude APIキー',saveBtn:'保存',saved:'保存済み',
     tabFill:'穴埋め',tabCritique:'批判読み',tabSum:'要約',
-    fThemeLbl:'テーマ',optional:'（省略可）',fLenLbl:'文字数（目安）',
+    fThemeLbl:'テーマ',themeLbl:'テーマ',optional:'（省略可）',industryLbl:'業界（任意）',
+    themeRequired:'テーマを選択してください。',
+    diffRequired:'難易度を選択してください。',
+    themePresetUnavailable:'選択した文書タイプはこの難易度では利用できません。',themeAreaUnavailable:'選択したテーマ領域はこの難易度では利用できません。',
+    fillAnswerRequired:'すべての空欄に回答を入力してください。',
+    summaryAnswerRequired:'すべての設問に回答を入力してください。',
+    critiqueAnswerRequired:'すべての設問に回答を入力してください。',
+    ameAnswerRequired:'すべての設問に回答を入力してください。',
+    kbAnswerRequired:'メッセージを入力してください。',
+    fLenLbl:'文字数（目安）',
     sLenLbl:'問題文の文字数（目安）',diffLbl:'難易度',
     dLabels:['入門','基礎','標準','上級','超難問'],
     fDescs:[
-      '難易度1（入門）: 社内メール・業務連絡。基本的な接続表現のみ。穴抜き2個。ヒントあり。',
-      '難易度2（基礎）: 議事録・進捗報告。因果・逆接を含む接続表現。穴抜き3個。軽いヒントあり。',
-      '難易度3（標準）: 提案書・企画書の一節。類似する接続表現の正確な使い分けが問われる。穴抜き3個。ヒントなし。',
-      '難易度4（上級）: 分析レポート・調査報告。接続表現の選択が論旨の成否を決める精緻な構造。穴抜き4個。ヒントなし。',
-      '難易度5（超難問）: 経営戦略文書・コンサルレポート。高度な接続表現・多層的な論証構造。穴抜き5個。ヒントなし。'
+      '社内メール・業務連絡。基本的な接続表現の使い分けが問われる。',
+      '議事録・進捗報告。因果・逆接を含む接続表現の使い分けが問われる。',
+      '提案書・企画書の一節。類似する接続表現の正確な使い分けが問われる。',
+      '分析レポート・調査報告。接続表現の選択が論旨の成否を決める精緻な構造。',
+      '経営戦略文書・コンサルレポート。高度な接続表現・多層的な論証構造。'
     ],
     sDescs:[
-      '難易度1（基礎）: 社内メール・業務連絡。設問1問（主張のまとめ）。約60%に圧縮。',
-      '難易度2（標準）: 議事録・進捗報告。設問2問（主張のまとめ・用語の説明）。約50%に圧縮。',
-      '難易度3（応用）: 提案書・企画書の一節。設問3問（用語の説明・主張のまとめ・理由の説明）。約40%に圧縮。',
-      '難易度4（上級）: 分析レポート・調査報告。設問3問。約30%に圧縮。',
-      '難易度5（超難問）: 経営戦略文書・コンサルレポート。設問3問。約20%に圧縮。'
+      '社内メール・業務連絡。主張のまとめを問う。',
+      '議事録・進捗報告。主張のまとめと用語の説明を問う。',
+      '提案書・企画書の一節。用語の説明・主張のまとめ・理由の説明を問う。',
+      '分析レポート・調査報告。主張と根拠の整理を問う。',
+      '経営戦略文書・コンサルレポート。多層的な論証の要約を問う。'
     ],
     genBtn:'問題を生成する',genBtnBusy:'生成中…',genLoading:'問題を生成中...',gradingLoading:'答え合わせ中...',modeKeyword:'キーワード',modeQuestion:'課題・疑問',
     genPhaseLlm:'AIが問題を作成しています',genPhaseProcess:'問題を整理しています',
     gradePhaseLlm:'AIが答え合わせしています',gradePhaseProcess:'解説を表示しています',
+    busyOverlayHint:'処理が終わるまでお待ちください',
+    busyOverlayGen:'問題を作成しています…',
+    busyOverlayGrade:'答え合わせ・採点中です…',
+    busyOverlayKibariRv:'読み手の反応を生成しています…',
     fInst:'問題文 — 空欄に当てはまる接続詞を答えてください',
     answerBox:'回答欄',submitBtn:'答え合わせをする',submitBtnBusy:'答え合わせ中…',
     pq:'問題を印刷',pa:'解説を印刷',
@@ -41,13 +55,12 @@ const L={
     cInst:'問題文を読み、各設問に答えてください',cSubmit:'添削してもらう',cPastTitle:'批判読み 過去問',
     cSavedOk:'批判読み問題を保存しました ✓',cGenFailed:'問題の生成に失敗しました。',cGradingErr:'添削に失敗しました',
     cDescs:[
-      'ビジネスの短い論証3問。「本当にそう言える？」という部分を見つける練習。',
-      'ビジネスの短い論証3問。論理の弱点の指摘・条件の補完・反対意見への応答を練習。',
-      'ビジネス文書1本・設問4問。話の流れを整理し、弱点・条件・反対意見を問う。',
-      'ビジネス文書1本・設問5問。立場が異なる人からの疑問を含む高度な論証の検証。',
-      'ビジネス文書1本・設問5問。多層的な論証構造を持つ経営・戦略文書の批判的検証。',
+      'ビジネスの短い論証。「本当にそう言える？」という視点で論理の弱点を見つける。',
+      'ビジネスの短い論証。弱点の指摘・条件の補完・反対意見への応答を問う。',
+      'ビジネス文書1本。話の流れの整理と、弱点・条件・反対意見を問う。',
+      'ビジネス文書1本。立場が異なる読み手からの疑問を含む論証の検証。',
+      '経営・戦略文書。多層的な論証構造の批判的検証。'
     ],
-    cAutoInfo:'設問数：',
     cQTypes:{
       '話の流れの整理':'話の流れの整理',
       '本当にそう言える？の指摘':'本当にそう言える？',
@@ -82,11 +95,11 @@ const L={
     aSoraInterpLbl:'解釈・意見として書かれている部分',
     aSoraSplitTotal:'合計',
     aDescs:[
-      '帰納型。ビジネスデータ（営業・売上）の記事。読み取りと次の行動を書く練習。',
-      '帰納型。ビジネスデータ（人事・プロジェクト）の記事。事実の仕分けを含む3問構成。',
-      '帰納型。ビジネスデータ（IT・マーケティング）の記事。事実と解釈が混在。傘に制約条件あり。',
-      'ビジネスデータ（経営・営業）。帰納型約50%・演繹型約50%。5設問構成。',
-      'ビジネスデータ（経営・IT）。帰納型約30%・演繹型約70%。5設問構成。',
+      '帰納型。営業・売上のビジネスデータから、読み取りと次の行動を導く。',
+      '帰納型。人事・組織のビジネスデータ。事実の仕分けと読み取り・行動を問う。',
+      '帰納型。IT・マーケティングのデータ。事実と解釈の混在、制約付きの行動を問う。',
+      '経営・営業のデータ。帰納と演繹が混在する推論と行動の設計。',
+      '経営・ITのデータ。多層的な推論と自己検証を含む高度な設問。'
     ],
     tabKibari:'気配り',
     kbSceneLbl:'場面タイプ',
@@ -104,16 +117,33 @@ const L={
     kbRvBtn:'読み手の反応を見る',
     kbRvLoading:'読み手の反応を生成中...',
     kbEmptyAnswer:'メッセージを入力してください。',
+    kbPreviewBtn:'プレビュー',
+    kbPreviewTitle:'メッセージのプレビュー',
+    metaIndustry:'業界',
+    metaIndustryNone:'未選択',
+    kbBoilerplateNote:'冒頭・結びの定型文は参考表示です。入力不要で文字数に含めません。下の枠に本文のみ書いてください。',
+    kbBoilerplateOpenLbl:'冒頭（入力不要・文字数に含めない）',
+    kbBoilerplateCloseLbl:'結び（入力不要・文字数に含めない）',
+    kbCoreBodyLbl:'本文',
+    kbConstraintBodyNote:'（本文のみ）',
+    kbPreviewClose:'閉じる',
+    kbPhotoLbl:'画像を添付する（任意・最大2枚）',
+    kbUploadHint:'タップして画像を選ぶ',
+    kbUploadNote:'JPEG / PNG / HEIC・最大2枚',
+    kbExtraNote:'※ 画像による情報整理が優れている場合は加点されます',
+    kbScoreAxis1:'①やり取りの回数',
+    kbScoreAxis2:'②文章の伝わりやすさ',
+    kbScoreAxis3:'③情報の整理・読みやすさ',
     kbSceneReport:'報告・共有',
     kbSceneRequest:'依頼・指示',
     kbSceneProposal:'提案・説明',
     kbSceneSelf:'自己表現',
     kbDescs:[
-      'ビジネスメール・報告（読み手1人・シンプルな状況）。1回のやり取りで伝わるかを練習。',
-      'ビジネス報告・依頼（読み手1人・軽微な利害関係あり）。1回のやり取り。',
-      '提案・報告（読み手2人・立場が異なる）。2回のやり取り。',
-      '提案・依頼（読み手2〜3人・対立する利害関係あり）。2回のやり取り。',
-      '複雑な状況（複数の読み手・感情への配慮が必要）。3回のやり取り。',
+      '報告・共有。シンプルな状況で、読み手に伝わるメッセージを書く。',
+      '依頼・指示。軽微な利害関係のある読み手への配慮。',
+      '提案・説明。立場の異なる読み手への伝え方。',
+      '提案・依頼。対立する利害関係を踏まえた文章設計。',
+      '複雑な状況。複数の読み手と感情への配慮が必要な場面。'
     ],
     cTooltips:{
       '本当にそう言える？の指摘':{
@@ -167,6 +197,7 @@ const L={
     theme:'テーマ：',diff:'難易度：',
     sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
     copiedMsg:'クリップボードにコピーしました ✓',copyBtn:'コピー（MD）',noPhotoError:'写真をアップロードしてください。',
+    photoFormatError:'画像ファイル（JPEG / PNG / HEIC など）を選択してください。',photoDecodeError:'画像を読み込めませんでした。別の形式（JPEG など）でお試しください。',photoLoading:'画像を読み込み中…',
     ansModeLbl:'回答方法',amodeText:'テキスト入力',amodePhoto:'写真で提出',
     uploadHint:'タップして写真を選ぶ',uploadNote:'JPEG / PNG / HEIC・最大2枚',memoLbl:'補足メモ（任意）',
     photoLbl:'回答を書いた紙を撮影してください（最大2枚）',photoGrading:'採点中...',
@@ -178,26 +209,39 @@ const L={
     gTabOverview:'Overview',gTabFill:'Fill-in',gTabSummary:'Summary',gTabCritique:'Critical Reading',gTabAme:'Sky-Rain-Umbrella',gTabKibari:'Consideration',
     apiLbl:'Claude API Key',saveBtn:'Save',saved:'Saved',
     tabFill:'Fill-in',tabCritique:'Critical Reading',tabSum:'Summarize',
-    fThemeLbl:'Theme',optional:'(optional)',fLenLbl:'Length (approx.)',
+    fThemeLbl:'Theme',themeLbl:'Theme',optional:'(optional)',industryLbl:'Industry (optional)',
+    themeRequired:'Please select a theme.',
+    diffRequired:'Please select a difficulty level.',
+    themePresetUnavailable:'This document type is not available at the current difficulty.',themeAreaUnavailable:'This theme area is not available at the current difficulty.',
+    fillAnswerRequired:'Please fill in all blanks before submitting.',
+    summaryAnswerRequired:'Please answer all questions before submitting.',
+    critiqueAnswerRequired:'Please answer all questions before submitting.',
+    ameAnswerRequired:'Please answer all questions before submitting.',
+    kbAnswerRequired:'Please enter your message before submitting.',
+    fLenLbl:'Length (approx.)',
     sLenLbl:'Problem text length (approx.)',diffLbl:'Difficulty',
     dLabels:['Beginner','Basic','Standard','Advanced','Master'],
     fDescs:[
-      'Difficulty 1 (Beginner): Internal email / business communication. Basic connectors only. 2 blanks. Hints provided.',
-      'Difficulty 2 (Basic): Meeting minutes / progress report. Causal and adversative connectors. 3 blanks. Light hints.',
-      'Difficulty 3 (Standard): Proposal / project plan excerpt. Precise selection among similar connectors. 3 blanks. No hints.',
-      'Difficulty 4 (Advanced): Analysis report / research findings. Plain language, precise logic. 4 blanks. No hints.',
-      'Difficulty 5 (Master): Management strategy / consulting report. High-register connectors, layered logic. 5 blanks. No hints.'
+      'Internal email / business communication. Basic connector usage is tested.',
+      'Meeting minutes / progress report. Causal and adversative connectors.',
+      'Proposal / project plan excerpt. Precise use of similar connectors.',
+      'Analysis report / research findings. Connectors that determine the argument.',
+      'Management strategy / consulting report. Advanced connectors and layered logic.'
     ],
     sDescs:[
-      'Difficulty 1 (Basic): Internal email / communication. 1 question (Main claim). Target: ~60% of original.',
-      'Difficulty 2 (Standard): Meeting minutes / progress report. 2 questions (Main claim + Term). Target: ~50% of original.',
-      'Difficulty 3 (Advanced): Proposal / project plan. 3 questions (Term + Main claim + Reason). Target: ~40% of original.',
-      'Difficulty 4 (Expert): Analysis report / research findings. 3 questions. Target: ~30% of original.',
-      'Difficulty 5 (Master): Strategy document / consulting report. 3 questions. Target: ~20% of original.'
+      'Internal email / communication. Main claim summary.',
+      'Meeting minutes / progress report. Main claim and term explanation.',
+      'Proposal / project plan excerpt. Term, main claim, and reasoning.',
+      'Analysis report / research findings. Organizing claims and evidence.',
+      'Strategy / consulting report. Summarizing multi-layer arguments.'
     ],
     genBtn:'Generate Problem',genBtnBusy:'Generating…',genLoading:'Generating problem...',gradingLoading:'Grading...',modeKeyword:'Keyword',modeQuestion:'Question',
     genPhaseLlm:'AI is generating the problem',genPhaseProcess:'Organizing the problem',
     gradePhaseLlm:'AI is checking your answers',gradePhaseProcess:'Preparing your feedback',
+    busyOverlayHint:'Please wait until processing completes.',
+    busyOverlayGen:'Generating problem…',
+    busyOverlayGrade:'Checking answers…',
+    busyOverlayKibariRv:'Generating reader response…',
     fInst:'Fill in the blanks with the appropriate conjunctions',
     answerBox:'Answers',submitBtn:'Check Answers',submitBtnBusy:'Checking…',
     pq:'Print Problem',pa:'Print Explanation',
@@ -208,13 +252,12 @@ const L={
     cInst:'Read the passage and answer each question',cSubmit:'Get Feedback',cPastTitle:'Critical Reading Past Problems',
     cSavedOk:'Saved ✓',cGenFailed:'Failed to generate problem.',cGradingErr:'Grading failed',
     cDescs:[
-      '3 short business arguments. Practice finding the logical gap.',
-      '3 short business arguments. Practice identifying gaps, missing conditions, and responding to objections.',
-      '1 business document, 4 questions. Summarize the argument flow, identify gaps, conditions, and objections.',
-      '1 business document, 5 questions. Includes stakeholder perspective questions.',
-      '1 business document, 5 questions. Critical review of complex multi-layer strategy documents.',
+      'Short business arguments. Find logical gaps with "Is this really valid?"',
+      'Short business arguments. Gaps, missing conditions, and objections.',
+      'One business document. Flow, gaps, conditions, and objections.',
+      'One business document. Includes stakeholder perspective questions.',
+      'Strategy documents. Critical review of multi-layer arguments.'
     ],
-    cAutoInfo:'Questions: ',
     cQTypes:{
       '話の流れの整理':'Argument flow',
       '本当にそう言える？の指摘':'Is this valid?',
@@ -249,11 +292,11 @@ const L={
     aSoraInterpLbl:'Parts written as interpretations/opinions',
     aSoraSplitTotal:'Total',
     aDescs:[
-      'Inductive. Business data article (Sales/Marketing). Practice writing interpretation and action.',
-      'Inductive. Business data article (HR/Project Mgmt). 3-question format including fact sorting.',
-      'Inductive. Business data article (IT/Marketing). Mixed facts and interpretations. Umbrella has a constraint.',
-      'Business data (Strategy/Sales). ~50% inductive / ~50% deductive. 5-question format.',
-      'Business data (Strategy/IT). ~30% inductive / ~70% deductive. 5-question format.',
+      'Inductive. Sales/marketing data — interpretation and next action.',
+      'Inductive. HR/organization data — fact sorting and reasoning.',
+      'Inductive. IT/marketing data — mixed facts and interpretations with constraints.',
+      'Strategy/sales data — blended inductive and deductive reasoning.',
+      'Strategy/IT data — advanced reasoning and self-verification.'
     ],
     tabKibari:'Consideration',
     kbSceneLbl:'Scene type',
@@ -271,16 +314,33 @@ const L={
     kbRvBtn:'See reader\'s response',
     kbRvLoading:'Generating reader\'s response...',
     kbEmptyAnswer:'Please enter your message.',
+    kbPreviewBtn:'Preview',
+    kbPreviewTitle:'Message Preview',
+    metaIndustry:'Industry',
+    metaIndustryNone:'Not set',
+    kbBoilerplateNote:'Opening and closing phrases are shown for reference only. Do not type them—they are not counted toward the limit. Write only the body in the box below.',
+    kbBoilerplateOpenLbl:'Opening (do not type; not counted)',
+    kbBoilerplateCloseLbl:'Closing (do not type; not counted)',
+    kbCoreBodyLbl:'Body',
+    kbConstraintBodyNote:'(body only)',
+    kbPreviewClose:'Close',
+    kbPhotoLbl:'Attach images (optional, max 2)',
+    kbUploadHint:'Tap to select an image',
+    kbUploadNote:'JPEG / PNG / HEIC · max 2 images',
+    kbExtraNote:'※ Well-organized visual information may earn extra points',
+    kbScoreAxis1:'① Number of exchanges',
+    kbScoreAxis2:'② Clarity of message',
+    kbScoreAxis3:'③ Information structure & readability',
     kbSceneReport:'Report / Share',
     kbSceneRequest:'Request / Instruction',
     kbSceneProposal:'Proposal / Explanation',
     kbSceneSelf:'Self-introduction',
     kbDescs:[
-      'Business email / report (1 reader, simple). Practice getting your message across in 1 exchange.',
-      'Business report / request (1 reader, minor conflict). 1 exchange.',
-      'Proposal / report (2 readers, different perspectives). 2 exchanges.',
-      'Proposal / request (2-3 readers, conflicting interests). 2 exchanges.',
-      'Complex situation (multiple readers, emotional consideration needed). 3 exchanges.',
+      'Report / share. Simple situation — clear messages for the reader.',
+      'Request / instruction. Minor stakeholder considerations.',
+      'Proposal / explanation. Readers with different perspectives.',
+      'Proposal / request. Conflicting interests among readers.',
+      'Complex situation. Multiple readers and emotional nuance.'
     ],
     cTooltips:{
       '本当にそう言える？の指摘':{
@@ -334,6 +394,7 @@ const L={
     theme:'Theme: ',diff:'Difficulty: ',
     sVolLbl:'Volume',volShort:'Quick',volMid:'Normal',volLong:'Deep',
     copiedMsg:'Copied to clipboard ✓',copyBtn:'Copy (MD)',noPhotoError:'Please upload at least one photo.',
+    photoFormatError:'Please select an image file (JPEG, PNG, HEIC, etc.).',photoDecodeError:'Could not load the image. Try saving as JPEG and upload again.',photoLoading:'Loading image…',
     ansModeLbl:'Answer method',amodeText:'Text input',amodePhoto:'Submit photo',
     uploadHint:'Tap to select a photo',uploadNote:'JPEG / PNG / HEIC · max 2 photos',memoLbl:'Note (optional)',
     photoLbl:'Take photos of your handwritten answers (max 2)',photoGrading:'Grading...',
@@ -341,10 +402,10 @@ const L={
 };
 
 // ── State ─────────────────────────────────────────────────
-const st={lang:'ja',fDiff:3,sDiff:3,cDiff:3,sVolume:'short',sThemeMode:'keyword',answerMode:'text',answerScope:'s',fFilter:'all',sFilter:'all',cFilter:'all',aFilter:'all',kbFilter:'all',fPast:[],sPast:[],cPast:[],fill:null,summary:null,critique:null,ame:null,aPast:[],aDiff:3,kibariDiff:3,kibariScene:'report',kibari:null,kbPast:[],genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
+const st={lang:'ja',fDiff:0,sDiff:0,cDiff:0,sVolume:'',fDocType:'',sDocType:'',cDocType:'',aDocType:'',industry:'',answerMode:'text',answerScope:'s',fFilter:'all',sFilter:'all',cFilter:'all',aFilter:'all',kbFilter:'all',fPast:[],sPast:[],cPast:[],fill:null,summary:null,critique:null,ame:null,aPast:[],aDiff:0,kibariDiff:0,kibariScene:'',kibari:null,kibariPast:null,kbPast:[],genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
+const DEFAULT_S_VOLUME='short';
 let answerPhotos=[];
-let _genLockedEls=[];
-let _gradeLockedEls=[];
+let _appLockedEls=[];
 function isBusy(){return st.genBusy||st.gradeBusy;}
 function setAppBusyClass(){document.querySelector('.app').classList.toggle('is-busy',!!isBusy());}
 
@@ -359,7 +420,7 @@ const S_LENGTH_VARIABLE={
 };
 function getSummaryLength(diff){
   if(diff<=3) return S_LENGTH_FIXED[diff];
-  const vol=st.sVolume||'short';
+  const vol=st.sVolume||DEFAULT_S_VOLUME;
   return S_LENGTH_VARIABLE[vol].chars;
 }
 const S_RATIO={1:.6,2:.5,3:.4,4:.3,5:.2};
@@ -370,10 +431,96 @@ const C_TEXT_LENGTH=400;
 const A_DEDUCTIVE_RATE={1:0,2:0,3:0,4:0.5,5:0.7};
 const A_ARTICLE_LENGTH=350;
 
+const FILL_PRESETS={
+  ja:[
+    {value:'email',label:'社内メール・業務連絡',minDiff:1},
+    {value:'minutes',label:'議事録・進捗報告',minDiff:1},
+    {value:'proposal',label:'提案書・企画書',minDiff:2},
+    {value:'report',label:'分析レポート・調査報告',minDiff:3},
+    {value:'strategy',label:'経営戦略文書・コンサルレポート',minDiff:4},
+  ],
+  en:[
+    {value:'email',label:'Internal email / communication',minDiff:1},
+    {value:'minutes',label:'Meeting minutes / progress report',minDiff:1},
+    {value:'proposal',label:'Proposal / project plan',minDiff:2},
+    {value:'report',label:'Analysis report / research findings',minDiff:3},
+    {value:'strategy',label:'Management strategy / consulting report',minDiff:4},
+  ],
+};
+const SUMMARY_PRESETS=FILL_PRESETS;
+const CRITIQUE_PRESETS={
+  ja:[
+    {value:'chat',label:'社内チャット・短いメール',minDiff:1},
+    {value:'progress',label:'進捗報告・議事録',minDiff:1},
+    {value:'proposal',label:'提案書・企画書',minDiff:2},
+    {value:'report',label:'分析レポート・稟議書',minDiff:3},
+    {value:'strategy',label:'経営戦略文書・提言書',minDiff:4},
+  ],
+  en:[
+    {value:'chat',label:'Internal chat / short email',minDiff:1},
+    {value:'progress',label:'Progress report / meeting minutes',minDiff:1},
+    {value:'proposal',label:'Proposal / project plan',minDiff:2},
+    {value:'report',label:'Analysis report / approval document',minDiff:3},
+    {value:'strategy',label:'Strategy document / policy recommendation',minDiff:4},
+  ],
+};
+const AME_PRESETS={
+  ja:[
+    {value:'sales',label:'営業・売上',minDiff:1},
+    {value:'hr',label:'人事・組織',minDiff:1},
+    {value:'it',label:'IT・システム',minDiff:2},
+    {value:'strategy',label:'経営・戦略',minDiff:3},
+  ],
+  en:[
+    {value:'sales',label:'Sales / Revenue',minDiff:1},
+    {value:'hr',label:'HR / Organization',minDiff:1},
+    {value:'it',label:'IT / Systems',minDiff:2},
+    {value:'strategy',label:'Management / Strategy',minDiff:3},
+  ],
+};
+const INDUSTRY_PRESETS={
+  ja:[
+    {value:'',label:'指定なし'},
+    {value:'it',label:'IT・テクノロジー'},
+    {value:'mfg',label:'製造業'},
+    {value:'retail',label:'小売・EC'},
+    {value:'finance',label:'金融・保険'},
+    {value:'medical',label:'医療・ヘルスケア'},
+  ],
+  en:[
+    {value:'',label:'Any industry'},
+    {value:'it',label:'IT / Technology'},
+    {value:'mfg',label:'Manufacturing'},
+    {value:'retail',label:'Retail / E-commerce'},
+    {value:'finance',label:'Finance / Insurance'},
+    {value:'medical',label:'Healthcare / Medical'},
+  ],
+};
+const INDUSTRY_CONSTRAINT={
+  ja:'\n- 業界が指定されている場合は文脈の色付けのみに使用し、その業界の専門知識・専門用語・規制・法律を知らなくても読める内容にすること',
+  en:'\n- If an industry is specified, use it only as context coloring. The content must be readable without specialized knowledge of that industry\'s regulations, terminology, or laws.',
+};
+function addIndustryConstraintToPrompts(prompts){
+  const suffix=st.lang==='en'?INDUSTRY_CONSTRAINT.en:INDUSTRY_CONSTRAINT.ja;
+  const out={};
+  for(const k in prompts)out[k]=prompts[k]+suffix;
+  return out;
+}
+
 const KB_MAX_ROUNDS={1:1,2:1,3:2,4:2,5:3};
-const KB_SCENE_LABELS={
-  ja:{report:'報告・共有',request:'依頼・指示',proposal:'提案・説明',self:'自己表現'},
-  en:{report:'Report/Share',request:'Request/Instruction',proposal:'Proposal/Explanation',self:'Self-introduction'},
+const KIBARI_PRESETS={
+  ja:[
+    {value:'report',label:'報告・共有',minDiff:1},
+    {value:'request',label:'依頼・指示',minDiff:1},
+    {value:'proposal',label:'提案・説明',minDiff:1},
+    {value:'self',label:'自己表現',minDiff:1},
+  ],
+  en:[
+    {value:'report',label:'Report / Share',minDiff:1},
+    {value:'request',label:'Request / Instruction',minDiff:1},
+    {value:'proposal',label:'Proposal / Explanation',minDiff:1},
+    {value:'self',label:'Self-introduction',minDiff:1},
+  ],
 };
 
 /** 採点（答え合わせ）用 max_tokens — 従来比約1.5倍。問題生成には使わない */
@@ -493,6 +640,27 @@ const SUM_FORMAT_NOTE_JA='文章の書式ルール：\n- 段落の冒頭は全�
 const SUM_FORMAT_NOTE_EN='Formatting rules:\n- Indent the first line of each paragraph\n- Add a line break between paragraphs';
 function dlabel(d){return(st.lang==='ja'?DIFF_LABELS_JA:DIFF_LABELS_EN)[d]||'—';}
 const BADGE={1:'b1',2:'b2',3:'b3',4:'b4',5:'b5'};
+function industryDisplayLabel(value,lang){
+  if(!value)return L[lang||st.lang].metaIndustryNone||'未選択';
+  const ind=INDUSTRY_PRESETS[lang||st.lang].find(p=>p.value===value);
+  return ind?.label||L[lang||st.lang].metaIndustryNone||'未選択';
+}
+function buildProblemMetaHtml(prob,lang){
+  const l=L[lang||st.lang];
+  const diffNum=+(prob.diff||0);
+  const diffPart=diffNum?`<span class="meta-tag meta-diff"><span class="badge ${BADGE[diffNum]||'b3'}">${dlabel(diffNum)}</span></span>`:'';
+  const indKey=l.metaIndustry||'業界';
+  return`<div class="problem-meta-row">
+    <span class="meta-tag">${esc(l.theme)}${esc(prob.theme||'—')}</span>
+    <span class="meta-tag">${esc(indKey)}：${esc(industryDisplayLabel(prob.industry,lang))}</span>
+    ${diffPart}
+  </div>`;
+}
+function renderProblemMeta(elId,prob){
+  const el=document.getElementById(elId);
+  if(el)el.innerHTML=buildProblemMetaHtml(prob,prob.lang||st.lang);
+}
+function genIndustrySnapshot(){return st.industry||'';}
 
 function ui(id,txt){const e=document.getElementById(id);if(e)e.textContent=txt;}
 function applyLang(){
@@ -500,17 +668,11 @@ function applyLang(){
   ui('ui-app-title',l.appTitle);
   ui('ui-f-sub-new',l.subNew);ui('ui-f-sub-past',l.subPast);
   ui('ui-s-sub-new',l.subNew);ui('ui-s-sub-past',l.subPast);
-  ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);
-  if(localStorage.getItem(APIKEY_KEY)){
-    const statusEl=document.getElementById('api-bar-status');
-    if(statusEl)statusEl.textContent='✓ '+l.saved;
-  }
   ui('ui-guide-btn',l.guideBtn);ui('ui-guide-title',l.guideTitle);
   ui('ui-gtab-overview',l.gTabOverview);ui('ui-gtab-fill',l.gTabFill);ui('ui-gtab-summary',l.gTabSummary);
   ui('ui-gtab-critique',l.gTabCritique);ui('ui-gtab-ame',l.gTabAme);ui('ui-gtab-kibari',l.gTabKibari);
   ui('ui-tab-fill',l.tabFill);ui('ui-tab-critique',l.tabCritique);ui('ui-tab-sum',l.tabSum);ui('ui-tab-ame',l.tabAme);ui('ui-tab-kibari',l.tabKibari);
-  document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-f-diff-lbl',l.diffLbl);
+  setThemeLabel('ui-f-theme-lbl',l);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
   ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
   ui('ui-f-gen-loading',l.genLoading);
@@ -518,8 +680,7 @@ function applyLang(){
   ui('ui-f-back',l.back);ui('ui-fp-all',l.all);
   const rp=document.getElementById('r-premise');
   if(rp)rp.placeholder='';
-  document.getElementById('ui-s-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-s-diff-lbl',l.diffLbl);
+  setThemeLabel('ui-s-theme-lbl',l);
   ui('ui-s-vol-lbl',l.sVolLbl);ui('ui-vol-short',l.volShort);ui('ui-vol-mid',l.volMid);ui('ui-vol-long',l.volLong);
   const fmtVolChars=n=>st.lang==='ja'?n.toLocaleString('ja-JP')+'字':n.toLocaleString('en-US')+' chars';
   ui('ui-vol-short-chars',fmtVolChars(S_LENGTH_VARIABLE.short.chars));
@@ -534,28 +695,30 @@ function applyLang(){
   ui('ui-a-photo-lbl',l.photoLbl);ui('ui-a-upload-hint',l.uploadHint);ui('ui-a-upload-note',l.uploadNote);ui('ui-a-memo-lbl',l.memoLbl);
   ui('ui-f-copy',l.copyBtn);ui('ui-s-copy',l.copyBtn);
   ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
-  ui('ui-s-mode-keyword',l.modeKeyword);ui('ui-s-mode-question',l.modeQuestion);
   ui('ui-s-gen-loading',l.genLoading);
   ui('ui-s-rand',l.rand);
   ui('ui-s-back',l.back);ui('ui-sp-all',l.all);
 
   ui('ui-c-sub-new',l.subNew);ui('ui-c-sub-past',l.subPast);
-  document.getElementById('ui-c-theme-lbl').innerHTML=l.cThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-c-diff-lbl',l.cDiffLbl);ui('ui-c-gen',l.cGenBtn);ui('ui-c-gen-loading',l.cGenLoading);
+  setThemeLabel('ui-c-theme-lbl',l);
+  ui('ui-c-gen',l.cGenBtn);ui('ui-c-gen-loading',l.cGenLoading);
   ui('ui-c-inst',l.cInst);ui('ui-c-submit',l.cSubmit);ui('ui-c-pa',l.pa);
   ui('ui-a-sub-new',l.subNew);ui('ui-a-sub-past',l.subPast);
-  document.getElementById('ui-a-theme-lbl').innerHTML=l.aThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-a-diff-lbl',l.aDiffLbl);ui('ui-a-gen',l.aGenBtn);ui('ui-a-gen-loading',l.aGenLoading);
+  setThemeLabel('ui-a-theme-lbl',l);
+  setThemeLabel('ui-kb-theme-lbl',l);
+  document.querySelectorAll('.ui-industry-lbl').forEach(el=>{el.textContent=l.industryLbl||'業界（任意）';});
+  ['ui-f-diff-lbl','ui-s-diff-lbl','ui-c-diff-lbl','ui-a-diff-lbl','ui-kb-diff-lbl'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el)el.innerHTML=esc(l.diffLbl)+' <span class="label-req">*</span>';
+  });
+  ui('ui-a-gen',l.aGenBtn);ui('ui-a-gen-loading',l.aGenLoading);
   ui('ui-a-law-lbl',l.aLawLbl);ui('ui-a-article-lbl',l.aArticleLbl);ui('ui-a-submit',l.aSubmit);ui('ui-a-pa',l.pa);
   ui('ui-a-rand',l.rand);ui('ui-a-back',l.back);ui('ui-ap-all',l.all);
   ui('ui-c-rand',l.rand);ui('ui-c-back',l.back);ui('ui-cp-all',l.all);
   ui('ui-kb-sub-new',l.subNew);ui('ui-kb-sub-past',l.subPast);
-  ui('ui-kb-scene-lbl',l.kbSceneLbl);ui('ui-kb-diff-lbl',l.kbDiffLbl);
   ui('ui-kb-gen',l.kbGenBtn);ui('ui-kb-gen-loading',l.kbGenLoading);
   ui('ui-kb-situation-lbl',l.kbSituationLbl);ui('ui-kb-submit',l.kbSubmit);
   ui('ui-kb-pa',l.pa);ui('ui-kb-rand',l.rand);ui('ui-kb-back',l.back);ui('ui-kbp-all',l.all);
-  ui('ui-kb-scene-report',l.kbSceneReport);ui('ui-kb-scene-request',l.kbSceneRequest);
-  ui('ui-kb-scene-proposal',l.kbSceneProposal);ui('ui-kb-scene-self',l.kbSceneSelf);
 
   // diff labels
   for(let d=1;d<=5;d++){
@@ -568,15 +731,14 @@ function applyLang(){
   }
   // diff desc & auto info
   updateDiffUI('f');updateDiffUI('s');updateDiffUI('c');updateDiffUI('a');updateDiffUI('kb');
-  setKibariScene(st.kibariScene||'report',true);
-  // placeholders removed
-  ['f-theme','s-theme','c-theme','a-theme'].forEach(id=>{const el=document.getElementById(id);if(el)el.placeholder='';});
+  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  updateIndustryUI();
+  ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
   // lang buttons
   document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',i===(st.lang==='ja'?0:1)));
   document.documentElement.lang=st.lang;
   if(st.genBusy)updateGenStatusUI(st.genBusy);
   if(st.gradeBusy)updateGradeStatusUI(st.gradeBusy);
-  setThemeMode('s',st.sThemeMode||'keyword');
   updateApiKeyUI();
 }
 
@@ -607,67 +769,98 @@ function setGenPhase(mode,phase){
   });
   updateGenStatusUI(mode);
 }
-function collectGenLockEls(mode){
-  const panel='#'+(mode==='fill'?'fill':mode==='summary'?'summary':mode==='critique'?'critique':mode==='kibari'?'kibari':'ame')+'-panel';
+function showBusyOverlay(message){
+  const l=L[st.lang];
+  const ov=document.getElementById('app-busy-overlay');
+  const msg=document.getElementById('app-busy-overlay-msg');
+  const hint=document.getElementById('app-busy-overlay-hint');
+  if(msg)msg.textContent=message||'';
+  if(hint)hint.textContent=l.busyOverlayHint||'';
+  if(ov){ov.classList.add('show');ov.setAttribute('aria-hidden','false');}
+}
+function hideBusyOverlay(){
+  const ov=document.getElementById('app-busy-overlay');
+  if(ov){ov.classList.remove('show');ov.setAttribute('aria-hidden','true');}
+}
+function collectAppLockEls(){
   return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, .sub-tab, '+panel+' .card button, '+panel+' .card input, '+panel+' .card textarea, '+panel+' .mode-btn, #'+pastPrefix(mode)+'-past-area button, #'+pastPrefix(mode)+'-past-area .pf-tab, #'+pastPrefix(mode)+'-past-area .pcard, #'+pastPrefix(mode)+'-past-area .back-btn'
+    '.app .tab, .app .sub-tab, .app .lang-btn, .app .guide-btn, .app button, .app input, .app textarea, .app select, .app .pcard, .app .pf-tab, .app .back-btn'
   );
 }
-function lockEl(el,skipIds){
-  const skip=Array.isArray(skipIds)?skipIds:[];
-  if(skip.includes(el.id)||el.id==='f-gen-btn'||el.id==='s-gen-btn'||el.id==='c-gen-btn'||el.id==='a-gen-btn'||el.id==='kb-gen-btn')return;
-  if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.tagName==='TEXTAREA'){
-    el.dataset.genWasDisabled=el.disabled?'1':'0';
+function lockEl(el){
+  if(el.closest('#app-busy-overlay'))return;
+  if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.tagName==='TEXTAREA'||el.tagName==='SELECT'){
+    el.dataset.appWasDisabled=el.disabled?'1':'0';
     el.disabled=true;
   }else{
-    el.dataset.genLocked='1';
+    el.dataset.appLocked='1';
     el.style.pointerEvents='none';
     el.style.opacity='0.55';
   }
 }
 function unlockEl(el){
-  if(el.dataset.genLocked){
-    delete el.dataset.genLocked;
+  if(el.dataset.appLocked){
+    delete el.dataset.appLocked;
     el.style.pointerEvents='';
     el.style.opacity='';
-  }else if(el.dataset.genWasDisabled!==undefined){
-    el.disabled=el.dataset.genWasDisabled==='1';
-    delete el.dataset.genWasDisabled;
+  }else if(el.dataset.appWasDisabled!==undefined){
+    el.disabled=el.dataset.appWasDisabled==='1';
+    delete el.dataset.appWasDisabled;
   }
 }
-function beginGen(mode){
+function lockAppInteractive(){
+  _appLockedEls=[...collectAppLockEls()];
+  _appLockedEls.forEach(el=>lockEl(el));
+}
+function unlockAppInteractive(){
+  _appLockedEls.forEach(unlockEl);
+  _appLockedEls=[];
+}
+function beginAppBusy(kind,mode,message){
   if(isBusy())return false;
-  st.genBusy=mode;
-  const p=genPrefix(mode);
+  if(kind==='gen')st.genBusy=mode;
+  else st.gradeBusy=mode;
   setAppBusyClass();
+  showBusyOverlay(message);
+  lockAppInteractive();
+  updateApiKeyUI();
+  return true;
+}
+function endAppBusy(kind,mode){
+  if(kind==='gen'){if(st.genBusy!==mode)return;st.genBusy=null;st.genPhase=null;}
+  else{if(st.gradeBusy!==mode)return;st.gradeBusy=null;st.gradePhase=null;}
+  setAppBusyClass();
+  hideBusyOverlay();
+  unlockAppInteractive();
+  updateApiKeyUI();
+}
+function beginGen(mode){
+  const l=L[st.lang];
+  const msg=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:mode==='kibari'?l.kbGenLoading:l.busyOverlayGen||l.genLoading;
+  if(!beginAppBusy('gen',mode,msg))return false;
+  const p=genPrefix(mode);
   const loadEl=document.getElementById(p+'-gen-loading');
   if(loadEl)loadEl.style.display='flex';
-  const loadLbl=mode==='summary'?L[st.lang].sGenLoading:mode==='critique'?L[st.lang].cGenLoading:mode==='ame'?L[st.lang].aGenLoading:mode==='kibari'?L[st.lang].kbGenLoading:L[st.lang].genLoading;
+  const loadLbl=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:mode==='kibari'?l.kbGenLoading:l.genLoading;
   ui(p+'-gen-loading',loadLbl);
-
   const btn=document.getElementById(p+'-gen-btn');
-  btn.disabled=true;
-  btn.classList.add('is-loading');
-  _genLockedEls=[...collectGenLockEls(mode)];
-  _genLockedEls.forEach(el=>lockEl(el));
+  if(btn)btn.classList.add('is-loading');
   return true;
 }
 function endGen(mode){
   if(st.genBusy!==mode)return;
-  st.genBusy=null;
-  st.genPhase=null;
   const p=genPrefix(mode);
-  setAppBusyClass();
   const loadEl=document.getElementById(p+'-gen-loading');
   if(loadEl)loadEl.style.display='none';
   const btn=document.getElementById(p+'-gen-btn');
-  btn.classList.remove('is-loading');
-  const genLbl=mode==='fill'?L[st.lang].genBtn:mode==='summary'?L[st.lang].sGenBtn:mode==='critique'?L[st.lang].cGenBtn:mode==='ame'?L[st.lang].aGenBtn:mode==='kibari'?L[st.lang].kbGenBtn:L[st.lang].cGenBtn;
-  btn.querySelector('span').textContent=genLbl;
-  _genLockedEls.forEach(unlockEl);
-  _genLockedEls=[];
+  if(btn){
+    btn.classList.remove('is-loading');
+    const genLbl=mode==='fill'?L[st.lang].genBtn:mode==='summary'?L[st.lang].sGenBtn:mode==='critique'?L[st.lang].cGenBtn:mode==='ame'?L[st.lang].aGenBtn:mode==='kibari'?L[st.lang].kbGenBtn:L[st.lang].cGenBtn;
+    const span=btn.querySelector('span');
+    if(span)span.textContent=genLbl;
+  }
   setGenPhase(mode,null);
-  updateApiKeyUI();
+  endAppBusy('gen',mode);
 }
 
 function updateGradeStatusUI(){
@@ -695,62 +888,220 @@ function setGradePhase(phase){
   });
   updateGradeStatusUI();
 }
-function collectGradeLockEls(){
-  return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn'
-  );
-}
 function beginGrade(){
-  if(isBusy())return false;
-  st.gradeBusy='fill';
-  setAppBusyClass();
+  const l=L[st.lang];
+  if(!beginAppBusy('grade','fill',l.busyOverlayGrade||l.gradingLoading))return false;
   document.getElementById('f-grade-status').hidden=false;
   document.getElementById('f-fb').innerHTML='';
   updateGradeStatusUI();
   setGradePhase('llm');
   const btn=document.getElementById('f-submit');
-  btn.disabled=true;
-  btn.classList.add('is-loading');
-  _gradeLockedEls=[...collectGradeLockEls()];
-  _gradeLockedEls.forEach(el=>lockEl(el,['f-submit']));
+  if(btn)btn.classList.add('is-loading');
   return true;
 }
 function endGrade(){
   if(st.gradeBusy!=='fill')return;
-  st.gradeBusy=null;
-  st.gradePhase=null;
-  setAppBusyClass();
   document.getElementById('f-grade-status').hidden=true;
   const btn=document.getElementById('f-submit');
-  btn.classList.remove('is-loading');
-  btn.querySelector('span').textContent=L[st.lang].submitBtn;
-  _gradeLockedEls.forEach(unlockEl);
-  _gradeLockedEls=[];
+  if(btn){
+    btn.classList.remove('is-loading');
+    const span=btn.querySelector('span');
+    if(span)span.textContent=L[st.lang].submitBtn;
+  }
   setGradePhase(null);
-  updateApiKeyUI();
+  endAppBusy('grade','fill');
+}
+function beginGradeBusy(mode){
+  return beginAppBusy('grade',mode,L[st.lang].busyOverlayGrade||L[st.lang].gradingLoading);
+}
+function endGradeBusy(mode){
+  endAppBusy('grade',mode);
+}
+function resetGenConditions(){
+  st.fDocType='';
+  st.sDocType='';
+  st.cDocType='';
+  st.aDocType='';
+  st.industry='';
+  st.fDiff=0;
+  st.sDiff=0;
+  st.cDiff=0;
+  st.aDiff=0;
+  st.kibariDiff=0;
+  st.kibariScene='';
+  st.sVolume='';
+  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  updateIndustryUI();
+  ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
+  document.querySelectorAll('#s-volume-selector .vol-btn').forEach(b=>b.classList.remove('active'));
 }
 
+function diffValueFor(mode){
+  if(mode==='f')return st.fDiff;
+  if(mode==='s')return st.sDiff;
+  if(mode==='c')return st.cDiff;
+  if(mode==='kb')return st.kibariDiff;
+  return st.aDiff;
+}
+function isDiffSelected(mode){
+  const d=diffValueFor(mode);
+  return d>=1&&d<=5;
+}
+function isBlankAnswer(s){
+  const t=String(s||'').trim();
+  return !t||t==='—'||t==='－';
+}
+function setThemeLabel(id,l){
+  const el=document.getElementById(id);
+  if(el)el.innerHTML=esc(l.themeLbl||l.fThemeLbl)+' <span class="label-req">*</span>';
+}
+function validateBeforeGen(mode){
+  const l=L[st.lang];
+  if(!themeValueFor(mode)){
+    alert(l.themeRequired);
+    return false;
+  }
+  if(!isDiffSelected(mode)){
+    alert(l.diffRequired);
+    return false;
+  }
+  return true;
+}
 function updateDiffUI(m){
   const l=L[st.lang];
-  const diff=m==='f'?st.fDiff:m==='s'?st.sDiff:m==='c'?st.cDiff:m==='kb'?st.kibariDiff:st.aDiff;
-  if(m==='f'){
-    document.getElementById('f-diff-desc').textContent=l.fDescs[diff-1];
-    const b=calcBlanks(diff);
-    document.getElementById('f-auto-info').textContent=l.autoFill+b+(st.lang==='ja'?'個':' blanks');
-  }else if(m==='s'){
-    document.getElementById('s-diff-desc').textContent=l.sDescs[diff-1];
-    const nq=calcBlocks(diff);
-    document.getElementById('s-auto-info').textContent=l.autoQuestions+nq+(st.lang==='ja'?'問':' questions');
-  }else if(m==='c'){
-    document.getElementById('c-diff-desc').textContent=l.cDescs[diff-1];
-    const nq=C_QUESTION_COUNTS[diff];
-    document.getElementById('c-auto-info').textContent=l.cAutoInfo+nq+(st.lang==='ja'?'問':' questions');
-  }else if(m==='kb'){
-    const kbDesc=document.getElementById('kb-diff-desc');
-    if(kbDesc)kbDesc.textContent=l.kbDescs[diff-1];
-  }else{
-    document.getElementById('a-diff-desc').textContent=l.aDescs[diff-1];
+  const diff=diffValueFor(m);
+  const prefix=m==='f'?'f':m==='s'?'s':m==='c'?'c':m==='kb'?'kb':'a';
+  document.querySelectorAll('#'+prefix+'-diff-row .diff-btn').forEach(b=>{
+    b.classList.toggle('sel',isDiffSelected(m)&&parseInt(b.dataset.d)===diff);
+  });
+  const descId=m==='f'?'f-diff-desc':m==='s'?'s-diff-desc':m==='c'?'c-diff-desc':m==='kb'?'kb-diff-desc':'a-diff-desc';
+  const descEl=document.getElementById(descId);
+  if(descEl){
+    if(!isDiffSelected(m))descEl.textContent='';
+    else if(m==='f')descEl.textContent=l.fDescs[diff-1];
+    else if(m==='s')descEl.textContent=l.sDescs[diff-1];
+    else if(m==='c')descEl.textContent=l.cDescs[diff-1];
+    else if(m==='kb')descEl.textContent=l.kbDescs[diff-1];
+    else descEl.textContent=l.aDescs[diff-1];
   }
+  if(m==='s'){
+    const vs=document.getElementById('s-volume-selector');
+    if(vs)vs.style.display=isDiffSelected(m)&&diff>=4?'':'none';
+  }
+  updateThemeUI(m);
+}
+
+const THEME_PRESET_COLS=5;
+
+function themeListFor(mode){
+  const lang=st.lang==='en'?'en':'ja';
+  if(mode==='f')return FILL_PRESETS[lang];
+  if(mode==='s')return SUMMARY_PRESETS[lang];
+  if(mode==='c')return CRITIQUE_PRESETS[lang];
+  if(mode==='kb')return KIBARI_PRESETS[lang];
+  return AME_PRESETS[lang];
+}
+
+function themeDiffFor(mode){
+  if(mode==='f')return st.fDiff;
+  if(mode==='s')return st.sDiff;
+  if(mode==='c')return st.cDiff;
+  if(mode==='kb')return st.kibariDiff;
+  return st.aDiff;
+}
+
+function themeValueFor(mode){
+  if(mode==='f')return st.fDocType;
+  if(mode==='s')return st.sDocType;
+  if(mode==='c')return st.cDocType;
+  if(mode==='kb')return st.kibariScene;
+  return st.aDocType;
+}
+
+function themeStKey(mode){
+  if(mode==='f')return 'fDocType';
+  if(mode==='s')return 'sDocType';
+  if(mode==='c')return 'cDocType';
+  if(mode==='kb')return 'kibariScene';
+  return 'aDocType';
+}
+
+function getThemePreset(mode){
+  const diff=themeDiffFor(mode);
+  const value=themeValueFor(mode);
+  if(!value)return null;
+  const p=themeListFor(mode).find(x=>x.value===value);
+  if(!p||p.minDiff>diff)return null;
+  return p;
+}
+
+function buildThemeInFromDocType(mode,isEN){
+  return buildThemeInFromTheme(mode,isEN);
+}
+function buildThemeInFromTheme(mode,isEN){
+  const lang=isEN?'en':'ja';
+  const preset=getThemePreset(mode);
+  if(!preset)return '';
+  const ind=INDUSTRY_PRESETS[lang].find(p=>p.value===st.industry);
+  const indNote=st.industry&&ind?(isEN?` Industry context: ${ind.label}.`:` 業界：${ind.label}。`):'';
+  return preset.label+indNote;
+}
+
+function setDocType(mode,value){setTheme(mode,value);}
+function setTheme(mode,value){
+  if(isBusy())return;
+  const diff=themeDiffFor(mode);
+  const p=themeListFor(mode).find(x=>x.value===value);
+  const diffOk=!diff||diff<1||p.minDiff<=diff;
+  if(!p||!diffOk)return;
+  st[themeStKey(mode)]=value;
+  updateThemeUI(mode);
+}
+
+function setIndustry(value){
+  if(isBusy())return;
+  st.industry=value;
+  document.querySelectorAll('.industry-preset-row .preset-btn')
+    .forEach(b=>b.classList.toggle('sel',!!value&&b.dataset.industry===value));
+}
+
+function updateDocTypeUI(mode){updateThemeUI(mode);}
+function updateThemeUI(mode){
+  const diff=themeDiffFor(mode);
+  const presets=themeListFor(mode);
+  let current=themeValueFor(mode);
+  const stKey=themeStKey(mode);
+  const rowEl=document.getElementById(mode+'-theme-row');
+  if(!rowEl)return;
+  if(current&&diff>=1){
+    const p=presets.find(x=>x.value===current);
+    if(p&&p.minDiff>diff){
+      st[stKey]='';
+      current='';
+    }
+  }
+  rowEl.className='preset-row';
+  let html=presets.map(p=>{
+    const enabled=!diff||diff<1||p.minDiff<=diff;
+    const sel=enabled&&p.value===current;
+    if(enabled){
+      return `<button type="button" class="preset-btn${sel?' sel':''}" data-theme="${p.value}" onclick="setTheme('${mode}','${p.value}')">${esc(p.label)}</button>`;
+    }
+    return `<button type="button" class="preset-btn" disabled data-theme="${p.value}">${esc(p.label)}</button>`;
+  }).join('');
+  for(let i=presets.length;i<THEME_PRESET_COLS;i++)html+='<div class="preset-spacer" aria-hidden="true"></div>';
+  rowEl.innerHTML=html;
+}
+
+function updateIndustryUI(){
+  const lang=st.lang==='en'?'en':'ja';
+  const presets=INDUSTRY_PRESETS[lang];
+  const html=presets.map(p=>
+    `<button type="button" class="preset-btn${st.industry&&p.value===st.industry?' sel':''}" data-industry="${p.value}" onclick="setIndustry('${p.value}')">${esc(p.label)}</button>`
+  ).join('');
+  document.querySelectorAll('.industry-preset-row').forEach(rowEl=>{
+    rowEl.innerHTML=html;
+  });
 }
 
 function resetUIOnLangSwitch(){
@@ -812,6 +1163,11 @@ function resetUIOnLangSwitch(){
   if(kbs1)kbs1.className='step done';
   if(kbs2)kbs2.className='step active';
   if(kbs3)kbs3.className='step';
+  const kbPreviewOverlay=document.getElementById('kb-preview-overlay');
+  if(kbPreviewOverlay)kbPreviewOverlay.classList.remove('show');
+  document.removeEventListener('keydown',onKibariPreviewKeyDown);
+  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  updateIndustryUI();
   updateApiKeyUI();
 }
 function setLang(lang){
@@ -830,8 +1186,7 @@ function setLang(lang){
 function setVolume(v){
   if(isBusy())return;
   st.sVolume=v;
-  document.querySelectorAll('#s-volume-selector .vol-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
-  updateDiffUI('s');
+  document.querySelectorAll('#s-volume-selector .vol-btn').forEach(b=>b.classList.toggle('active',!!v&&b.dataset.v===v));
 }
 function setDiff(m,d){
   if(isBusy())return;
@@ -840,14 +1195,15 @@ function setDiff(m,d){
   else if(m==='c')st.cDiff=d;
   else if(m==='kb')st.kibariDiff=d;
   else st.aDiff=d;
-  document.querySelectorAll('#'+(m==='f'?'f':m==='s'?'s':m==='c'?'c':m==='kb'?'kb':'a')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
-  if(m==='s'){
-    const vs=document.getElementById('s-volume-selector');
-    if(vs) vs.style.display=d>=4?'':'none';
+  const cur=themeValueFor(m);
+  if(cur){
+    const p=themeListFor(m).find(x=>x.value===cur);
+    if(p&&p.minDiff>d)st[themeStKey(m)]='';
   }
   updateDiffUI(m);
 }
 function switchSub(mode,sub){
+  if(isBusy())return;
   document.getElementById(mode+'-sub-new').classList.toggle('active',sub==='new');
   document.getElementById(mode+'-sub-past').classList.toggle('active',sub==='past');
   const newArea=document.getElementById(mode+'-new-area');
@@ -956,12 +1312,30 @@ function parseMdRow(line){
 function renderMdTable(lines){
   const header=parseMdRow(lines[0]);
   const body=lines.slice(2).map(parseMdRow).filter(r=>r.some(c=>c.length));
+  const mergeCol=0;
+  const rowspan=new Array(body.length).fill(1);
+  const skipRow=new Array(body.length).fill(false);
+  for(let i=0;i<body.length;){
+    const label=body[i][mergeCol]||'';
+    let j=i+1;
+    while(j<body.length&&(body[j][mergeCol]||'')===label)j++;
+    rowspan[i]=j-i;
+    for(let k=i+1;k<j;k++)skipRow[k]=true;
+    i=j;
+  }
   let h='<table class="md-table"><thead><tr>';
   header.forEach(c=>{h+=`<th>${mdInline(c)}</th>`;});
   h+='</tr></thead><tbody>';
-  body.forEach(row=>{
+  body.forEach((row,ri)=>{
+    if(skipRow[ri])return;
     h+='<tr>';
-    for(let i=0;i<header.length;i++) h+=`<td>${mdInline(row[i]||'')}</td>`;
+    for(let ci=0;ci<header.length;ci++){
+      if(ci===mergeCol&&rowspan[ri]>1){
+        h+=`<td rowspan="${rowspan[ri]}" class="md-cell-merged">${mdInline(row[ci]||'')}</td>`;
+      }else if(ci!==mergeCol||!skipRow[ri]){
+        h+=`<td>${mdInline(row[ci]||'')}</td>`;
+      }
+    }
     h+='</tr>';
   });
   return h+'</tbody></table>';
@@ -1035,92 +1409,37 @@ function md2h(tx){
   return styleCompletedConj(h);
 }
 
-// ── APIキー ───────────────────────────────────────────────
-function hasApiKey(){return !!document.getElementById('apikey')?.value.trim();}
+// ── APIキー（組み込み） ─────────────────────────────────────
+function hasApiKey(){return !!getKey();}
+function getKey(){return localStorage.getItem(API_KEY_STORAGE)||CLAUDE_API_KEY||'';}
 function updateApiKeyUI(){
-  const l=L[st.lang],busy=isBusy(),ok=hasApiKey();
+  const l=L[st.lang],busy=isBusy();
+  const needProb=st.lang==='ja'?'先に問題を生成してください':'Generate a problem first';
   ['f-gen-btn','s-gen-btn','c-gen-btn','a-gen-btn','kb-gen-btn'].forEach(id=>{
     const b=document.getElementById(id);
-    if(!b)return;
-    b.disabled=busy||!ok;
-    b.classList.toggle('needs-apikey',!ok&&!busy);
-    b.title=!ok?l.apiKeyHint:'';
+    if(b)b.disabled=busy;
   });
   const sub=document.getElementById('f-submit');
   if(sub){
-    const canGrade=ok&&!busy&&!!st.fill;
-    sub.disabled=!canGrade;
-    sub.classList.toggle('needs-apikey',!ok);
-    sub.title=!ok?l.apiKeyHint:(!st.fill?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+    sub.disabled=busy||!st.fill;
+    sub.title=!st.fill&&!busy?needProb:'';
   }
   const csub=document.getElementById('c-submit');
   if(csub){
-    const canCrit=ok&&!busy&&!!st.critique;
-    csub.disabled=!canCrit;
-    csub.classList.toggle('needs-apikey',!ok);
-    csub.title=!ok?l.apiKeyHint:(!st.critique?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+    csub.disabled=busy||!st.critique;
+    csub.title=!st.critique&&!busy?needProb:'';
   }
   const asub=document.getElementById('a-submit');
   if(asub){
-    const canAme=ok&&!busy&&!!st.ame;
-    asub.disabled=!canAme;
-    asub.classList.toggle('needs-apikey',!ok);
-    asub.title=!ok?l.apiKeyHint:(!st.ame?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+    asub.disabled=busy||!st.ame;
+    asub.title=!st.ame&&!busy?needProb:'';
   }
   const kbsub=document.getElementById('kb-submit');
   if(kbsub){
-    const canKb=ok&&!busy&&!!st.kibari&&document.getElementById('kb-submit-bar')?.style.display!=='none';
+    const canKb=!busy&&!!st.kibari&&document.getElementById('kb-submit-bar')?.style.display!=='none';
     kbsub.disabled=!canKb;
-    kbsub.classList.toggle('needs-apikey',!ok);
-    kbsub.title=!ok?l.apiKeyHint:(!st.kibari?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+    kbsub.title=!st.kibari&&!busy?needProb:'';
   }
-}
-function toggleApiBar(){
-  const body=document.getElementById('api-bar-body');
-  const chevron=document.getElementById('api-bar-chevron');
-  const isCollapsed=body.classList.contains('collapsed');
-  body.classList.toggle('collapsed',!isCollapsed);
-  chevron.classList.toggle('collapsed',!isCollapsed);
-}
-function collapseApiBar(){
-  const statusEl=document.getElementById('api-bar-status');
-  if(statusEl)statusEl.textContent='✓ '+L[st.lang].saved;
-  const body=document.getElementById('api-bar-body');
-  const chevron=document.getElementById('api-bar-chevron');
-  if(body)body.classList.add('collapsed');
-  if(chevron)chevron.classList.add('collapsed');
-}
-function loadApiKey(){
-  const v=localStorage.getItem(APIKEY_KEY);
-  if(v){
-    document.getElementById('apikey').value=v;
-    collapseApiBar();
-  }
-  updateApiKeyUI();
-}
-function saveApiKey(){
-  const k=document.getElementById('apikey').value.trim();
-  if(!k){alert(L[st.lang].noApiKey);return;}
-  localStorage.setItem(APIKEY_KEY,k);
-  const bar=document.getElementById('api-bar');
-  const btn=document.querySelector('.api-save-btn');
-  const lbl=document.getElementById('ui-save-btn');
-  bar.classList.add('flash-saved');
-  btn.classList.add('saved');
-  if(lbl)lbl.textContent=L[st.lang].saveBtnDone;
-  showToast(L[st.lang].apiKeySaved);
-  collapseApiBar();
-  updateApiKeyUI();
-  setTimeout(()=>{
-    bar.classList.remove('flash-saved');
-    btn.classList.remove('saved');
-    if(lbl)lbl.textContent=L[st.lang].saveBtn;
-  },2000);
-}
-function getKey(silent){
-  const k=document.getElementById('apikey').value.trim();
-  if(!k){if(!silent)alert(L[st.lang].noApiKey);return null;}
-  return k;
 }
 
 // ── Claude API ────────────────────────────────────────────
@@ -1331,21 +1650,6 @@ function autoResize(el){
   el.style.height='auto';
   el.style.height=el.scrollHeight+'px';
 }
-function setThemeMode(m,mode){
-  const key=m+'ThemeMode';
-  st[key]=mode;
-  document.querySelectorAll(`#${m}-theme-mode .mode-btn`).forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
-  const input=document.getElementById(`${m}-theme`);
-  if(!input)return;
-  input.placeholder='';
-  if(mode==='keyword'){
-    input.rows=1;
-    input.style.height='';
-    autoResize(input);
-  }else{
-    input.style.height='72px';
-  }
-}
 function buildThemeInst(themeIn,themeMode,length,isEN,forSummary){
   if(!themeIn){
     if(isEN){
@@ -1439,7 +1743,7 @@ function applyFillBlankGrade(prob){
 }
 function getFillPrompts(){
   const l=st.lang;
-  if(l==='ja') return {
+  if(l==='ja') return addIndustryConstraintToPrompts({
     1:`難易度1（入門）:
 - 文書タイプ：社内メール・業務連絡（ビジネス文書）
 - 文字数：400〜500字
@@ -1492,8 +1796,8 @@ function getFillPrompts(){
   正答が一意に定まるよう緻密に設計すること
 - 穴抜き：5個
 - ヒント：なし（hintsはすべて空文字列）`
-  };
-  return {
+  });
+  return addIndustryConstraintToPrompts({
     1:`Difficulty 1 (Beginner):
 - Document type: Internal email / business communication
 - Length: 400-500 characters
@@ -1545,33 +1849,34 @@ function getFillPrompts(){
   placed in contexts where only one connector is logically correct
 - Blanks: 5
 - Hints: none (all hints must be empty strings)`
-  };
+  });
 }
 function getSumPrompts(){
   const l=st.lang;
-  if(l==='ja') return {
+  if(l==='ja') return addIndustryConstraintToPrompts({
     1:'難易度1（基礎）: 社内メール・業務連絡（ビジネス文書）。設問：主張のまとめ1問。約60%に圧縮できる内容。主張と根拠が明確で具体例を削ることで圧縮できる構造にすること。',
     2:'難易度2（標準）: 議事録・進捗報告（ビジネス文書）。設問：主張のまとめ・用語の説明の2問。約50%に圧縮できる内容。ビジネス用語や略語を1〜2個含めること。',
     3:'難易度3（応用）: 提案書・企画書の一節（ビジネス文書）。課題→根拠→提案の構造を持つこと。設問：用語の説明・主張のまとめ・理由の説明の3問。約40%に圧縮できる内容。',
     4:'難易度4（上級）: 分析レポート・調査報告（ビジネス文書）。データの解釈と複数の根拠を含む構造にすること。設問：用語の説明・主張のまとめ・理由の説明の3問。約30%に圧縮できる内容。',
     5:'難易度5（超難問）: 経営戦略文書・コンサルレポート（ビジネス文書）。多層的な論証と専門的なビジネス用語を含むこと。設問：用語の説明・主張のまとめ・理由の説明の3問。約20%に圧縮できる内容。'
-  };
-  return {
+  });
+  return addIndustryConstraintToPrompts({
     1:'Difficulty 1 (Basic): Internal email / business communication. Question: Main claim summary only (1 question). Target: ~60% of original. Design so claims and evidence are clear and specific examples can be removed.',
     2:'Difficulty 2 (Standard): Meeting minutes / progress report. Questions: Main claim + Term explanation (2 questions). Target: ~50% of original. Include 1-2 business terms or abbreviations.',
     3:'Difficulty 3 (Advanced): Proposal / project plan excerpt. Must follow issue → evidence → proposal structure. Questions: Term explanation + Main claim + Reason (3 questions). Target: ~40% of original.',
     4:'Difficulty 4 (Expert): Analysis report / research findings. Include data interpretation and multiple pieces of evidence. Questions: Term explanation + Main claim + Reason (3 questions). Target: ~30% of original.',
     5:'Difficulty 5 (Master): Management strategy document / consulting report. Include multi-layer reasoning and specialized business terminology. Questions: Term explanation + Main claim + Reason (3 questions). Target: ~20% of original.'
-  };
+  });
 }
 
 async function generateFill(){
-  if(isBusy()||!hasApiKey())return;
-  const themeIn=document.getElementById('f-theme').value.trim();
+  if(isBusy())return;
+  const isEN=st.lang==='en';
+  if(!validateBeforeGen('f'))return;
+  const themeIn=buildThemeInFromDocType('f',isEN);
   const diff=st.fDiff;
   const length=F_LENGTH;
   const blanks=calcBlanks(diff);
-  const isEN=st.lang==='en';
   document.getElementById('fill-result').style.display='none';
   const fpa=document.getElementById('f-print-area');if(fpa)fpa.style.display='none';
   if(!beginGen('fill'))return;
@@ -1599,8 +1904,9 @@ async function generateFill(){
       p.text=t;
     }
     if(diff>=3) p.hints=(p.answers||[]).map(()=>'');
-    st.fill={...p,id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
+    st.fill={...p,id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),industry:genIndustrySnapshot(),blanks,feedback:null,userAnswers:null,lang:st.lang};
     renderFill(st.fill);
+    resetGenConditions();
     try{await syncPastOnGen('fill',st.fill);}
     catch(syncErr){setSync('fill','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].genFailed+'\n'+e.message);}
@@ -1610,7 +1916,7 @@ async function generateFill(){
 function renderFill(prob){
   resetBlankStyles();
   const l=L[st.lang];
-  document.getElementById('f-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
+  renderProblemMeta('f-theme-tag',prob);
   document.getElementById('f-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabFill}</h2><p>${l.theme}${esc(prob.theme||'—')}　${l.diff}${dlabel(prob.diff)}　${fmtDate(prob.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.fPrintInst}</p>`;
   let html=esc(prob.text);
   for(let i=1;i<=prob.answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank" id="blank-${i}">（${i}）</span>`);
@@ -1632,9 +1938,13 @@ function renderFill(prob){
 }
 
 async function submitFill(){
-  if(isBusy()||!hasApiKey())return;
+  if(isBusy())return;
   const prob=st.fill;if(!prob)return;
-  const ua=prob.answers.map((_,i)=>document.getElementById(`fans-${i}`)?.value.trim()||'—');
+  const ua=prob.answers.map((_,i)=>document.getElementById(`fans-${i}`)?.value.trim()||'');
+  if(ua.some(isBlankAnswer)){
+    alert(L[st.lang].fillAnswerRequired);
+    return;
+  }
   if(!beginGrade())return;
   const fb=document.getElementById('f-fb');
   try{
@@ -1702,11 +2012,11 @@ At the end of each question's explanation, provide the following two items:
 }
 
 function buildFillEntry(prob){
-  return {id:prob.id||Date.now(),sheet:'fill',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text,answers:prob.answers,hints:prob.hints||[],feedback:prob.feedback||null,userAnswers:prob.userAnswers||[],lang:prob.lang||st.lang};
+  return {id:prob.id||Date.now(),sheet:'fill',theme:prob.theme||'—',diff:prob.diff,date:prob.date,industry:prob.industry||'',text:prob.text,answers:prob.answers,hints:prob.hints||[],feedback:prob.feedback||null,userAnswers:prob.userAnswers||[],lang:prob.lang||st.lang};
 }
 function buildSummaryEntry(prob){
   const questions=prob.questions;
-  return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text||'',questions:typeof questions==='string'?questions:JSON.stringify(questions||[]),ratio:prob.ratio,lang:prob.lang||st.lang};
+  return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,industry:prob.industry||'',text:prob.text||'',questions:typeof questions==='string'?questions:JSON.stringify(questions||[]),ratio:prob.ratio,lang:prob.lang||st.lang};
 }
 async function gasPostEntry(entry){
   const res=await gasPost(entry);
@@ -1758,7 +2068,7 @@ function buildAnswerModeBar(scope){
 }
 function buildPhotoArea(scope){
   const l=L[st.lang];
-  return`<div id="${scope}-photo-area" class="no-print" style="display:none;margin-bottom:1rem;"><span class="label">${esc(l.photoLbl)}</span><div class="upload-zone" id="${scope}-upload-zone" onclick="document.getElementById('${scope}-photo-input').click()"><i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:.4rem;opacity:.5;"></i><span>${esc(l.uploadHint)}</span><div style="font-size:11px;color:var(--text2);margin-top:4px;">${esc(l.uploadNote)}</div></div><input type="file" id="${scope}-photo-input" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event,'${scope}')"/><div class="photo-preview" id="${scope}-photo-preview"></div><span class="label" style="margin-top:.5rem;display:block;">${esc(l.memoLbl)}</span><textarea id="${scope}-photo-memo" rows="2" style="resize:none;font-size:13px;"></textarea></div>`;
+  return`<div id="${scope}-photo-area" class="no-print" style="display:none;margin-bottom:1rem;"><span class="label">${esc(l.photoLbl)}</span><label class="upload-zone" id="${scope}-upload-zone" for="${scope}-photo-input"><i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:.4rem;opacity:.5;"></i><span>${esc(l.uploadHint)}</span><div style="font-size:11px;color:var(--text2);margin-top:4px;">${esc(l.uploadNote)}</div></label><input type="file" id="${scope}-photo-input" accept="${IMAGE_ACCEPT}" multiple style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;" onchange="handlePhotoUpload(event,'${scope}')"/><div class="photo-preview" id="${scope}-photo-preview"></div><span class="label" style="margin-top:.5rem;display:block;">${esc(l.memoLbl)}</span><textarea id="${scope}-photo-memo" rows="2" style="resize:none;font-size:13px;"></textarea></div>`;
 }
 function setAnswerMode(scope,mode){
   st.answerMode=mode;
@@ -1780,20 +2090,57 @@ function setAnswerMode(scope,mode){
     if(btn)btn.disabled=false;
   }
 }
-function resizeImage(dataUrl,maxSize,callback){
+const IMAGE_ACCEPT='image/jpeg,image/png,image/gif,image/webp,image/heic,image/heif,.heic,.heif';
+function isImageFile(file){
+  if(!file)return false;
+  if(file.type&&file.type.startsWith('image/'))return true;
+  return /\.(jpe?g|png|gif|webp|heic|heif)$/i.test(file.name||'');
+}
+function canvasToJpegDataUrl(source,maxSize){
+  const canvas=document.createElement('canvas');
+  let w=source.width,h=source.height;
+  if(w>maxSize||h>maxSize){
+    if(w>h){h=Math.round(h*maxSize/w);w=maxSize;}
+    else{w=Math.round(w*maxSize/h);h=maxSize;}
+  }
+  canvas.width=w;canvas.height=h;
+  canvas.getContext('2d').drawImage(source,0,0,w,h);
+  return canvas.toDataURL('image/jpeg',0.85);
+}
+function resizeImage(dataUrl,maxSize,callback,onError){
   const img=new Image();
   img.onload=()=>{
-    const canvas=document.createElement('canvas');
-    let w=img.width,h=img.height;
-    if(w>maxSize||h>maxSize){
-      if(w>h){h=Math.round(h*maxSize/w);w=maxSize;}
-      else{w=Math.round(w*maxSize/h);h=maxSize;}
-    }
-    canvas.width=w;canvas.height=h;
-    canvas.getContext('2d').drawImage(img,0,0,w,h);
-    callback(canvas.toDataURL('image/jpeg',0.85));
+    try{callback(canvasToJpegDataUrl(img,maxSize));}
+    catch(e){if(onError)onError(e);else alert(L[st.lang].photoDecodeError);}
   };
+  img.onerror=()=>{if(onError)onError();else alert(L[st.lang].photoDecodeError);};
   img.src=dataUrl;
+}
+function readImageFileViaDataUrl(file,maxSize){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(new Error(L[st.lang].photoDecodeError));
+    reader.onload=(e)=>{
+      resizeImage(e.target.result,maxSize,resolve,()=>reject(new Error(L[st.lang].photoDecodeError)));
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function processImageFile(file,maxSize=1000){
+  if(!isImageFile(file))return Promise.reject(new Error(L[st.lang].photoFormatError));
+  if(typeof createImageBitmap==='function'){
+    return createImageBitmap(file)
+      .then(bitmap=>{
+        try{return canvasToJpegDataUrl(bitmap,maxSize);}
+        finally{bitmap.close?.();}
+      })
+      .catch(()=>readImageFileViaDataUrl(file,maxSize));
+  }
+  return readImageFileViaDataUrl(file,maxSize);
+}
+function photoPayloadFromDataUrl(dataUrl){
+  const [header,data]=dataUrl.split(',');
+  return{base64:data,mediaType:'image/jpeg',dataUrl};
 }
 function renderPhotoPreview(scope){
   const preview=document.getElementById(scope+'-photo-preview');
@@ -1811,22 +2158,26 @@ function removePhoto(idx,scope){
   answerPhotos.splice(idx,1);
   renderPhotoPreview(scope);
 }
-function handlePhotoUpload(event,scope){
-  const files=Array.from(event.target.files||[]);
+async function handlePhotoUpload(event,scope){
+  const input=event.target;
+  const files=Array.from(input?.files||[]).filter(isImageFile);
   const remaining=2-answerPhotos.length;
-  files.slice(0,remaining).forEach(file=>{
-    const reader=new FileReader();
-    reader.onload=(e)=>{
-      resizeImage(e.target.result,1000,(resizedDataUrl)=>{
-        const [header,data]=resizedDataUrl.split(',');
-        const mediaType=(header.match(/:(.*?);/)||[])[1]||'image/jpeg';
-        answerPhotos.push({base64:data,mediaType,dataUrl:resizedDataUrl});
-        renderPhotoPreview(scope);
-      });
-    };
-    reader.readAsDataURL(file);
-  });
-  event.target.value='';
+  if(!files.length){
+    alert(L[st.lang].photoFormatError);
+    if(input)input.value='';
+    return;
+  }
+  const batch=files.slice(0,remaining);
+  for(const file of batch){
+    try{
+      const dataUrl=await processImageFile(file);
+      answerPhotos.push(photoPayloadFromDataUrl(dataUrl));
+      renderPhotoPreview(scope);
+    }catch(e){
+      alert(e.message||L[st.lang].photoDecodeError);
+    }
+  }
+  if(input)input.value='';
 }
 function copyResult(mode){
   let md='';
@@ -1894,16 +2245,16 @@ function copyResult(mode){
   }
 }
 async function generateSummary(){
-  if(isBusy()||!hasApiKey())return;
-  const themeIn=document.getElementById('s-theme').value.trim();
+  if(isBusy())return;
+  const isEN=st.lang==='en';
+  if(!validateBeforeGen('s'))return;
+  const themeIn=buildThemeInFromDocType('s',isEN);
   const diff=st.sDiff;
   let length;
   if(diff<=3){length=S_LENGTH_FIXED[diff];}
-  else{const vol=st.sVolume||'short';length=S_LENGTH_VARIABLE[vol].chars;}
+  else{const vol=st.sVolume||DEFAULT_S_VOLUME;length=S_LENGTH_VARIABLE[vol].chars;}
   const numQ=calcBlocks(diff);
   const ratio=S_RATIO[diff];
-  const themeMode=st.sThemeMode||'keyword';
-  const isEN=st.lang==='en';
   document.getElementById('summary-result').style.display='none';
   const spa=document.getElementById('s-print-area');if(spa)spa.style.display='none';
   if(!beginGen('summary'))return;
@@ -1911,7 +2262,7 @@ async function generateSummary(){
   const sys=isEN
     ?'You are an expert in business writing and communication education. The educational goal of this tab is to train learners to compress business documents by retaining claims and evidence while cutting specific examples, and to answer only based on evidence from the document. Design the passage so it can be compressed by retaining the main argument and supporting evidence. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
     :'あなたはビジネス文書の読解と論理的コミュニケーションの教育専門家です。このタブの教育目的は「ビジネス文書の主張と根拠を残しながら具体例を削る情報の取捨選択力」と「文書に書かれていることのみを根拠にして答える規律」を鍛えることです。問題文はビジネス現場で実際に使われる文書（議事録・報告書・提案書など）の文体で作成し、主張と根拠を残し具体例を削ることで圧縮できる構造にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
-  const themeInst=buildThemeInst(themeIn,themeMode,length,isEN,true);
+  const themeInst=buildThemeInst(themeIn,'keyword',length,isEN,true);
   const diffPrompt=getSumPrompts()[diff];
   const types=getSumQuestionTypes(diff);
   const typesList=types.join(isEN ? ', ' : '、');
@@ -1930,8 +2281,9 @@ async function generateSummary(){
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
     const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張のまとめ',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
-    st.summary={id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||'short'):null,feedback:null,lang:st.lang};
+    st.summary={id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),industry:genIndustrySnapshot(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||DEFAULT_S_VOLUME):null,feedback:null,lang:st.lang};
     renderSummary(st.summary);
+    resetGenConditions();
     try{await syncPastOnGen('summary',st.summary);}
     catch(syncErr){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].genFailed+'\n'+e.message);}
@@ -1945,7 +2297,7 @@ function renderSummary(prob){
   setAnswerMode('s','text');
   const l=L[st.lang];
   const p=normSummaryProb(prob);
-  document.getElementById('s-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(p.theme||'—')}</span>`;
+  renderProblemMeta('s-theme-tag',p);
   document.getElementById('s-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabSum}</h2><p>${l.theme}${esc(p.theme||'—')}　${l.diff}${dlabel(p.diff)}　${fmtDate(p.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.sPrintInst}</p>`;
   document.getElementById('s-problem-text').innerHTML=esc(p.text);
   document.getElementById('s-questions').innerHTML=p.questions.map((q,i)=>buildSummaryQuestionHtml(q,i,p.lang||st.lang,'live')).join('');
@@ -1984,13 +2336,15 @@ function updateSumCC(i,mode){
 function updateCC(i){updateSumCC(i,'live');}
 
 async function submitPhotoGrade(kind,prob,scope){
+  if(isBusy())return;
   if(answerPhotos.length===0){alert(L[st.lang].noPhotoError);return;}
+  const busyMode='photo-'+kind+(scope==='pp'?'-pp':'');
+  if(!beginGradeBusy(busyMode))return;
   const btnId=scope==='pp'?(kind==='summary'?'pp-submit':kind==='ame'?'pp-a-submit':'pp-c-submit'):(kind==='summary'?'s-submit':kind==='ame'?'a-submit':'c-submit');
   const fbId=scope==='pp'?'pp-fb':(kind==='summary'?'s-fb':kind==='ame'?'a-fb':'c-fb');
   const btn=document.getElementById(btnId);
   const fb=document.getElementById(fbId);
   const l=L[prob.lang||st.lang];
-  if(btn)btn.disabled=true;
   fb.innerHTML=`<p class="loading"><span class="dots">${l.photoGrading}</span></p>`;
   const isEN=(prob.lang||st.lang)==='en';
   const memo=document.getElementById(scope+'-photo-memo')?.value.trim()||'';
@@ -2011,7 +2365,7 @@ async function submitPhotoGrade(kind,prob,scope){
         :'あなたはビジネス文書の読解と記述指導の教育専門家です。フィードバックの目的は「文書に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る情報の取捨選択ができているか」を評価することです。文書外の自分の解釈や知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
       content=[...imageContents,{type:'text',text:textPrompt}];
       const diff=prob.diff||st.sDiff;
-      const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
+      const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||DEFAULT_S_VOLUME)].chars);
       gradeMaxTokens=gradeMaxTokensBySummaryLength(length);
     }else if(kind==='ame'){
       const p=normAmeProb(prob);
@@ -2099,17 +2453,23 @@ async function submitPhotoGrade(kind,prob,scope){
   }catch(e){
     const errLbl=kind==='summary'?l.gradingErr:kind==='ame'?l.aGradingErr:l.cGradingErr;
     fb.innerHTML=`<p class="err">${errLbl}: ${e.message}</p>`;
+  }finally{
+    endGradeBusy(busyMode);
   }
-  if(btn)btn.disabled=false;
 }
 
 async function submitSummary(){
+  if(isBusy())return;
   const prob=st.summary;if(!prob)return;
   if(st.answerMode==='photo'&&st.answerScope==='s'){await submitPhotoGrade('summary',prob,'s');return;}
   const anyOver=[...document.querySelectorAll('[id^="sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
   if(anyOver){alert(L[st.lang].overWarn);return;}
   const userTexts=collectSummaryAnswers(prob,'live');
-  const btn=document.getElementById('s-submit');btn.disabled=true;
+  if(userTexts.some(isBlankAnswer)){
+    alert(L[st.lang].summaryAnswerRequired);
+    return;
+  }
+  if(!beginGradeBusy('summary'))return;
   const fb=document.getElementById('s-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
   const isEN=prob.lang==='en';
@@ -2119,7 +2479,7 @@ async function submitSummary(){
   const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
     const diff=prob.diff||st.sDiff;
-    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
+    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||DEFAULT_S_VOLUME)].chars);
     const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3);if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res,prob.lang)}</div>`;
     prob.feedback=res;
@@ -2129,7 +2489,7 @@ async function submitSummary(){
     document.getElementById('s-pa-btn').style.display='';
     showCopyBar('summary');
   }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].gradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
+  finally{endGradeBusy('summary');}
 }
 
 
@@ -2221,20 +2581,20 @@ function getCritiqueQuestionTypes(diff){
 }
 function getCritiquePrompts(){
   const l=st.lang;
-  if(l==='ja')return{
+  if(l==='ja')return addIndustryConstraintToPrompts({
     1:`難易度1（入門）・B形式:\n- 短い論証を3つ生成する（各50〜80字）\n- ビジネス現場で起こりうる単純な因果構造（「〜だから〜すべき」「〜なので〜になる」など）\n- 各論証に論理のつながりが不十分な箇所を1つだけ含める\n- 設問は平易な言葉で「この文章では〜と結論づけています。その間に「本当にそう言える？」と感じる部分はどこですか？」という形式にする\n- targetChars: 100字`,
     2:`難易度2（基礎）・B形式:\n- 短い論証を3つ生成する（各60〜90字）\n- ビジネス現場の状況（売上・人事・プロジェクト・施策など）を題材にする\n- 設問タイプの順序: 本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答\n- 各論証の論理構造は異なるものにする\n- 設問は平易なビジネス表現で書く（論理学の専門用語を使わない）\n- targetChars: 指摘100字、条件120字、応答120字`,
     3:`難易度3（標準）・A形式:\n- 約400字のビジネス文書（提案書・報告書・企画書の一節）を1本生成する\n- 構造：「課題提起→根拠2〜3つ→反論への言及→提案・結論」\n- 文体：ビジネス文書として自然な文体。論理の弱点を意図的に含めること\n- 設問タイプ：話の流れの整理・本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答\n- 設問はすべて平易なビジネス表現で書く\n- targetChars: 整理150字、指摘120字、条件130字、応答150字`,
     4:`難易度4（上級）・A形式:\n- 約400字のビジネス文書（分析レポート・稟議書・提言書の一節）を1本生成する\n- 構造：「課題提起→根拠2〜3つ→反論処理→結論・提言」の2層構造\n- 文体：上位職向けのビジネス文書。論理構造が精緻で、読み手の立場によって疑問が生じる設計にする\n- 設問タイプ：話の流れの整理・本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答・立場が異なる人からの疑問\n- 「立場が異なる人からの疑問」では、現場担当者・管理職・顧客など立場の異なる人が持ちうる疑問を問う\n- 設問はすべて平易なビジネス表現で書く\n- targetChars: 整理150字、指摘130字、条件140字、応答150字、疑問160字`,
     5:`難易度5（超難問）・A形式:\n- 約400字のビジネス文書（経営戦略文書・コンサルレポート・提言書の一節）を1本生成する\n- 構造：「課題提起→根拠3つ以上→留保・例外→反論処理→結論・提言」の3層構造\n- 文体：経営層・意思決定者向けの高度なビジネス文書。多層的な論証・留保を含むこと\n- 設問タイプ：話の流れの整理・本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答・立場が異なる人からの疑問\n- 「立場が異なる人からの疑問」では、複数の利害関係者（株主・現場・顧客・社会）の立場から最も論証を揺るがす疑問を問う\n- 設問はすべて平易なビジネス表現で書く\n- targetChars: 整理180字、指摘150字、条件160字、応答170字、疑問180字`,
-  };
-  return{
+  });
+  return addIndustryConstraintToPrompts({
     1:`Difficulty 1 (Beginner) · Form B:\n- Generate 3 independent short arguments (50-80 chars each)\n- Use business scenarios with simple causal structure ("because X, we should Y")\n- Each argument must contain exactly one logical gap\n- Questions must use plain language: "This text concludes X. Where does it feel like a stretch?"\n- targetChars: 100`,
     2:`Difficulty 2 (Basic) · Form B:\n- Generate 3 independent short arguments (60-90 chars each)\n- Use business scenarios (sales, HR, projects, initiatives)\n- Question types in order: logical gap, missing condition, counterargument response\n- Each argument must have a different logical structure\n- Use plain business language in all questions (no academic jargon)\n- targetChars: gap 100, condition 120, response 120`,
     3:`Difficulty 3 (Standard) · Form A:\n- Generate one business document excerpt (~400 characters): proposal, report, or plan\n- Structure: issue → 2-3 pieces of evidence → reference to counterargument → proposal/conclusion\n- Style: natural business writing with intentional logical weaknesses\n- Question types: flow summary, logical gap, missing condition, counterargument response\n- Use plain business language in all questions\n- targetChars: flow 150, gap 120, condition 130, response 150`,
     4:`Difficulty 4 (Advanced) · Form A:\n- Generate one business document excerpt (~400 characters): analysis report, approval document, or recommendation\n- Structure: issue → 2-3 pieces of evidence → counterargument handling → conclusion/recommendation (2-layer)\n- Style: senior-level business document with precise logic and viewpoint-dependent questions\n- Question types: flow summary, logical gap, missing condition, counterargument response, stakeholder perspective\n- "Stakeholder perspective": ask about questions that arise from different roles (frontline staff, management, customers)\n- Use plain business language in all questions\n- targetChars: flow 150, gap 130, condition 140, response 150, perspective 160`,
     5:`Difficulty 5 (Master) · Form A:\n- Generate one business document excerpt (~400 characters): strategy document, consulting report, or policy recommendation\n- Structure: issue → 3+ pieces of evidence → reservation/exception → counterargument handling → conclusion (3-layer)\n- Style: executive-level business document with multi-layer reasoning and reservations\n- Question types: flow summary, logical gap, missing condition, counterargument response, stakeholder perspective\n- "Stakeholder perspective": ask which stakeholder's perspective (shareholders, frontline, customers, society) most challenges the argument\n- Use plain business language in all questions\n- targetChars: flow 180, gap 150, condition 160, response 170, perspective 180`,
-  };
+  });
 }
 function toggleTooltip(id){
   document.querySelectorAll('.tooltip-box.show').forEach(el=>{
@@ -2262,7 +2622,7 @@ function buildCritiqueQuestionHtml(q,i,lang,form,mode){
 }
 function renderCritique(prob){
   const l=L[st.lang];
-  document.getElementById('c-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
+  renderProblemMeta('c-theme-tag',prob);
   const problemEl=document.getElementById('c-problem');
   if(prob.form==='A'&&prob.text){
     problemEl.textContent=prob.text;
@@ -2282,8 +2642,9 @@ function renderCritique(prob){
   updateApiKeyUI();
 }
 async function generateCritique(){
-  if(isBusy()||!hasApiKey())return;
-  const themeIn=document.getElementById('c-theme').value.trim();
+  if(isBusy())return;
+  if(!validateBeforeGen('c'))return;
+  const themeIn=buildThemeInFromDocType('c',isEN);
   const diff=st.cDiff;
   const isEN=st.lang==='en';
   const numQ=C_QUESTION_COUNTS[diff];
@@ -2315,23 +2676,28 @@ async function generateCritique(){
     const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||qTypes[i]||'本当にそう言える？の指摘',question:q.question||'',argument:q.argument||'',targetChars:parseInt(q.targetChars)||100}));
     st.critique={
       id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
-      date:new Date().toISOString(),text:p.text||null,questions,
+      date:new Date().toISOString(),industry:genIndustrySnapshot(),text:p.text||null,questions,
       feedback:null,lang:st.lang,form:isAForm?'A':'B',
     };
     renderCritique(st.critique);
+    resetGenConditions();
     try{await syncPastOnGen('critique',st.critique);}
     catch(syncErr){setSync('critique','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].cGenFailed+'\n'+e.message);}
   finally{endGen('critique');}
 }
 async function submitCritique(){
-  if(isBusy()||!hasApiKey())return;
+  if(isBusy())return;
   const prob=st.critique;if(!prob)return;
   if(st.answerMode==='photo'&&st.answerScope==='c'){await submitPhotoGrade('critique',prob,'c');return;}
-  const userAnswers=prob.questions.map((_,i)=>document.getElementById(`c-ans-${i}`)?.value.trim()||'—');
+  const userAnswers=prob.questions.map((_,i)=>document.getElementById(`c-ans-${i}`)?.value.trim()||'');
+  if(userAnswers.some(isBlankAnswer)){
+    alert(L[st.lang].critiqueAnswerRequired);
+    return;
+  }
+  if(!beginGradeBusy('critique'))return;
   const fb=document.getElementById('c-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
-  const btn=document.getElementById('c-submit');btn.disabled=true;
   try{
     const res=await gradeCritique(prob,userAnswers);if(!res)return;
     prob.feedback=res;
@@ -2342,7 +2708,7 @@ async function submitCritique(){
     try{await syncCritiquePast(prob);}
     catch(syncErr){setSync('critique','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].cGradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
+  finally{endGradeBusy('critique');}
 }
 async function gradeCritique(prob,userAnswers){
   const isEN=(prob.lang||st.lang)==='en';
@@ -2368,18 +2734,19 @@ async function gradeCritique(prob,userAnswers){
 function buildCritiqueEntry(prob){
   const p=normCritiqueProb(prob);
   return{
-    id:p.id||Date.now(),sheet:'critique',theme:p.theme||'—',diff:p.diff,date:p.date,
+    id:p.id||Date.now(),sheet:'critique',theme:p.theme||'—',diff:p.diff,date:p.date,industry:p.industry||'',
     text:p.text||'',questions:JSON.stringify(p.questions||[]),feedback:prob.feedback||p.feedback||null,
     form:p.form,lang:p.lang||st.lang,
   };
 }
 async function ppCritique(id){
+  if(isBusy())return;
   const prob=st.cPast.find(p=>String(p.id)===String(id));if(!prob)return;
   const p=normCritiqueProb(prob);
   const pLang=prob.lang||'ja';const l=L[pLang];
   if(st.answerMode==='photo'&&st.answerScope==='pp'){await submitPhotoGrade('critique',{...p,lang:pLang},'pp');return;}
   const userAnswers=p.questions.map((_,i)=>document.getElementById(`pp-c-ans-${i}`)?.value.trim()||'—');
-  const btn=document.getElementById('pp-c-submit');if(btn)btn.disabled=true;
+  if(!beginGradeBusy('pp-critique'))return;
   const fb=document.getElementById('pp-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
   try{
@@ -2391,7 +2758,7 @@ async function ppCritique(id){
     try{await syncCritiquePast(saved);}
     catch(syncErr){setSync('critique','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){fb.innerHTML=`<p class="err">${l.cGradingErr}: ${e.message}</p>`;}
-  if(btn)btn.disabled=false;
+  finally{endGradeBusy('pp-critique');}
 }
 
 // ── 空雨傘 ─────────────────────────────────────────────
@@ -2421,20 +2788,20 @@ function normAmeProb(prob){
 }
 function getAmePrompts(){
   const isEN=st.lang==='en';
-  if(!isEN)return{
+  if(!isEN)return addIndustryConstraintToPrompts({
     1:`難易度1（入門）・帰納型:\n- ビジネスデータを題材にした300〜400字の短い記事を生成する\n- テーマ：営業・売上／マーケティングの領域（例：月次売上データ・顧客獲得数・キャンペーン結果など）\n- 事実のみで構成する（数値・調査結果・客観的なビジネスデータのみ）\n- 解釈や意見・評価は一切含めないこと\n- 設問構成：読み取り（雨）・次の行動（傘）の2問のみ\n- targetChars: 雨150字、傘150字`,
     2:`難易度2（基礎）・帰納型:\n- ビジネスデータを題材にした300〜400字の短い記事を生成する\n- テーマ：人事・組織／プロジェクト管理の領域（例：離職率・稼働率・進捗状況など）\n- 事実のみで構成する（数値・客観的なビジネスデータのみ）\n- 設問構成：事実の仕分け（空）・読み取り（雨）・次の行動（傘）の3問\n- 仕分け設問は「この記事に書かれていることをすべてビジネスデータ・客観的事実として整理してください」という形式\n- targetChars: 仕分け200字、雨150字、傘150字`,
     3:`難易度3（標準）・帰納型:\n- ビジネスデータを題材にした300〜400字の記事を生成する\n- テーマ：IT・システム／マーケティングの領域（例：システム導入結果・広告効果・ユーザー行動データなど）\n- 事実は5〜6件、解釈・意見は2〜3件を自然に混在させる（解釈が事実として書かれているように見える文を含めること）\n- 傘（次の行動）には制約条件を1つ設ける（例：「3ヶ月以内に実施可能なもの」「追加コストなしで」など）\n- 設問構成：事実の仕分け（空）・読み取り（雨）・次の行動（傘）の3問\n- 仕分け設問は「事実（数字や客観的情報）として書かれている部分」と「見方・解釈として書かれている部分」を仕分けする形式\n- targetChars: 仕分け250字、雨160字、傘160字`,
     4:`難易度4（上級）:\n- 演繹型（約50%）または帰納型（約50%）をランダムに選択する\n- テーマ：経営・戦略／営業の領域（例：市場シェア変動・競合分析・営業戦略の結果など）\n【演繹型の場合】\n- ビジネス原則・法則を1つ生成する（1〜2文。実際のビジネス現場で使われる判断基準にすること）\n  例：「主要顧客のLTVが低下している場合、価格戦略の見直しかサービス強化のいずれかを優先する必要がある」\n- 事実と解釈が混在した300〜400字のビジネス記事を生成する\n- 事実は5〜6件、解釈は2〜3件\n- 因果の距離を伸ばす（複数の事実を組み合わせて初めて読み取りが導ける構造）\n- 解釈の競合を含める（同じ事実から2つの読み取りが成立しうる）\n- 傘に制約条件を1つ設ける\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証または法則が当てはまらない場合をランダム選択）\n【帰納型の場合】\n- 事実と解釈が混在した300〜400字のビジネス記事を生成する\n- 事実は5〜6件、解釈は2〜3件\n- 解釈の競合を含める\n- 傘に制約条件を1つ設ける\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証に固定）\n- targetChars: 仕分け250字、雨200字、傘200字、導出200字、5問目200字`,
     5:`難易度5（超難問）:\n- 演繹型（約70%）または帰納型（約30%）をランダムに選択する\n- テーマ：経営・戦略／IT・システムの領域（例：DX推進・組織変革・事業撤退判断など）\n【演繹型の場合】\n- ビジネス原則・法則を1つ生成する（複合的な条件を含む2〜3文。経営判断レベルの基準にすること）\n- 事実と解釈が混在した300〜400字のビジネス記事を生成する\n- 事実は6〜7件、解釈は3〜4件\n- 因果の距離を3ステップ以上に設定する\n- 解釈の競合を含める\n- 傘に複数の制約条件を設ける\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証または法則が当てはまらない場合をランダム選択）\n【帰納型の場合】\n- 難易度4帰納型より複雑な構造（事実7件以上・因果の距離3ステップ以上）\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証に固定）\n- targetChars: 仕分け300字、雨220字、傘220字、導出220字、5問目220字`,
-  };
-  return{
+  });
+  return addIndustryConstraintToPrompts({
     1:`Difficulty 1 (Beginner) · Inductive:\n- Generate a 300-400 character business article using facts only\n- Theme: Sales / Marketing (e.g. monthly sales data, customer acquisition numbers, campaign results)\n- Facts only: numbers, survey results, objective business data\n- No interpretations, opinions, or evaluations\n- Questions: Interpretation (Rain) and Action (Umbrella) only\n- targetChars: Rain 150, Umbrella 150`,
     2:`Difficulty 2 (Basic) · Inductive:\n- Generate a 300-400 character business article using facts only\n- Theme: HR / Project Management (e.g. turnover rate, utilization rate, progress status)\n- Facts only: numbers, objective business data\n- Questions: Fact sorting, Interpretation, Action (3 questions)\n- Sorting question: "List all the business facts and objective data stated in this article"\n- targetChars: Sorting 200, Rain 150, Umbrella 150`,
     3:`Difficulty 3 (Standard) · Inductive:\n- Generate a 300-400 character business article mixing facts and interpretations\n- Theme: IT/Systems / Marketing (e.g. system implementation results, ad performance, user behavior data)\n- Include 5-6 facts and 2-3 interpretations/opinions naturally mixed in\n  (include sentences that appear to be facts but are actually interpretations)\n- Add one constraint to the Action question (e.g. "implementable within 3 months", "without additional cost")\n- Questions: Fact sorting, Interpretation, Action (3 questions)\n- Sorting: separate "facts (numbers/objective data)" from "interpretations/opinions"\n- targetChars: Sorting 250, Rain 160, Umbrella 160`,
     4:`Difficulty 4 (Advanced):\n- Randomly select deductive (~50%) or inductive (~50%) type\n- Theme: Strategy / Sales (e.g. market share changes, competitive analysis, sales strategy results)\n[Deductive]\n- Generate one business principle/law (1-2 sentences. Use real business judgment criteria)\n  e.g. "When key customer LTV is declining, prioritize either pricing strategy revision or service enhancement"\n- Generate a 300-400 character business article mixing facts (5-6) and interpretations (2-3)\n- Extend causal distance (interpretation requires combining multiple facts)\n- Include competing interpretations (two valid interpretations from same facts)\n- Add one constraint to Umbrella\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (self-verification or law limitation randomly)\n[Inductive]\n- Generate a 300-400 character business article with competing interpretations\n- Add one constraint to Umbrella\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (self-verification fixed)\n- targetChars: Sorting 250, Rain 200, Umbrella 200, Deduction 200, Q5 200`,
     5:`Difficulty 5 (Master):\n- Randomly select deductive (~70%) or inductive (~30%) type\n- Theme: Strategy / IT (e.g. DX initiatives, organizational change, business exit decisions)\n[Deductive]\n- Generate one business principle/law (2-3 sentences with compound conditions. Use executive decision-level criteria)\n- Generate a 300-400 character business article with 6-7 facts and 3-4 interpretations\n- Extend causal distance to 3+ steps\n- Include competing interpretations\n- Add multiple constraints to Umbrella\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (randomly self-verification or law limitation)\n[Inductive]\n- More complex than Difficulty 4 inductive (7+ facts, 3+ causal steps)\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (self-verification fixed)\n- targetChars: Sorting 300, Rain 220, Umbrella 220, Deduction 220, Q5 220`,
-  };
+  });
 }
 function getAmeQuestionTypes(diff,isDeductive){
   if(diff===1)return[{ja:'雨',en:'Rain'},{ja:'傘',en:'Umbrella'}];
@@ -2547,7 +2914,7 @@ function buildAmeQuestionsHtml(prob,mode){
 function renderAme(prob){
   const p=normAmeProb(prob);
   const l=L[st.lang];
-  document.getElementById('a-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(p.theme||'—')}</span>`;
+  renderProblemMeta('a-theme-tag',p);
   const lawBox=document.getElementById('a-law-box');
   const lawText=document.getElementById('a-law-text');
   if(p.law){lawText.textContent=p.law;lawBox.style.display='';}
@@ -2565,8 +2932,9 @@ function renderAme(prob){
   updateApiKeyUI();
 }
 async function generateAme(){
-  if(isBusy()||!hasApiKey())return;
-  const themeIn=document.getElementById('a-theme').value.trim();
+  if(isBusy())return;
+  if(!validateBeforeGen('a'))return;
+  const themeIn=buildThemeInFromDocType('a',isEN);
   const diff=st.aDiff;
   const isEN=st.lang==='en';
   const isDeductive=Math.random()<A_DEDUCTIVE_RATE[diff];
@@ -2604,24 +2972,29 @@ async function generateAme(){
     if(!p.questions.length)throw new Error('Invalid JSON structure: missing questions');
     st.ame={
       id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
-      date:new Date().toISOString(),law:p.law||null,article:p.article,
+      date:new Date().toISOString(),industry:genIndustrySnapshot(),law:p.law||null,article:p.article,
       constraint:p.constraint||null,questions:p.questions,
       form:p.form||(isDeductive?'deductive':'inductive'),feedback:null,lang:st.lang,
     };
     renderAme(st.ame);
+    resetGenConditions();
     try{await syncPastOnGen('ame',st.ame);}
     catch(syncErr){setSync('ame','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].aGenFailed+'\n'+e.message);}
   finally{endGen('ame');}
 }
 async function submitAme(){
-  if(isBusy()||!hasApiKey())return;
+  if(isBusy())return;
   const prob=st.ame;if(!prob)return;
   if(st.answerMode==='photo'&&st.answerScope==='a'){await submitPhotoGrade('ame',prob,'a');return;}
   const userAnswers=collectAmeUserAnswers(prob,'');
+  if(userAnswers.some(isBlankAnswer)){
+    alert(L[st.lang].ameAnswerRequired);
+    return;
+  }
+  if(!beginGradeBusy('ame'))return;
   const fb=document.getElementById('a-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
-  const btn=document.getElementById('a-submit');btn.disabled=true;
   try{
     const res=await gradeAme(prob,userAnswers);if(!res)return;
     prob.feedback=res;
@@ -2632,7 +3005,7 @@ async function submitAme(){
     try{await syncAmePast(prob);}
     catch(syncErr){setSync('ame','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].aGradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
+  finally{endGradeBusy('ame');}
 }
 async function gradeAme(prob,userAnswers){
   const isEN=(prob.lang||st.lang)==='en';
@@ -2660,19 +3033,20 @@ async function gradeAme(prob,userAnswers){
 }
 function buildAmeEntry(prob){
   return{
-    id:prob.id||Date.now(),sheet:'ame',theme:prob.theme||'—',diff:prob.diff,date:prob.date,
+    id:prob.id||Date.now(),sheet:'ame',theme:prob.theme||'—',diff:prob.diff,date:prob.date,industry:prob.industry||'',
     law:prob.law||'',article:prob.article||'',constraint:prob.constraint||'',
     questions:JSON.stringify(prob.questions||[]),feedback:prob.feedback||null,
     form:prob.form||'inductive',lang:prob.lang||st.lang,
   };
 }
 async function ppAme(id){
+  if(isBusy())return;
   const prob=st.aPast.find(p=>String(p.id)===String(id));if(!prob)return;
   const p=normAmeProb(prob);
   const pLang=prob.lang||'ja';const l=L[pLang];
   if(st.answerMode==='photo'&&st.answerScope==='pp'){await submitPhotoGrade('ame',{...p,lang:pLang},'pp');return;}
   const userAnswers=collectAmeUserAnswers({...p,lang:pLang},'pp-');
-  const btn=document.getElementById('pp-a-submit');if(btn)btn.disabled=true;
+  if(!beginGradeBusy('pp-ame'))return;
   const fb=document.getElementById('pp-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
   try{
@@ -2684,7 +3058,7 @@ async function ppAme(id){
     try{await syncAmePast(saved);}
     catch(syncErr){setSync('ame','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){fb.innerHTML=`<p class="err">${l.aGradingErr}: ${e.message}</p>`;}
-  if(btn)btn.disabled=false;
+  finally{endGradeBusy('pp-ame');}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -2747,8 +3121,7 @@ function openPast(mode,id){
     let html=esc(prob.text);
     for(let i=1;i<=answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank" id="blank-${i}">（${i}）</span>`);
     cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
+      ${buildProblemMetaHtml(prob,pLang)}
       <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
       <div class="problem-box">${html}</div>
       <div class="answer-section" id="pp-inputs" style="margin-top:1rem;margin-bottom:1rem;"></div>
@@ -2776,8 +3149,7 @@ function openPast(mode,id){
     const p=normSummaryProb(prob);
     const qHtml=p.questions.map((q,i)=>buildSummaryQuestionHtml(q,i,pLang,'pp')).join('');
     cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
+      ${buildProblemMetaHtml(prob,pLang)}
       <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
       <p class="slabel">${l.sInst}</p>
       <div class="problem-box">${esc(p.text)}</div>
@@ -2800,8 +3172,7 @@ function openPast(mode,id){
     if(!p.questions.length){alert(L[st.lang].cGenFailed);closePP('critique');return;}
     const qHtml=p.questions.map((q,i)=>buildCritiqueQuestionHtml(q,i,pLang,p.form,'pp')).join('');
     cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
+      ${buildProblemMetaHtml(prob,pLang)}
       <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
       <p class="slabel">${l.cInst}</p>
       ${p.form==='A'&&p.text?`<div class="problem-box">${esc(p.text)}</div>`:''}
@@ -2827,8 +3198,7 @@ function openPast(mode,id){
       :'';
     const qHtml=buildAmeQuestionsHtml(p,'pp');
     cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
+      ${buildProblemMetaHtml(prob,pLang)}
       <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
       <p class="slabel">${l.aArticleLbl}</p>
       <div class="problem-box">${esc(p.article)}</div>
@@ -2847,22 +3217,32 @@ function openPast(mode,id){
     resetAnswerPhotos();
     setAnswerMode('pp','text');
   } else if(mode==='kibari'){
-    const p=normKibariProb(prob);
-    const firstDraft=p.firstAnswer?`<p class="slabel">${st.lang==='ja'?'初稿':'First draft'}</p><div class="problem-box">${esc(p.firstAnswer)}</div>`:'';
-    const fbHtml=p.feedback?`<div class="feedback-box">${md2h(p.feedback)}</div>`:'';
+    const p=pastKibariToPlayable(prob);
+    st.kibariPast=p;
+    const fbHtml=prob.feedback?`<div class="feedback-box">${md2h(prob.feedback)}</div>`:'';
     cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
+      ${buildProblemMetaHtml(prob,pLang)}
+      <div class="step-bar"><div class="step done" id="kbp-s1"></div><div class="step active" id="kbp-s2"></div><div class="step" id="kbp-s3"></div></div>
       <p class="slabel">${l.kbSituationLbl}</p>
       <div class="problem-box">${esc(p.situation)}</div>
-      ${firstDraft}
-      ${fbHtml}
+      <div id="kbp-rounds">${buildKibariRoundHtml(p,0,'kbp')}</div>
+      <div class="action-bar" id="kbp-submit-bar" style="display:none;">
+        <button class="btn" onclick="submitKibari('kbp')"><span>${l.kbSubmit}</span></button>
+      </div>
       <div class="action-bar" style="margin-top:8px;">
         <button class="btn btn-icon btn-sm" onclick="window.print()">
           <i class="ti ti-printer"></i>
           <span>${l.pq}</span>
         </button>
-      </div>`;
+      </div>
+      <div id="kbp-fb">${fbHtml}</div>`;
+    updateKibariCoreCount('kbp',0);
+    if(prob.feedback){
+      const s2=document.getElementById('kbp-s2');
+      const s3=document.getElementById('kbp-s3');
+      if(s2)s2.className='step done';
+      if(s3)s3.className='step done';
+    }
   }
 }
 
@@ -2870,13 +3250,14 @@ function ppCC(i){updateSumCC(i,'pp');}
 
 
 async function ppAPI(id){
+  if(isBusy())return;
   const prob=st.fPast.find(p=>String(p.id)===String(id));if(!prob)return;
   const pLang=prob.lang||'ja';const l=L[pLang];
   const answers=parseF(prob.answers);
   const ua=answers.map((_,i)=>document.getElementById(`ppans-${i}`)?.value.trim()||'—');
+  if(!beginGradeBusy('pp-fill'))return;
   const fbEl=document.getElementById('pp-fb');
   fbEl.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
-  const apiBtn=document.getElementById('pp-api-btn');if(apiBtn)apiBtn.disabled=true;
   try{
     const res=await gradeFill({...prob,answers,lang:pLang},ua);if(!res)return;
     fbEl.innerHTML=`<div class="feedback-box">${formatFeedback100(res,pLang)}</div>`;
@@ -2885,7 +3266,7 @@ async function ppAPI(id){
     document.getElementById('pp-s2').className='step done';
     document.getElementById('pp-s3').className='step done';
   }catch(e){fbEl.innerHTML=`<p class="err">${l.gradingErr}: ${e.message}</p>`;}
-  if(apiBtn)apiBtn.disabled=false;
+  finally{endGradeBusy('pp-fill');}
 }
 
 async function ppOverwrite(id){
@@ -2907,13 +3288,14 @@ async function ppOverwrite(id){
 }
 
 async function ppSummary(id){
+  if(isBusy())return;
   const prob=st.sPast.find(p=>String(p.id)===String(id));if(!prob)return;
   const pLang=prob.lang||'ja';const l=L[pLang];
   if(st.answerMode==='photo'&&st.answerScope==='pp'){await submitPhotoGrade('summary',prob,'pp');return;}
   const anyOver=[...document.querySelectorAll('[id^="pp-sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
   if(anyOver){alert(l.overWarn);return;}
   const userTexts=collectSummaryAnswers(prob,'pp');
-  const btn=document.getElementById('pp-submit');btn.disabled=true;
+  if(!beginGradeBusy('pp-summary'))return;
   const fb=document.getElementById('pp-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
   const isEN=pLang==='en';
@@ -2923,13 +3305,13 @@ async function ppSummary(id){
   const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
     const diff=prob.diff||st.sDiff;
-    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
+    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||DEFAULT_S_VOLUME)].chars);
     const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3);if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res,pLang)}</div>`;
     document.getElementById('pp-s2').className='step done';
     document.getElementById('pp-s3').className='step done';
   }catch(e){fb.innerHTML=`<p class="err">${l.gradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
+  finally{endGradeBusy('pp-summary');}
 }
 
 
@@ -2938,6 +3320,7 @@ function closePP(mode){
   document.getElementById(pfx+'-list-view').style.display='';
   document.getElementById(pfx+'-play').style.display='none';
   document.getElementById(pfx+'-play-content').innerHTML='';
+  if(mode==='kibari')st.kibariPast=null;
   resetAnswerPhotos();
 }
 async function deletePast(mode,id){
@@ -3000,6 +3383,7 @@ async function switchGuideTab(tabKey){
 }
 
 function openGuide(tab='overview'){
+  if(isBusy())return;
   document.getElementById('guide-overlay').classList.add('show');
   Object.keys(_guideCache).forEach(k=>delete _guideCache[k]);
   switchGuideTab(tab);
@@ -3022,10 +3406,7 @@ function onGuideKeyDown(e){
 // ── 気配り ─────────────────────────────────────────────
 function setKibariScene(scene,silent=false){
   if(!silent&&isBusy())return;
-  st.kibariScene=scene;
-  document.querySelectorAll('#kb-scene-row .mode-btn').forEach(b=>
-    b.classList.toggle('sel',b.dataset.scene===scene)
-  );
+  setTheme('kb',scene);
 }
 function normKibariProb(prob){
   let readers=prob.readers;
@@ -3034,12 +3415,180 @@ function normKibariProb(prob){
   let points=prob.points;
   if(typeof points==='string'){try{points=JSON.parse(points);}catch{points=[];}}
   if(!Array.isArray(points))points=[];
-  return{...prob,readers,points,situation:prob.situation||'',rounds:prob.rounds||[]};
+  return{
+    ...prob,
+    readers,
+    points,
+    industry:prob.industry||'',
+    situation:prob.situation||'',
+    writeInstruction:prob.writeInstruction||'',
+    rewriteInstruction:prob.rewriteInstruction||'',
+    openingPhrase:prob.openingPhrase||'',
+    closingPhrase:prob.closingPhrase||'',
+    rounds:prob.rounds||[],
+  };
+}
+function kibariBoilerplate(prob){
+  const isEN=(prob.lang||st.lang)==='en';
+  let open=(prob.openingPhrase||'').trim();
+  let close=(prob.closingPhrase||'').trim();
+  if(!open&&!close){
+    const reader=prob.readers?.[0];
+    if(isEN){
+      open=reader?`Dear ${reader},\n\n`:'';
+      close='Best regards';
+    }else{
+      open=reader?`${reader}様\n\n`:'';
+      close='以上、よろしくお願いいたします。';
+    }
+  }
+  return{open,close,has:!!(open||close)};
+}
+function kibariRoundCoreText(scope,roundIndex){
+  return document.getElementById(`${scope}-ans-${roundIndex}`)?.value.trim()||'';
+}
+function kibariRoundFullText(prob,core){
+  const {open,close}=kibariBoilerplate(prob);
+  const parts=[];
+  if(open)parts.push(open);
+  if(core)parts.push(core);
+  if(close)parts.push(close);
+  return parts.join('\n\n').trim();
+}
+function parseKibariCharLimit(constraint){
+  if(!constraint)return null;
+  const range=constraint.match(/(\d+)\s*[〜~\-－]\s*(\d+)/);
+  if(range)return{min:+range[1],max:+range[2]};
+  const maxOnly=constraint.match(/(\d+)\s*字/);
+  if(maxOnly)return{max:+maxOnly[1]};
+  const enRange=constraint.match(/(\d+)\s*[-–]\s*(\d+)\s*char/i);
+  if(enRange)return{min:+enRange[1],max:+enRange[2]};
+  const enMax=constraint.match(/(\d+)\s*char/i);
+  if(enMax)return{max:+enMax[1]};
+  return null;
+}
+function updateKibariCoreCount(scope,roundIndex){
+  const prob=kibariState(scope);
+  const el=document.getElementById(`${scope}-cc-${roundIndex}`);
+  const ta=document.getElementById(`${scope}-ans-${roundIndex}`);
+  if(!el||!ta||!prob)return;
+  const len=ta.value.length;
+  const lim=parseKibariCharLimit(prob.constraint);
+  const isEN=(prob.lang||st.lang)==='en';
+  if(!lim){el.textContent='';return;}
+  let txt;
+  if(lim.min!=null&&lim.max!=null){
+    txt=isEN?`${len} / ${lim.min}–${lim.max} chars (body)`: `本文 ${len} / ${lim.min}〜${lim.max}字`;
+  }else{
+    txt=isEN?`${len} / ${lim.max} chars (body)`: `本文 ${len} / ${lim.max}字`;
+  }
+  const over=lim.max!=null&&len>lim.max;
+  const under=lim.min!=null&&len>0&&len<lim.min;
+  el.textContent=txt;
+  el.className='cc no-print'+(over||under?' over':len>= (lim.min||0)&&len<= (lim.max||1e9)?' ok2':'');
+  ta.classList.toggle('overlimit',over);
+}
+function buildKibariComposeHtml(prob,roundIndex,scope){
+  const l=L[prob.lang||st.lang];
+  const {open,close,has}=kibariBoilerplate(prob);
+  const noteHtml=has?`<p class="kibari-boilerplate-note no-print">${esc(l.kbBoilerplateNote||'')}</p>`:'';
+  const openBlk=open?`<div class="kibari-boilerplate kibari-boilerplate-open"><div class="kibari-boilerplate-lbl">${esc(l.kbBoilerplateOpenLbl||'')}</div>${esc(open)}</div>`:'';
+  const closeBlk=close?`<div class="kibari-boilerplate kibari-boilerplate-close"><div class="kibari-boilerplate-lbl">${esc(l.kbBoilerplateCloseLbl||'')}</div>${esc(close)}</div>`:'';
+  return`${noteHtml}
+    <div class="kibari-compose">
+      ${openBlk}
+      <textarea class="kibari-core-ta sum-ta" id="${scope}-ans-${roundIndex}" style="min-height:120px;" placeholder="" oninput="updateKibariCoreCount('${scope}',${roundIndex})"></textarea>
+      ${closeBlk}
+    </div>
+    <div class="cc no-print" id="${scope}-cc-${roundIndex}"></div>`;
+}
+function kibariState(scope='kb'){
+  return scope==='kbp'?st.kibariPast:st.kibari;
+}
+function pastKibariToPlayable(prob){
+  const p=normKibariProb(prob);
+  const diff=+(p.diff||3);
+  return{
+    ...p,
+    maxRounds:KB_MAX_ROUNDS[diff]||1,
+    rounds:[],
+    photos:[],
+    currentRound:0,
+    lang:p.lang||st.lang,
+  };
+}
+function kibariFallbackWriteInstruction(prob,l){
+  const isEN=(prob.lang||st.lang)==='en';
+  const scene=prob.scene||'report';
+  const preset=KIBARI_PRESETS[isEN?'en':'ja'].find(x=>x.value===scene);
+  const sceneLabel=preset?.label||(isEN?'situation':'場面');
+  const action=getKibariSceneActionHint(scene,isEN);
+  const readers=prob.readers?.length
+    ?prob.readers.join(isEN?', ':'、')
+    :(isEN?'the reader(s)':'読み手');
+  return isEN
+    ?`For this ${sceneLabel} situation, write a message to ${readers} to ${action}. Follow the situation above (when, who, what, where).`
+    :`この${sceneLabel}の場面で、${readers}に${action}するメッセージを書いてください（状況文の期限・手段・内容に沿ってください）。`;
+}
+function kibariFallbackRewriteInstruction(prob,l){
+  const isEN=(prob.lang||st.lang)==='en';
+  return isEN
+    ?'Revise your message using the reader\'s feedback; keep the same when, who, what, and where.'
+    :'読み手の反応を踏まえ、同じ期限・相手・内容・手段を保ちつつ不足を補って書き直してください。';
+}
+function kibariWriteLabel(prob,roundIndex,l){
+  if(roundIndex===0){
+    return prob.writeInstruction||kibariFallbackWriteInstruction(prob,l);
+  }
+  return prob.rewriteInstruction||kibariFallbackRewriteInstruction(prob,l);
+}
+function getKibariSceneActionHint(scene,isEN){
+  const ja={report:'共有または報告',request:'依頼または指示',proposal:'提案または説明',self:'自己紹介または自己表現'};
+  const en={report:'share or report',request:'request or instruct',proposal:'propose or explain',self:'introduce yourself or express yourself'};
+  return(isEN?en:ja)[scene]||(isEN?'communicate':'伝える');
+}
+function getKibariInstructionGuide(diff,scene,sceneLabel,isEN){
+  const action=getKibariSceneActionHint(scene,isEN);
+  const explicit=diff<=2;
+  if(!isEN)return`
+【状況文の要件】
+- 状況説明（situation）に、いつまでに（When）・誰に（Who）・何を（What）・どの手段・場で（Where）が読み取れるように書く（括弧でラベル付けしなくてよい）
+- Why（なぜ伝えるか）は状況文に含め、作業指示では繰り返さない
+
+【作業指示の要件】
+- writeInstruction：初回回答欄の見出し用。回答者が「何を書けばよいか」が一目でわかる具体的な一文（50〜120字程度）
+  - 場面「${sceneLabel}」に合い、${action}するメッセージを書くよう促す
+  - ${explicit?'When・Who・What・Where を可能な限り明示する（例：本日中に／営業部長とPMに／この情報を／社内チャットで）':'状況文と整合するよう When・Who・What・Where を簡潔に含める'}
+  - 「メッセージを書いてください」のような漠然とした表現は禁止
+- rewriteInstruction：2回目以降用。読み手の反応を踏まえ不足を補う書き直し。同じ When/Who/What/Where を維持する
+
+【定型文（冒頭・結び）】
+- openingPhrase：状況・読み手に合った冒頭の挨拶・名乗り（1〜2文）。学習者は入力しない参考表示
+- closingPhrase：状況に合った結びの定型文（1文程度）。同上
+- constraint の文字数は**本文のみ**に適用（冒頭・結びは含めない）
+`.trim();
+  return`
+[Situation text]
+- The situation field must let the learner infer When, Who, What, and Where (labels in parentheses are optional)
+- Include Why in the situation only; do not repeat Why in writeInstruction
+
+[Task instructions]
+- writeInstruction: heading for the first answer box (50-120 chars). Must be specific, not vague like "Write your message"
+  - Match scene "${sceneLabel}"; ask for a message to ${action}
+  - ${explicit?'Spell out When, Who, What, Where as clearly as possible':'Keep When/Who/What/Where concise but actionable, consistent with the situation'}
+- rewriteInstruction: for revision rounds after reader feedback; same When/Who/What/Where, ask to fix gaps
+
+[Opening / closing phrases]
+- openingPhrase: greeting/self-intro matching the situation and readers (1-2 sentences); shown as fixed reference, not typed by learner
+- closingPhrase: polite closing matching the situation (about one sentence); same
+- Character limits in constraint apply to the body only, not opening/closing
+`.trim();
 }
 function getKibariDiffPrompt(diff,scene,sceneLabel,isEN){
   const maxRounds=KB_MAX_ROUNDS[diff];
+  const instrGuide=getKibariInstructionGuide(diff,scene,sceneLabel,isEN);
   if(!isEN)return`
-場面タイプ：${sceneLabel}
+テーマ：${sceneLabel}
 難易度${diff}・最大往復回数：${maxRounds}回
 
 以下の条件で状況を生成してください：
@@ -3049,9 +3598,11 @@ function getKibariDiffPrompt(diff,scene,sceneLabel,isEN){
 - 制約条件：${diff<=2?'文字数制限（200〜300字）':diff<=4?'文字数制限（250〜350字）':'文字数制限（300〜400字）'}
 - 状況は実際のビジネス現場で起こりうるリアルなものにすること
 - 書き手が「読み手が次に何を知りたいか・何をすべきか」を先回りして書く必要がある状況にすること
+
+${instrGuide}
 `.trim();
   return`
-Scene type: ${sceneLabel}
+Theme: ${sceneLabel}
 Difficulty ${diff} · Maximum exchanges: ${maxRounds}
 
 Generate a situation with the following conditions:
@@ -3061,25 +3612,32 @@ Generate a situation with the following conditions:
 - Constraint: ${diff<=2?'character limit (200-300 chars)':diff<=4?'character limit (250-350 chars)':'character limit (300-400 chars)'}
 - The situation must be realistic and occur in an actual business context
 - The writer must proactively address what the reader needs to know or do next
+
+${instrGuide}
 `.trim();
 }
 async function generateKibari(){
-  if(isBusy()||!hasApiKey())return;
+  if(isBusy())return;
+  if(!validateBeforeGen('kb'))return;
   const diff=st.kibariDiff;
-  const scene=st.kibariScene||'report';
+  const scene=st.kibariScene;
   const isEN=st.lang==='en';
   const maxRounds=KB_MAX_ROUNDS[diff]||1;
-  const sceneLabel=(KB_SCENE_LABELS[isEN?'en':'ja']||KB_SCENE_LABELS.ja)[scene];
+  const preset=KIBARI_PRESETS[isEN?'en':'ja'].find(p=>p.value===scene);
+  const sceneLabel=preset?.label||scene;
+  const themeIn=buildThemeInFromTheme('kb',isEN);
   document.getElementById('kibari-result').style.display='none';
   if(!beginGen('kibari'))return;
   const sys=isEN
-    ?'You are an expert in business communication education. Generate a realistic business situation for a writing practice problem. The situation should require the writer to think about what the reader needs to know next and communicate proactively. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
-    :'あなたはビジネスコミュニケーション教育の専門家です。文章作成の練習問題として、リアルなビジネス状況を生成してください。書き手が「読み手が次に何を知りたいか・何をすべきか」を先回りして伝えることが求められる状況にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+    ?'You are an expert in business communication education. Generate a realistic business situation for a writing practice problem. The situation must embed When/Who/What/Where; also provide a specific writeInstruction (learner-facing task) and rewriteInstruction. The writer must proactively address what readers need to know or do. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
+    :'あなたはビジネスコミュニケーション教育の専門家です。文章作成の練習問題として、リアルなビジネス状況を生成してください。状況文にWhen・Who・What・Whereが読み取れるようにし、回答者向けの具体的な作業指示（writeInstruction・rewriteInstruction）も生成してください。書き手が「読み手が次に何を知りたいか・何をすべきか」を先回りして伝えることが求められる状況にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const diffPrompt=getKibariDiffPrompt(diff,scene,sceneLabel,isEN);
+  const industrySuffix=st.lang==='en'?INDUSTRY_CONSTRAINT.en:INDUSTRY_CONSTRAINT.ja;
   const jsonSchema=isEN
-    ?`Return ONLY this JSON:\n{"theme":"situation title in 15 chars","situation":"situation description 150-200 chars","readers":["reader1 role","reader2 role"],"points":["key point 1 the writer should cover","key point 2","key point 3"],"constraint":"word limit or other constraint (e.g. within 300 chars)"}`
-    :`返答はJSONのみ：\n{"theme":"状況タイトル15文字以内","situation":"状況説明150〜200字","readers":["読み手1の立場","読み手2の立場"],"points":["書き手が盛り込むべき観点1","観点2","観点3"],"constraint":"文字数制限などの制約条件（例：300字以内）"}`;
-  const prompt=`${diffPrompt}\n${jsonSchema}`;
+    ?`Return ONLY this JSON:\n{"theme":"situation title in 15 chars","situation":"situation description 150-200 chars (include When/Who/What/Where)","readers":["reader1 role","reader2 role"],"points":["key point 1","key point 2"],"constraint":"e.g. body 250-350 chars (opening/closing not included)","openingPhrase":"e.g. Dear Ms. Tanaka,\\n\\nThis is Sato from IT.","closingPhrase":"e.g. Thank you for your review.","writeInstruction":"Specific first-draft task for the learner (When/Who/What/Where, not vague)","rewriteInstruction":"Revision task after reader feedback, same channel/audience"}`
+    :`返答はJSONのみ：\n{"theme":"状況タイトル15文字以内","situation":"状況説明150〜200字（When・Who・What・Whereが読み取れること）","readers":["読み手1の立場","読み手2の立場"],"points":["盛り込むべき観点1","観点2"],"constraint":"本文の文字数制限（例：本文250〜350字。冒頭・結びは含めない）","openingPhrase":"状況・読み手に合った冒頭（例：山田部長、お疲れ様です。IT部の佐藤です。）","closingPhrase":"状況に合った結び（例：以上、ご確認のほどよろしくお願いいたします。）","writeInstruction":"初回回答用の具体的な作業指示（例：本日中に、〇〇と△△に、この情報を社内チャットで共有するメッセージを記載してください。）","rewriteInstruction":"読み手の反応を踏まえ、同じ条件で不足を補う改訂メッセージを記載してください。"}`;
+  const themeLine=isEN?`Theme: ${themeIn}\n\n`:`テーマ：${themeIn}\n\n`;
+  const prompt=`${themeLine}${diffPrompt}${industrySuffix}\n${jsonSchema}`;
   try{
     const raw=await callClaude(prompt,sys,1500,0.9);
     if(!raw)return;
@@ -3090,11 +3648,16 @@ async function generateKibari(){
       theme:p.theme||sceneLabel,
       diff,
       scene,
+      industry:genIndustrySnapshot(),
       date:new Date().toISOString(),
       situation:p.situation,
       readers:p.readers||[],
       points:p.points||[],
       constraint:p.constraint||'',
+      openingPhrase:p.openingPhrase||'',
+      closingPhrase:p.closingPhrase||'',
+      writeInstruction:p.writeInstruction||'',
+      rewriteInstruction:p.rewriteInstruction||'',
       rounds:[],
       currentRound:0,
       maxRounds,
@@ -3102,39 +3665,131 @@ async function generateKibari(){
       lang:st.lang,
     };
     renderKibari(st.kibari);
+    resetGenConditions();
     try{await syncPastOnGen('kibari',st.kibari);}
     catch(syncErr){setSync('kibari','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){alert(L[st.lang].kbGenFailed+'\n'+e.message);}
   finally{endGen('kibari');}
 }
-function buildKibariRoundHtml(prob,roundIndex){
+function buildKibariRoundHtml(prob,roundIndex,scope='kb'){
   const l=L[prob.lang||st.lang];
-  const isFirst=roundIndex===0;
-  const labelWrite=isFirst?(l.kbWriteLbl||'メッセージを書いてください'):(l.kbRewriteLbl||'書き直してください');
-  const constraintNote=prob.constraint?`<span style="font-size:11px;color:var(--amber);margin-left:6px;">${esc(prob.constraint)}</span>`:'';
+  const isLastRound=roundIndex===prob.maxRounds-1;
+  const labelWrite=kibariWriteLabel(prob,roundIndex,l);
+  const bodyNote=kibariBoilerplate(prob).has?(l.kbConstraintBodyNote||'（本文のみ）'):'';
+  const constraintNote=prob.constraint?`<span style="font-size:11px;color:var(--amber);margin-left:6px;">${esc(prob.constraint)}${esc(bodyNote)}</span>`:'';
   const prevRv=roundIndex>0&&prob.rounds[roundIndex-1]?.rv
     ?`<div class="kibari-rv-box"><p class="slabel no-print">${esc(l.kbRvLbl||'読み手からの反応')}</p><div class="problem-box" style="background:var(--bg2);">${esc(prob.rounds[roundIndex-1].rv)}</div></div>`
     :'';
+  const photoArea=isLastRound?`
+    <div class="kibari-photo-area no-print" style="margin-top:10px;">
+      <p class="slabel" style="margin-bottom:6px;">${esc(l.kbPhotoLbl||'画像を添付する（任意・最大2枚）')}</p>
+      <label class="upload-zone" id="${scope}-upload-zone-${roundIndex}" for="${scope}-photo-input-${roundIndex}" style="padding:12px;cursor:pointer;display:block;">
+        <i class="ti ti-camera-plus" aria-hidden="true" style="font-size:22px;display:block;margin-bottom:4px;opacity:.5;"></i>
+        <span style="font-size:13px;">${esc(l.kbUploadHint||'タップして画像を選ぶ')}</span>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px;">${esc(l.kbUploadNote||'JPEG / PNG / HEIC・最大2枚')}</div>
+      </label>
+      <input type="file" id="${scope}-photo-input-${roundIndex}" accept="${IMAGE_ACCEPT}" multiple
+        style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"
+        onchange="handleKibariPhotoUpload(event,${roundIndex},'${scope}')"/>
+      <div class="photo-preview" id="${scope}-photo-preview-${roundIndex}" style="margin-top:8px;"></div>
+      <p style="font-size:11px;color:var(--text2);margin-top:6px;">${esc(l.kbExtraNote||'※ 画像による情報整理が優れている場合は加点されます')}</p>
+    </div>`:'';
   return`${prevRv}<div class="kibari-write-block">
     <p class="slabel no-print">${esc(labelWrite)}${constraintNote}</p>
-    <textarea class="sum-ta" id="kb-ans-${roundIndex}" style="min-height:120px;" placeholder=""></textarea>
-    <div class="action-bar no-print" style="margin-top:8px;" id="kb-rv-bar-${roundIndex}">
-      <button class="btn" onclick="requestKibariRv(${roundIndex})">
+    ${buildKibariComposeHtml(prob,roundIndex,scope)}
+    <div class="action-bar no-print" style="margin-top:6px;gap:8px;display:flex;flex-wrap:wrap;">
+      <button class="btn btn-icon btn-sm" type="button" onclick="openKibariPreview(${roundIndex},'${scope}')">
+        <i class="ti ti-eye" aria-hidden="true"></i>
+        <span>${esc(l.kbPreviewBtn||'プレビュー')}</span>
+      </button>
+    </div>
+    ${photoArea}
+    <div class="action-bar no-print" style="margin-top:8px;" id="${scope}-rv-bar-${roundIndex}">
+      <button class="btn" onclick="requestKibariRv(${roundIndex},'${scope}')">
         <span>${esc(l.kbRvBtn||'読み手の反応を見る')}</span>
       </button>
     </div>
-    <div id="kb-rv-loading-${roundIndex}" style="display:none;" class="gen-loading">
+    <div id="${scope}-rv-loading-${roundIndex}" style="display:none;" class="gen-loading">
       <span class="spinner" aria-hidden="true"></span>
       <span>${esc(l.kbRvLoading||'読み手の反応を生成中...')}</span>
     </div>
   </div>`;
 }
-function renderKibari(prob){
+function openKibariPreview(roundIndex,scope='kb'){
+  const prob=kibariState(scope);
+  const core=prob?kibariRoundCoreText(scope,roundIndex):'';
+  const text=prob?kibariRoundFullText(prob,core):'';
+  const body=document.getElementById('kb-preview-body');
+  const title=document.getElementById('kb-preview-title');
   const l=L[st.lang];
-  document.getElementById('kb-theme-tag').innerHTML=
-    `<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
+  const emptyMsg=st.lang==='en'?'(No text entered yet)':'（まだ入力されていません）';
+  if(title)title.textContent=l.kbPreviewTitle||'メッセージのプレビュー';
+  if(body)body.innerHTML=text?md2h(text):`<p style="color:var(--text2);font-size:13px;">${esc(emptyMsg)}</p>`;
+  const overlay=document.getElementById('kb-preview-overlay');
+  if(overlay)overlay.classList.add('show');
+  document.addEventListener('keydown',onKibariPreviewKeyDown);
+}
+function closeKibariPreview(){
+  const overlay=document.getElementById('kb-preview-overlay');
+  if(overlay)overlay.classList.remove('show');
+  document.removeEventListener('keydown',onKibariPreviewKeyDown);
+}
+function onKibariPreviewKeyDown(e){
+  if(e.key==='Escape')closeKibariPreview();
+}
+function renderKibariPhotoPreview(roundIndex,scope='kb'){
+  const previewEl=document.getElementById(`${scope}-photo-preview-${roundIndex}`);
+  const zone=document.getElementById(`${scope}-upload-zone-${roundIndex}`);
+  const prob=kibariState(scope);
+  if(!previewEl||!prob)return;
+  const photos=prob.photos||[];
+  previewEl.innerHTML=photos.map((p,i)=>`
+    <div class="photo-thumb">
+      <img src="${p.dataUrl}" alt="添付画像${i+1}"/>
+      <button type="button" class="photo-del" onclick="removeKibariPhoto(${roundIndex},${i},'${scope}')">✕</button>
+    </div>
+  `).join('');
+  if(zone)zone.style.display=photos.length>=2?'none':'';
+}
+function removeKibariPhoto(roundIndex,idx,scope='kb'){
+  const prob=kibariState(scope);
+  if(!prob?.photos)return;
+  prob.photos.splice(idx,1);
+  renderKibariPhotoPreview(roundIndex,scope);
+}
+async function handleKibariPhotoUpload(event,roundIndex,scope='kb'){
+  if(isBusy())return;
+  const input=event.target;
+  const files=Array.from(input?.files||[]).filter(isImageFile).slice(0,2);
+  const previewEl=document.getElementById(`${scope}-photo-preview-${roundIndex}`);
+  const prob=kibariState(scope);
+  if(!previewEl||!prob)return;
+  if(!files.length){
+    alert(L[st.lang].photoFormatError);
+    if(input)input.value='';
+    return;
+  }
+  previewEl.innerHTML=`<p class="loading-state"><span class="spinner" aria-hidden="true"></span>${esc(L[st.lang].photoLoading)}</p>`;
+  prob.photos=[];
+  const loaded=[];
+  for(const file of files){
+    try{
+      const dataUrl=await processImageFile(file);
+      loaded.push(photoPayloadFromDataUrl(dataUrl));
+    }catch(e){
+      alert(e.message||L[st.lang].photoDecodeError);
+    }
+  }
+  prob.photos=loaded;
+  renderKibariPhotoPreview(roundIndex,scope);
+  if(input)input.value='';
+}
+function renderKibari(prob){
+  prob.photos=[];
+  renderProblemMeta('kb-theme-tag',prob);
   document.getElementById('kb-situation').textContent=prob.situation;
   document.getElementById('kb-rounds').innerHTML=buildKibariRoundHtml(prob,0);
+  updateKibariCoreCount('kb',0);
   document.getElementById('kb-fb').innerHTML='';
   document.getElementById('kb-pa-btn').style.display='none';
   document.getElementById('kb-submit-bar').style.display='none';
@@ -3144,13 +3799,15 @@ function renderKibari(prob){
   document.getElementById('kbs3').className='step';
   updateApiKeyUI();
 }
-async function requestKibariRv(roundIndex){
-  if(isBusy()||!hasApiKey())return;
-  const prob=st.kibari;if(!prob)return;
-  const userAnswer=document.getElementById(`kb-ans-${roundIndex}`)?.value.trim()||'';
-  if(!userAnswer){alert(L[st.lang].kbEmptyAnswer);return;}
-  const rvBar=document.getElementById(`kb-rv-bar-${roundIndex}`);
-  const rvLoading=document.getElementById(`kb-rv-loading-${roundIndex}`);
+async function requestKibariRv(roundIndex,scope='kb'){
+  if(isBusy())return;
+  const prob=kibariState(scope);if(!prob)return;
+  const core=kibariRoundCoreText(scope,roundIndex);
+  if(!core){alert(L[st.lang].kbEmptyAnswer);return;}
+  const userAnswer=kibariRoundFullText(prob,core);
+  if(!beginAppBusy('grade','kibari-rv',L[st.lang].busyOverlayKibariRv||L[st.lang].kbGenLoading))return;
+  const rvBar=document.getElementById(`${scope}-rv-bar-${roundIndex}`);
+  const rvLoading=document.getElementById(`${scope}-rv-loading-${roundIndex}`);
   if(rvBar)rvBar.style.display='none';
   if(rvLoading)rvLoading.style.display='flex';
   const isEN=(prob.lang||st.lang)==='en';
@@ -3168,54 +3825,69 @@ async function requestKibariRv(roundIndex){
     if(!rv)return;
     if(!prob.rounds[roundIndex])prob.rounds[roundIndex]={};
     prob.rounds[roundIndex].answer=userAnswer;
+    prob.rounds[roundIndex].core=core;
     prob.rounds[roundIndex].rv=rv;
     prob.currentRound=roundIndex+1;
-    const roundsEl=document.getElementById('kb-rounds');
+    const roundsEl=document.getElementById(`${scope}-rounds`);
     if(roundIndex+1<prob.maxRounds){
-      roundsEl.innerHTML+=buildKibariRoundHtml(prob,roundIndex+1);
+      roundsEl.innerHTML+=buildKibariRoundHtml(prob,roundIndex+1,scope);
+      updateKibariCoreCount(scope,roundIndex+1);
     }else{
       const rvHtml=`<div class="kibari-rv-box"><p class="slabel no-print">${esc(L[st.lang].kbRvLbl||'読み手からの反応')}</p><div class="problem-box" style="background:var(--bg2);">${esc(rv)}</div></div>`;
       roundsEl.innerHTML+=rvHtml;
-      document.getElementById('kb-submit-bar').style.display='';
-      updateApiKeyUI();
+      document.getElementById(`${scope}-submit-bar`).style.display='';
+      if(scope==='kb')updateApiKeyUI();
     }
   }catch(e){
     if(rvBar)rvBar.style.display='';
     alert(L[st.lang].kbGradingErr+': '+e.message);
   }finally{
     if(rvLoading)rvLoading.style.display='none';
+    endAppBusy('grade','kibari-rv');
   }
 }
-async function submitKibari(){
-  if(isBusy()||!hasApiKey())return;
-  const prob=st.kibari;if(!prob)return;
+async function submitKibari(scope='kb'){
+  if(isBusy())return;
+  const prob=kibariState(scope);if(!prob)return;
   const lastIdx=prob.maxRounds-1;
-  const lastAnswer=document.getElementById(`kb-ans-${lastIdx}`)?.value.trim()||'';
+  const lastCore=kibariRoundCoreText(scope,lastIdx);
+  if(isBlankAnswer(lastCore)){
+    alert(L[st.lang].kbAnswerRequired);
+    return;
+  }
+  const lastAnswer=kibariRoundFullText(prob,lastCore);
   if(lastAnswer){
     if(!prob.rounds[lastIdx])prob.rounds[lastIdx]={};
     prob.rounds[lastIdx].answer=lastAnswer;
+    prob.rounds[lastIdx].core=lastCore;
   }
-  const fb=document.getElementById('kb-fb');
+  if(!beginGradeBusy(scope==='kbp'?'pp-kibari':'kibari'))return;
+  const fb=document.getElementById(`${scope}-fb`);
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading||'採点中...'}</span></p>`;
-  const btn=document.getElementById('kb-submit');btn.disabled=true;
   try{
     const res=await gradeKibari(prob);if(!res)return;
     prob.feedback=res;
     fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
-    document.getElementById('kbs2').className='step done';
-    document.getElementById('kbs3').className='step done';
-    document.getElementById('kb-pa-btn').style.display='';
+    if(scope==='kb'){
+      document.getElementById('kbs2').className='step done';
+      document.getElementById('kbs3').className='step done';
+      document.getElementById('kb-pa-btn').style.display='';
+    }else{
+      document.getElementById('kbp-s2').className='step done';
+      document.getElementById('kbp-s3').className='step done';
+    }
     try{await syncKibariPast(prob);}
     catch(syncErr){setSync('kibari','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
   }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].kbGradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
-  updateApiKeyUI();
+  finally{endGradeBusy(scope==='kbp'?'pp-kibari':'kibari');}
 }
 async function gradeKibari(prob){
-  const isEN=(prob.lang||st.lang)==='en';
+  const lang=prob.lang||st.lang;
+  const isEN=lang==='en';
+  const l=L[lang];
   const sys=isEN
-    ?'You are an expert in business communication education. Evaluate the learner\'s business writing on three axes: (1) How many exchanges were needed to get the message across (fewer = better), (2) Whether the final message is clear and actionable for the reader, (3) Whether the information is well-structured and readable (appropriate use of bullet points, numbering, concise language, no colloquialisms). Provide specific feedback with an improved example. Use markdown for structured feedback.'
-    :'あなたはビジネスコミュニケーション教育の専門家です。学習者のビジネス文章を以下の3軸で評価してください。(1) 何回のやり取りで読み手の疑問をゼロにできたか（少ないほど高評価）、(2) 最終的な文章が読み手にとって迷わず行動・判断できるものになっているか、(3) 情報が整理されて読みやすいか（箇条書き・番号・簡潔な表現・口語の排除など）。改善例を示してください。マークダウンを使って構造的にフィードバックしてください。';
+    ?'You are an expert in business communication education. Evaluate the learner\'s business writing on three axes: (1) How many exchanges were needed to get the message across (fewer = better), (2) Whether the final message is clear and actionable for the reader, (3) Whether the information is well-structured and readable (appropriate use of bullet points, numbering, concise language, no colloquialisms). If images are provided, evaluate whether they effectively organize information visually — if the visual structure is excellent, award up to 20 extra points (base score 100). Provide specific feedback with an improved example. Use markdown for structured feedback.'
+    :'あなたはビジネスコミュニケーション教育の専門家です。学習者のビジネス文章を以下の3軸で評価してください。(1) 何回のやり取りで読み手の疑問をゼロにできたか（少ないほど高評価）、(2) 最終的な文章が読み手にとって迷わず行動・判断できるものになっているか、(3) 情報が整理されて読みやすいか（箇条書き・番号・簡潔な表現・口語の排除など）。画像が添付されている場合は、画像による情報整理の優秀さも評価し、完璧な場合は最大20点の加点（基準点100点）を行ってください。改善例を示してください。マークダウンを使って構造的にフィードバックしてください。';
   const situationSection=isEN?`[Situation]\n${prob.situation}\n\n`:`【状況】\n${prob.situation}\n\n`;
   const readersSection=prob.readers?.length
     ?(isEN?`[Readers] ${prob.readers.join(', ')}\n\n`:`【読み手】${prob.readers.join('、')}\n\n`)
@@ -3224,19 +3896,29 @@ async function gradeKibari(prob){
     ?(isEN?`[Key points the writer should cover]\n${prob.points.map((p,i)=>`${i+1}. ${p}`).join('\n')}\n\n`:`【盛り込むべき観点】\n${prob.points.map((p,i)=>`${i+1}. ${p}`).join('\n')}\n\n`)
     :'';
   const roundsSection=(prob.rounds||[]).map((r,i)=>{
-    const ans=r.answer||'（未回答）';
+    const ans=r.answer||(isEN?'(No answer)':'（未回答）');
     const rv=r.rv?`\n${isEN?'Reader response':'読み手の反応'}:\n${r.rv}`:'';
     return isEN
       ?`[Round ${i+1}]\nWriter's message:\n${ans}${rv}`
       :`【${i+1}回目】\n書き手のメッセージ:\n${ans}${rv}`;
   }).join('\n\n---\n\n');
   const gradeInst=isEN
-    ?`Please evaluate based on the three axes above and provide:\n## Per-Axis Evaluation\n## Improved Example\n## Overall Feedback`
-    :`上記3軸で評価し、以下の構成でフィードバックしてください。\n## 軸別評価\n## 改善例\n## 総合講評`;
-  const prompt=`${situationSection}${readersSection}${pointsSection}${roundsSection}\n\n${gradeInst}`;
-  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
+    ?`Please evaluate based on the three axes above and provide:\n## Per-Axis Evaluation\n### ${l.kbScoreAxis1}\n### ${l.kbScoreAxis2}\n### ${l.kbScoreAxis3}\n## Improved Example\n## Overall Feedback${prob.photos?.length?'\n## Image Evaluation':''}`
+    :`上記3軸で評価し、以下の構成でフィードバックしてください。\n## 軸別評価\n### ${l.kbScoreAxis1}\n### ${l.kbScoreAxis2}\n### ${l.kbScoreAxis3}\n## 改善例\n## 総合講評${prob.photos?.length?'\n## 画像評価':''}`;
+  const textPrompt=`${situationSection}${readersSection}${pointsSection}${roundsSection}\n\n${gradeInst}`;
+  let content=textPrompt;
+  if(prob.photos?.length){
+    const imageContent=prob.photos.map(p=>({
+      type:'image',
+      source:{type:'base64',media_type:p.mediaType,data:p.base64},
+    }));
+    content=[...imageContent,{type:'text',text:textPrompt}];
+  }
+  return callClaudeMsg(sys,content,gradeMaxTokensByDiff(prob.diff),0.3);
 }
 function buildKibariEntry(prob){
+  const r0=prob.rounds?.[0];
+  const firstAnswer=r0?.answer||(r0?.core&&kibariRoundFullText(prob,r0.core))||'';
   return{
     id:prob.id||Date.now(),
     sheet:'kibari',
@@ -3244,11 +3926,16 @@ function buildKibariEntry(prob){
     diff:prob.diff,
     scene:prob.scene||'report',
     date:prob.date,
+    industry:prob.industry||'',
     situation:prob.situation||'',
     readers:JSON.stringify(prob.readers||[]),
     points:JSON.stringify(prob.points||[]),
     constraint:prob.constraint||'',
-    firstAnswer:prob.rounds?.[0]?.answer||'',
+    writeInstruction:prob.writeInstruction||'',
+    rewriteInstruction:prob.rewriteInstruction||'',
+    openingPhrase:prob.openingPhrase||'',
+    closingPhrase:prob.closingPhrase||'',
+    firstAnswer,
     feedback:prob.feedback||null,
     lang:prob.lang||st.lang,
   };
@@ -3273,18 +3960,15 @@ async function syncKibariPast(prob){
 function init(){
   const savedLang=localStorage.getItem(LANG_KEY);
   if(savedLang)st.lang=savedLang;
-  loadApiKey();
   applyLang();
   switchSub('fill','new');
   switchSub('summary','new');
   switchSub('critique','new');
   switchSub('ame','new');
   switchSub('kibari','new');
-  setDiff('c',st.cDiff);
-  setDiff('a',st.aDiff);
-  setDiff('kb',st.kibariDiff);
-  document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
-  setDiff('s',st.sDiff);
-  setThemeMode('s',st.sThemeMode||'keyword');
+  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  updateIndustryUI();
+  ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
+  updateApiKeyUI();
 }
 init();
