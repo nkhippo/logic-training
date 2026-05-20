@@ -1314,26 +1314,28 @@ function renderMdTable(lines){
   const body=lines.slice(2).map(parseMdRow).filter(r=>r.some(c=>c.length));
   const mergeCol=0;
   const rowspan=new Array(body.length).fill(1);
-  const skipRow=new Array(body.length).fill(false);
+  const skipMergeCell=new Array(body.length).fill(false);
   for(let i=0;i<body.length;){
     const label=body[i][mergeCol]||'';
     let j=i+1;
     while(j<body.length&&(body[j][mergeCol]||'')===label)j++;
     rowspan[i]=j-i;
-    for(let k=i+1;k<j;k++)skipRow[k]=true;
+    for(let k=i+1;k<j;k++)skipMergeCell[k]=true;
     i=j;
   }
   let h='<table class="md-table"><thead><tr>';
   header.forEach(c=>{h+=`<th>${mdInline(c)}</th>`;});
   h+='</tr></thead><tbody>';
   body.forEach((row,ri)=>{
-    if(skipRow[ri])return;
     h+='<tr>';
     for(let ci=0;ci<header.length;ci++){
+      if(ci===mergeCol&&skipMergeCell[ri])continue;
+      const cell=row[ci]??'';
+      const centered=/^[○◎×]$/.test(String(cell).trim());
       if(ci===mergeCol&&rowspan[ri]>1){
-        h+=`<td rowspan="${rowspan[ri]}" class="md-cell-merged">${mdInline(row[ci]||'')}</td>`;
-      }else if(ci!==mergeCol||!skipRow[ri]){
-        h+=`<td>${mdInline(row[ci]||'')}</td>`;
+        h+=`<td rowspan="${rowspan[ri]}" class="md-cell-merged">${mdInline(cell)}</td>`;
+      }else{
+        h+=`<td${centered?' class="center"':''}>${mdInline(cell)}</td>`;
       }
     }
     h+='</tr>';
