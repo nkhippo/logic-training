@@ -8,20 +8,28 @@
  * 確認: WebアプリURLに ?ping=1 を付けると { "version": 3 } が返る
  *
  * Spreadsheet: bind this script to your spreadsheet (Extensions > Apps Script)
- * Sheets (この2枚だけを使用):
- *   fill    — id, theme, diff, date, text, answers, hints, feedback, userAnswers, lang
- *   summary — id, theme, diff, date, text, questions, ratio, lang
+ * Sheets:
+ *   fill     — id, theme, diff, date, text, answers, hints, feedback, userAnswers, lang
+ *   summary  — id, theme, diff, date, text, questions, ratio, lang
+ *   critique — id, theme, diff, date, text, questions, feedback, form, lang
+ *   ame      — id, theme, diff, date, law, article, constraint, questions, feedback, form, lang
+ *   kibari   — id, theme, diff, scene, date, industry, situation, readers, points, constraint, writeInstruction, rewriteInstruction, openingPhrase, closingPhrase, firstAnswer, feedback, lang
  *
  * ※「要約」「穴埋め」タブは v3 では作りません。残っている場合は削除してください。
  */
 
 const GAS_VERSION = 3;
-const FILL_COLS = ['id', 'theme', 'diff', 'date', 'text', 'answers', 'hints', 'feedback', 'userAnswers', 'lang'];
-const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'ratio', 'lang'];
-/** 削除時のみ参照（読み書きは fill / summary のみ） */
+const FILL_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'answers', 'hints', 'feedback', 'userAnswers', 'lang'];
+const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'questions', 'ratio', 'lang'];
+const CRITIQUE_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'questions', 'feedback', 'form', 'lang'];
+const AME_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'law', 'article', 'constraint', 'questions', 'feedback', 'form', 'lang'];
+const KIBARI_COLS = ['id', 'theme', 'diff', 'scene', 'date', 'industry', 'situation', 'readers', 'points', 'constraint', 'writeInstruction', 'rewriteInstruction', 'openingPhrase', 'closingPhrase', 'firstAnswer', 'feedback', 'lang'];
+/** 旧シート名（読み書きは fill / summary / critique / ame） */
 const LEGACY_SHEET_NAMES = {
   fill: ['穴埋め'],
-  summary: ['要約']
+  summary: ['要約'],
+  critique: ['批判読み'],
+  ame: ['空雨傘', '雨空傘']
 };
 
 function getSs_() {
@@ -63,8 +71,24 @@ function rowScore_(o, cols) {
   return cols.reduce((n, c) => n + (o[c] !== undefined && o[c] !== null && String(o[c]) !== '' ? 1 : 0), 0);
 }
 
+function colsForLogical_(logical) {
+  if (logical === 'summary') return SUMMARY_COLS;
+  if (logical === 'critique') return CRITIQUE_COLS;
+  if (logical === 'ame') return AME_COLS;
+  if (logical === 'kibari') return KIBARI_COLS;
+  return FILL_COLS;
+}
+
+function sheetNameForLogical_(logical) {
+  if (logical === 'summary') return 'summary';
+  if (logical === 'critique') return 'critique';
+  if (logical === 'ame') return 'ame';
+  if (logical === 'kibari') return 'kibari';
+  return 'fill';
+}
+
 function readSheetRows_(sheetName, logical) {
-  const cols = logical === 'summary' ? SUMMARY_COLS : FILL_COLS;
+  const cols = colsForLogical_(logical);
   const sh = getSs_().getSheetByName(sheetName);
   if (!sh || sh.getLastRow() < 2) return [];
   ensureHeaders_(sh, cols);
@@ -75,18 +99,27 @@ function readSheetRows_(sheetName, logical) {
     .map((r) => {
       let o = rowToObj_(headers, r);
       if (logical === 'summary') o = normalizeSummaryRow_(o);
+      if (logical === 'critique') o = normalizeCritiqueRow_(o);
       return o;
     });
 }
 
 function readAllRows_(logical) {
-  const cols = logical === 'summary' ? SUMMARY_COLS : FILL_COLS;
-  const sheetName = logical === 'summary' ? 'summary' : 'fill';
-  const rows = readSheetRows_(sheetName, logical);
+  const cols = colsForLogical_(logical);
+  const sheetName = sheetNameForLogical_(logical);
+  const legacy = LEGACY_SHEET_NAMES[logical] || [];
+  const names = [sheetName].concat(legacy);
+  const rows = [];
+  names.forEach((name) => {
+    readSheetRows_(name, logical).forEach((row) => rows.push(row));
+  });
   const byId = {};
   rows.forEach((o) => {
     const id = String(o.id);
-    if (!byId[id] || rowScore_(o, cols) > rowScore_(byId[id], cols)) {
+    const score = logical === 'critique' ? critiqueRowScore_(o) : rowScore_(o, cols);
+    const prev = byId[id];
+    const prevScore = prev ? (logical === 'critique' ? critiqueRowScore_(prev) : rowScore_(prev, cols)) : -1;
+    if (!prev || score > prevScore) {
       byId[id] = o;
     }
   });
@@ -115,18 +148,50 @@ function normalizeSummaryRow_(o) {
   return o;
 }
 
+/** 列ずれ・旧データで questions / text が入れ替わった critique 行を補正 */
+function normalizeCritiqueRow_(o) {
+  if (o.rang && !o.lang) o.lang = o.rang;
+  let text = String(o.text || '').trim();
+  let questions = String(o.questions || '').trim();
+  const looksLikeJsonArray = (s) => s && (s.startsWith('[') || s.startsWith('{'));
+  if (looksLikeJsonArray(text) && !looksLikeJsonArray(questions)) {
+    questions = text;
+    text = '';
+  }
+  if (!text && questions && !looksLikeJsonArray(questions) && questions.length > 120) {
+    text = questions;
+    questions = '';
+  }
+  o.text = text;
+  o.questions = questions;
+  return o;
+}
+
+function critiqueRowScore_(o) {
+  let n = rowScore_(o, CRITIQUE_COLS);
+  const q = String(o.questions || '').trim();
+  if (q.startsWith('[') || q.startsWith('{')) n += 20;
+  if (String(o.feedback || '').trim()) n += 10;
+  return n;
+}
+
 function doGet(e) {
   if (String(e.parameter.ping || '') === '1') {
     return jsonOut_({
       version: GAS_VERSION,
       fillCols: FILL_COLS,
-      summaryCols: SUMMARY_COLS
+      summaryCols: SUMMARY_COLS,
+      critiqueCols: CRITIQUE_COLS,
+      ameCols: AME_COLS,
+      kibariCols: KIBARI_COLS
     });
   }
   const sheetName = String(e.parameter.sheet || 'fill').toLowerCase();
-  const isSummary = sheetName === 'summary';
-  const rows = readAllRows_(isSummary ? 'summary' : 'fill');
-  return jsonOut_(rows);
+  if (sheetName === 'summary') return jsonOut_(readAllRows_('summary'));
+  if (sheetName === 'critique') return jsonOut_(readAllRows_('critique'));
+  if (sheetName === 'ame') return jsonOut_(readAllRows_('ame'));
+  if (sheetName === 'kibari') return jsonOut_(readAllRows_('kibari'));
+  return jsonOut_(readAllRows_('fill'));
 }
 
 function doPost(e) {
@@ -138,6 +203,12 @@ function doPost(e) {
   const sheet = String(data.sheet || 'fill').toLowerCase();
   if (sheet === 'summary') {
     writeSummary_(data);
+  } else if (sheet === 'critique') {
+    writeCritique_(data);
+  } else if (sheet === 'ame') {
+    writeAme_(data);
+  } else if (sheet === 'kibari') {
+    writeKibari_(data);
   } else {
     writeFill_(data);
   }
@@ -177,11 +248,71 @@ function writeSummary_(data) {
   sh.appendRow(row);
 }
 
+function writeCritique_(data) {
+  const questions = data.questions;
+  const hasQ = Array.isArray(questions)
+    ? questions.length > 0
+    : (typeof questions === 'string' && questions.trim().length > 2);
+  if (!hasQ) {
+    throw new Error('critique requires non-empty questions (v3 schema)');
+  }
+  const sh = getSh_('critique', CRITIQUE_COLS);
+  const row = CRITIQUE_COLS.map(c => {
+    if (c === 'questions') {
+      return typeof data.questions === 'string'
+        ? data.questions
+        : JSON.stringify(data.questions || []);
+    }
+    const v = data[c];
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return v;
+  });
+  sh.appendRow(row);
+}
+
+function writeAme_(data) {
+  const questions = data.questions;
+  const hasQ = Array.isArray(questions)
+    ? questions.length > 0
+    : (typeof questions === 'string' && questions.trim().length > 2);
+  if (!hasQ) {
+    throw new Error('ame requires non-empty questions (v3 schema)');
+  }
+  const sh = getSh_('ame', AME_COLS);
+  const row = AME_COLS.map(c => {
+    if (c === 'questions') {
+      return typeof data.questions === 'string'
+        ? data.questions
+        : JSON.stringify(data.questions || []);
+    }
+    const v = data[c];
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return v;
+  });
+  sh.appendRow(row);
+}
+
+function writeKibari_(data) {
+  const sh = getSh_('kibari', KIBARI_COLS);
+  const row = KIBARI_COLS.map(c => {
+    const v = data[c];
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return v;
+  });
+  sh.appendRow(row);
+}
+
 function deleteById_(sheetName, id) {
-  const isSummary = String(sheetName).toLowerCase() === 'summary';
-  const names = [isSummary ? 'summary' : 'fill'].concat(
-    isSummary ? LEGACY_SHEET_NAMES.summary : LEGACY_SHEET_NAMES.fill
-  );
+  const s = String(sheetName).toLowerCase();
+  let logical = 'fill';
+  if (s === 'summary') logical = 'summary';
+  else if (s === 'critique') logical = 'critique';
+  else if (s === 'ame') logical = 'ame';
+  else if (s === 'kibari') logical = 'kibari';
+  const names = [sheetNameForLogical_(logical)].concat(LEGACY_SHEET_NAMES[logical] || []);
   const ss = getSs_();
   names.forEach((name) => {
     const sh = ss.getSheetByName(name);

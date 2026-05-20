@@ -3,246 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.2.2 / Logic Training</title>
+<title>論理トレーニング Ver.3.2 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-<style>
-@media print {
-  .no-print{display:none!important;}
-  body{background:#fff!important;padding:0!important;}
-  .app{max-width:100%!important;}
-  .problem-box{background:#fff!important;border:1px solid #aaa!important;font-size:13pt!important;line-height:2.2!important;}
-  .blank{border:1px solid #333!important;background:#fff!important;min-width:80px!important;}
-  .print-header{display:block!important;}
-  .summary-block-print{display:block!important;}
-  @page{size:A4;margin:18mm 14mm;}
-}
-.print-header{display:none;margin-bottom:1.5rem;}
-.print-header h2{font-size:14pt;font-weight:bold;margin-bottom:.4rem;}
-.print-header p{font-size:10pt;color:#555;margin-bottom:.2rem;}
-.summary-block-print{display:none;}
-:root{
-  --bg:#fdf8f2;--bg2:#f5ede0;--bg3:#e8d9c4;
-  --text:#2c1f0e;--text2:#8a7060;
-  --border:rgba(120,80,40,0.15);--border2:rgba(120,80,40,0.32);
-  --green:#2d7a5c;--green-bg:#e6f4ee;--green-text:#1a4d38;
-  --purple:#6b5fc7;--amber:#c8813a;--r-md:8px;--r-lg:12px;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg3);color:var(--text);display:flex;justify-content:center;padding:2rem 1rem 5rem;min-height:100vh;}
-.app{width:100%;max-width:700px;}
-.app-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.25rem;}
-.app-header h1{font-size:20px;font-weight:500;margin-bottom:.15rem;}
-.lang-sw{display:flex;border:.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;flex-shrink:0;}
-.lang-btn{padding:6px 12px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);transition:all .15s;white-space:nowrap;}
-.lang-btn.active{background:var(--bg2);color:var(--text);}
-.lang-btn:first-child{border-right:.5px solid var(--border2);}
-.api-bar{background:var(--bg);border:.5px solid var(--border2);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:1rem;}
-.api-bar-header{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);user-select:none;}
-.api-bar-status{font-size:12px;color:var(--green);flex:1;}
-.api-bar-body{overflow:hidden;transition:max-height .25s ease,opacity .2s ease;max-height:200px;opacity:1;}
-.api-bar-body.collapsed{max-height:0;opacity:0;}
-.api-bar-chevron.collapsed{transform:rotate(-90deg);}
-.api-row{display:flex;gap:8px;align-items:center;}
-.api-bar input[type=password]{flex:1;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:13px;background:var(--bg2);color:var(--text);}
-.api-save-btn{padding:7px 12px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:12px;color:var(--text2);white-space:nowrap;}
-.api-save-btn:hover{background:var(--bg2);}
-.api-note{font-size:12px;color:var(--text2);margin-top:8px;}
-.api-note a{color:var(--text2);}
-.api-bar.flash-saved{border-color:var(--green);box-shadow:0 0 0 2px rgba(45,122,92,.18);transition:border-color .3s,box-shadow .3s;}
-.api-save-btn.saved{background:var(--green-bg);border-color:var(--green);color:var(--green-text);}
-.btn.needs-apikey{opacity:.45;cursor:not-allowed;}
-.sub-tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border2);margin-bottom:1.25rem;width:100%;}
-.sub-tab{flex:1;justify-content:center;padding:10px 4px;border:none;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
-.sub-tab.active{color:var(--text);border-bottom-color:var(--purple);}
-.tabs{display:flex;gap:6px;margin-bottom:1.25rem;}
-.tab{flex:1;padding:9px 4px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);text-align:center;transition:all .15s;}
-.tab.active{background:var(--bg2);color:var(--text);}
-.panel{display:none;}.panel.active{display:block;}
-.card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
-label{display:block;font-size:13px;color:var(--text2);margin-bottom:6px;}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
-@media(max-width:500px){.row2{grid-template-columns:1fr;}}
-input[type=number],input[type=text],textarea{width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;}
-textarea{resize:vertical;}
-.btn{width:100%;padding:10px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;font-weight:500;cursor:pointer;color:var(--text);transition:background .15s;}
-.btn:hover{background:var(--bg3);}
-.btn:disabled{opacity:.5;cursor:not-allowed;}
-.btn-icon{width:auto;padding:8px 14px;font-size:13px;display:inline-flex;align-items:center;gap:6px;}
-.btn-sm{width:auto;padding:6px 12px;font-size:12px;}
-.btn-outline{background:transparent;}
-.diff-row{display:flex;gap:5px;margin-bottom:10px;}
-.diff-btn{flex:1;padding:7px 2px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:11px;color:var(--text2);text-align:center;line-height:1.6;transition:all .15s;}
-.diff-btn[data-d="1"].sel{background:#eaf5e6;border-color:#4a9e5c;color:#1f5c2a;}
-.diff-btn[data-d="2"].sel{background:#e6f4ee;border-color:#2d7a5c;color:#1a4d38;}
-.diff-btn[data-d="3"].sel{background:#e8eef9;border-color:#4a6db5;color:#1e3d7a;}
-.diff-btn[data-d="4"].sel{background:#fdf0e0;border-color:#c8813a;color:#7a4010;}
-.diff-btn[data-d="5"].sel{background:#fce8e8;border-color:#c0453a;color:#701510;}
-.diff-desc{font-size:12px;color:var(--text2);margin-bottom:12px;padding:6px 10px;background:var(--bg2);border-radius:var(--r-md);line-height:1.5;}
-.auto-info{font-size:12px;color:var(--amber);margin-bottom:12px;padding:5px 10px;background:#fdf5e6;border:.5px solid var(--amber);border-radius:var(--r-md);}
-.problem-box{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:15px;line-height:2.1;margin-bottom:1rem;white-space:pre-wrap;word-break:break-all;}
-.blank{display:inline-block;background:var(--bg);border:.5px solid var(--border2);border-radius:4px;width:5.5em;min-width:5.5em;max-width:5.5em;text-align:center;padding:2px 4px;font-size:13px;color:var(--text2);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;vertical-align:middle;margin:0 2px;transition:color .15s,background .15s;}
-.blank.filled{color:var(--text);background:var(--bg2);border-color:var(--purple);}
-.volume-row{display:flex;gap:8px;}
-.vol-btn{flex:1;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;text-align:center;font-size:13px;font-weight:500;color:var(--text2);display:flex;flex-direction:column;gap:3px;transition:all .15s;}
-.vol-btn.active{background:var(--bg2);color:var(--text);border-color:var(--purple);}
-.vol-chars{font-size:11px;color:var(--text2);}
-.theme-mode-toggle{display:flex;gap:0;border:.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;margin-bottom:8px;width:fit-content;}
-.mode-btn{padding:5px 16px;border:none;background:transparent;cursor:pointer;font-size:12px;font-weight:500;color:var(--text2);transition:all .15s;}
-.mode-btn.active{background:var(--bg2);color:var(--text);}
-.mode-btn:first-child{border-right:.5px solid var(--border2);}
-.gen-loading{display:flex;align-items:center;gap:10px;padding:.75rem 0;color:var(--text2);font-size:14px;}
-.gen-loading .spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:gen-spin .7s linear infinite;flex-shrink:0;}
-
-.answer-section{display:grid;gap:8px;margin-bottom:1rem;}
-.answer-item{display:flex;flex-direction:column;gap:3px;margin-bottom:8px;}
-.answer-row{display:flex;align-items:center;gap:10px;}
-.answer-row label{margin:0;min-width:46px;font-size:13px;white-space:nowrap;}
-.answer-row input{flex:1;}
-.hint-text{font-size:11px;color:var(--text2);padding-left:54px;line-height:1.4;}
-.feedback-box{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-md);padding:1.25rem;font-size:14px;line-height:1.85;margin-top:1rem;}
-.feedback-box h2{font-size:16px;font-weight:600;margin:1.2rem 0 .5rem;padding-bottom:.35rem;border-bottom:.5px solid var(--border);}
-.feedback-box h2:first-child{margin-top:0;}
-.feedback-box h3{font-size:15px;font-weight:500;margin:1.1rem 0 .45rem;padding-bottom:.3rem;border-bottom:.5px solid var(--border);}
-.feedback-box h3:first-child{margin-top:0;}
-.feedback-box h4{font-size:14px;font-weight:500;margin:.9rem 0 .35rem;color:var(--text);}
-.feedback-box hr{border:none;border-top:.5px solid var(--border2);margin:1rem 0;}
-.feedback-box table.md-table{width:100%;border-collapse:collapse;margin:.85rem 0 1rem;font-size:13px;line-height:1.6;}
-.feedback-box table.md-table th,.feedback-box table.md-table td{border:.5px solid var(--border2);padding:7px 10px;text-align:left;vertical-align:top;}
-.feedback-box table.md-table th{background:var(--bg2);font-weight:500;white-space:nowrap;}
-.feedback-box table.md-table tr:nth-child(even) td{background:rgba(255,255,255,.35);}
-.feedback-box p{margin-bottom:.55rem;}
-.feedback-box ol,.feedback-box ul{padding-left:1.4rem;margin-bottom:.55rem;}
-.feedback-box li{margin-bottom:.3rem;}
-.feedback-box strong{font-weight:500;}
-.ok{color:var(--green);font-weight:500;}
-.ng{color:#c0453a;font-weight:500;}
-.completed-text{background:var(--green-bg);border:.5px solid var(--green);border-radius:var(--r-md);padding:1rem 1.25rem;margin-top:.5rem;font-size:14px;line-height:2.1;color:var(--green-text);}
-.step-bar{display:flex;gap:6px;margin-bottom:1rem;}
-.step{flex:1;height:3px;border-radius:2px;background:var(--border);transition:background .3s;}
-.step.done{background:var(--green);}
-.step.active{background:var(--purple);}
-.action-bar{display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap;}
-.loading{color:var(--text2);font-size:14px;padding:.75rem 0;}
-.dots::after{content:'.';animation:dots 1.2s steps(3,end) infinite;}
-@keyframes dots{0%,20%{content:'.'}40%{content:'..'}80%,100%{content:'...'}}
-.gen-status{margin-top:12px;padding:12px 14px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-md);}
-.gen-status-hd{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--text);margin-bottom:10px;}
-.gen-spinner{width:18px;height:18px;border:2px solid var(--border2);border-top-color:var(--purple);border-radius:50%;animation:gen-spin .7s linear infinite;flex-shrink:0;}
-@keyframes gen-spin{to{transform:rotate(360deg);}}
-.gen-steps{list-style:none;display:grid;gap:6px;}
-.gen-step{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);transition:color .2s;}
-.gen-step.active{color:var(--text);font-weight:500;}
-.gen-step.done{color:var(--green);}
-.gen-step-mark{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;line-height:1;}
-.gen-step.active .gen-step-mark{border-color:var(--purple);border-top-color:transparent;border-width:2px;animation:gen-spin .7s linear infinite;background:transparent;}
-.gen-step.done .gen-step-mark{border-color:var(--green);background:var(--green);color:#fff;}
-.gen-step.done .gen-step-mark::after{content:'✓';}
-.btn.is-loading{opacity:.65;cursor:wait;}
-.app.is-busy .pcard{cursor:not-allowed;}
-.completed-text .conj strong{color:var(--purple);font-weight:600;}
-.completed-text .conj-role{font-size:.85em;color:var(--amber);font-weight:500;margin-left:1px;}
-.err{color:#c0453a;font-size:14px;padding:.5rem 0;}
-.slabel{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:8px;}
-.theme-tag{display:inline-block;font-size:12px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--r-md);padding:3px 10px;margin-bottom:10px;color:var(--text2);}
-.mode-bar{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:.6rem 1rem;font-size:13px;color:var(--text2);margin-bottom:.75rem;display:flex;align-items:center;gap:8px;}
-.mode-bar strong{color:var(--text);}
-.sum-block,.sum-q-block{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
-.sum-block-lbl,.sum-q-lbl{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:.5rem;}
-.q-type-badge{display:inline-block;font-size:11px;padding:2px 7px;border-radius:var(--r-md);background:var(--bg2);border:.5px solid var(--border2);color:var(--text2);margin-left:6px;vertical-align:middle;}
-.sum-src{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:1rem;font-size:14px;line-height:1.9;margin-bottom:.75rem;}
-.sum-q-text{font-size:14px;line-height:1.85;margin-bottom:.75rem;}
-.sum-ta{width:100%;border:.5px solid var(--border2);border-radius:var(--r-md);padding:10px;font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;resize:vertical;line-height:1.7;transition:border-color .15s;}
-.sum-ta.overlimit{border-color:#c0453a!important;}
-.cc{font-size:12px;text-align:right;margin-top:3px;color:var(--text2);}
-.cc.over{color:#c0453a;font-weight:500;}
-.cc.ok2{color:var(--green);}
-.owarn{font-size:12px;color:#c0453a;margin-top:4px;display:none;}
-.owarn.show{display:block;}
-.review-toggle{display:flex;align-items:center;gap:6px;width:100%;margin:0 0 10px;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);background:var(--bg2);color:var(--text2);font-size:13px;cursor:pointer;text-align:left;}
-.review-toggle:hover{color:var(--text);border-color:var(--border);}
-.review-toggle-icon{font-size:10px;line-height:1;transition:transform .15s;}
-.review-premise-body{margin-bottom:1rem;padding:0 2px;}
-.review-premise-body[hidden]{display:none!important;}
-.review-field{margin-bottom:.85rem;}
-.review-field label{display:block;font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px;}
-.review-images-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;}
-.review-img-preview{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
-.review-img-thumb{position:relative;width:72px;height:72px;border-radius:var(--r-md);overflow:hidden;border:.5px solid var(--border2);background:var(--bg2);}
-.review-img-thumb img{width:100%;height:100%;object-fit:cover;}
-.review-img-thumb button{position:absolute;top:2px;right:2px;width:20px;height:20px;border:none;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:12px;line-height:1;cursor:pointer;padding:0;}
-.review-required::after{content:' *';color:#c0453a;font-weight:500;}
-.past-section{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-top:1rem;}
-.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem;}
-.ph-title{font-size:15px;font-weight:500;}
-.pf-tabs{display:flex;gap:5px;margin-bottom:.75rem;flex-wrap:wrap;}
-.pf-tab{padding:5px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:11px;color:var(--text2);white-space:nowrap;}
-.pf-tab.active{background:var(--bg2);color:var(--text);font-weight:500;}
-.ptoolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;}
-.ssync{font-size:12px;color:var(--text2);display:flex;align-items:center;gap:5px;}
-.sdot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;}
-.sdot.ok{background:var(--green);}
-.sdot.err{background:#c0453a;}
-.sdot.spin{background:var(--amber);animation:pulse .8s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-.plist{display:grid;gap:8px;}
-.pempty{text-align:center;padding:2rem 1rem;color:var(--text2);font-size:13px;line-height:1.8;}
-.pcard{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:.85rem 1rem;cursor:pointer;transition:border-color .15s;}
-.pcard:hover{border-color:var(--border2);}
-.pc-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px;}
-.pc-t{font-size:13px;font-weight:500;}
-.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:var(--r-md);}
-.b1{background:#eaf5e6;color:#1f5c2a;}.b2{background:#e6f4ee;color:#1a4d38;}
-.b3{background:#e8eef9;color:#1e3d7a;}.b4{background:#fdf0e0;color:#7a4010;}.b5{background:#fce8e8;color:#701510;}
-.pc-pre{font-size:12px;color:var(--text2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.pc-date{font-size:11px;color:var(--text2);margin-top:4px;}
-.pc-m{display:flex;gap:5px;align-items:center;}
-.pcdel{padding:3px 7px;font-size:11px;color:var(--text2);background:transparent;border:.5px solid var(--border2);border-radius:var(--r-md);cursor:pointer;flex-shrink:0;}
-.pcdel:hover{color:#c0453a;border-color:#c0453a;}
-.back-btn{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--text2);cursor:pointer;background:none;border:none;padding:0;margin-bottom:1rem;}
-.back-btn:hover{color:var(--text);}
-.divider{height:.5px;background:var(--border);margin:1rem 0;}
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--bg);border:.5px solid var(--border2);border-radius:var(--r-lg);padding:.75rem 1.25rem;font-size:13px;box-shadow:0 4px 20px rgba(80,40,10,.15);display:none;z-index:999;max-width:380px;text-align:center;line-height:1.6;}
-.toast.show{display:block;}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
+  <div id="app-busy-overlay" class="app-busy-overlay" aria-hidden="true" role="alert" aria-live="assertive">
+    <div class="app-busy-overlay-inner">
+      <div class="app-busy-spinner" aria-hidden="true"></div>
+      <p class="app-busy-overlay-title" id="app-busy-overlay-msg"></p>
+      <p class="app-busy-overlay-hint" id="app-busy-overlay-hint"></p>
+    </div>
+  </div>
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
     </div>
-    <div class="lang-sw">
-      <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
-      <button class="lang-btn" onclick="setLang('en')">English</button>
-    </div>
-  </div>
-
-  <div class="api-bar no-print" id="api-bar">
-    <div class="api-bar-header" onclick="toggleApiBar()">
-      <span id="ui-api-lbl">Claude APIキー</span>
-      <span class="api-bar-status" id="api-bar-status"></span>
-      <i class="ti ti-chevron-down api-bar-chevron" id="api-bar-chevron"
-         style="font-size:14px;color:var(--text2);transition:transform .2s;"></i>
-    </div>
-    <div class="api-bar-body" id="api-bar-body">
-      <div class="api-row" style="margin-top:10px;">
-        <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="current-password"/>
-        <button class="api-save-btn" onclick="saveApiKey()">
-          <i class="ti ti-device-floppy"></i>
-          <span id="ui-save-btn">保存</span>
-        </button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="guide-btn no-print" onclick="openGuide()">
+        <i class="ti ti-help-circle" aria-hidden="true"></i>
+        <span id="ui-guide-btn">ガイド</span>
+      </button>
+      <div class="lang-sw">
+        <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+        <button class="lang-btn" onclick="setLang('en')">English</button>
       </div>
-      <p class="api-note">
-        <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
-        → API Keys
-      </p>
     </div>
   </div>
 
   <div class="tabs no-print">
     <button class="tab active" onclick="switchTab('fill')"><i class="ti ti-puzzle"></i> <span id="ui-tab-fill">穴埋め</span></button>
     <button class="tab" onclick="switchTab('summary')"><i class="ti ti-align-left"></i> <span id="ui-tab-sum">要約</span></button>
-    <button class="tab" onclick="switchTab('review')"><i class="ti ti-checklist"></i> <span id="ui-tab-review">校閲</span></button>
+    <button class="tab" onclick="switchTab('critique')"><i class="ti ti-message-search"></i> <span id="ui-tab-critique">批判読み</span></button>
+    <button class="tab" onclick="switchTab('ame')"><i class="ti ti-umbrella"></i> <span id="ui-tab-ame">空雨傘</span></button>
+    <button class="tab" onclick="switchTab('kibari')"><i class="ti ti-heart-handshake"></i> <span id="ui-tab-kibari">気配り</span></button>
   </div>
 
   <!-- 穴埋め -->
@@ -258,24 +53,18 @@ textarea{resize:vertical;}
     <div id="fill-new-area">
     <div class="card no-print">
       <div style="margin-bottom:12px;">
-        <label id="ui-f-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-optional">（省略可）</span></label>
-        <div class="theme-mode-toggle" id="f-theme-mode">
-          <button type="button" class="mode-btn active" data-mode="keyword" onclick="setThemeMode('f','keyword')">
-            <span id="ui-f-mode-keyword">キーワード</span>
-          </button>
-          <button type="button" class="mode-btn" data-mode="question" onclick="setThemeMode('f','question')">
-            <span id="ui-f-mode-question">課題・疑問</span>
-          </button>
-        </div>
-        <textarea id="f-theme" rows="1"
-          style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
-          oninput="autoResize(this)"></textarea>
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-f-theme-lbl">テーマ</label>
+        <div id="f-theme-row" class="preset-row"></div>
+      </div>
+      <div class="industry-block" style="margin-bottom:12px;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+        <div class="industry-preset-row"></div>
       </div>
       <label id="ui-f-diff-lbl">難易度</label>
       <div class="diff-row" id="f-diff-row">
         <button class="diff-btn" data-d="1" onclick="setDiff('f',1)">★☆☆☆☆<br><span class="dlbl" id="fd1"></span></button>
         <button class="diff-btn" data-d="2" onclick="setDiff('f',2)">★★☆☆☆<br><span class="dlbl" id="fd2"></span></button>
-        <button class="diff-btn sel" data-d="3" onclick="setDiff('f',3)">★★★☆☆<br><span class="dlbl" id="fd3"></span></button>
+        <button class="diff-btn" data-d="3" onclick="setDiff('f',3)">★★★☆☆<br><span class="dlbl" id="fd3"></span></button>
         <button class="diff-btn" data-d="4" onclick="setDiff('f',4)">★★★★☆<br><span class="dlbl" id="fd4"></span></button>
         <button class="diff-btn" data-d="5" onclick="setDiff('f',5)">★★★★★<br><span class="dlbl" id="fd5"></span></button>
       </div>
@@ -309,6 +98,12 @@ textarea{resize:vertical;}
       </div>
       <div class="action-bar no-print" style="margin-top:8px;">
         <button class="btn btn-icon btn-sm" id="f-pa-btn" style="display:none;" onclick="doPrint('fill','a')"><i class="ti ti-printer"></i> <span id="ui-f-pa">解説を印刷</span></button>
+      </div>
+      <div class="action-bar no-print" id="f-copy-bar" style="display:none;margin-top:8px;">
+        <button class="btn btn-icon btn-sm" onclick="copyResult('fill')">
+          <i class="ti ti-clipboard-copy" aria-hidden="true"></i>
+          <span id="ui-f-copy">コピー（MD）</span>
+        </button>
       </div>
       <div id="f-fb"></div>
     </div>
@@ -352,23 +147,26 @@ textarea{resize:vertical;}
     <div id="summary-new-area">
     <div class="card no-print">
       <div style="margin-bottom:12px;">
-        <label id="ui-s-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-s-opt">（省略可）</span></label>
-        <div class="theme-mode-toggle" id="s-theme-mode">
-          <button type="button" class="mode-btn active" data-mode="keyword" onclick="setThemeMode('s','keyword')">
-            <span id="ui-s-mode-keyword">キーワード</span>
-          </button>
-          <button type="button" class="mode-btn" data-mode="question" onclick="setThemeMode('s','question')">
-            <span id="ui-s-mode-question">課題・疑問</span>
-          </button>
-        </div>
-        <textarea id="s-theme" rows="1"
-          style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
-          oninput="autoResize(this)"></textarea>
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-s-theme-lbl">テーマ</label>
+        <div id="s-theme-row" class="preset-row"></div>
       </div>
+      <div class="industry-block" style="margin-bottom:12px;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+        <div class="industry-preset-row"></div>
+      </div>
+      <label id="ui-s-diff-lbl">難易度</label>
+      <div class="diff-row" id="s-diff-row">
+        <button class="diff-btn" data-d="1" onclick="setDiff('s',1)">★☆☆☆☆<br><span class="dlbl" id="sd1"></span></button>
+        <button class="diff-btn" data-d="2" onclick="setDiff('s',2)">★★☆☆☆<br><span class="dlbl" id="sd2"></span></button>
+        <button class="diff-btn" data-d="3" onclick="setDiff('s',3)">★★★☆☆<br><span class="dlbl" id="sd3"></span></button>
+        <button class="diff-btn" data-d="4" onclick="setDiff('s',4)">★★★★☆<br><span class="dlbl" id="sd4"></span></button>
+        <button class="diff-btn" data-d="5" onclick="setDiff('s',5)">★★★★★<br><span class="dlbl" id="sd5"></span></button>
+      </div>
+      <div class="diff-desc" id="s-diff-desc"></div>
       <div id="s-volume-selector" style="display:none; margin-bottom:12px;">
         <label id="ui-s-vol-lbl">ボリューム</label>
         <div class="volume-row">
-          <button type="button" class="vol-btn active" data-v="short" onclick="setVolume('short')">
+          <button type="button" class="vol-btn" data-v="short" onclick="setVolume('short')">
             <span id="ui-vol-short">さくっと</span>
             <span class="vol-chars" id="ui-vol-short-chars">500字</span>
           </button>
@@ -382,15 +180,6 @@ textarea{resize:vertical;}
           </button>
         </div>
       </div>
-      <label id="ui-s-diff-lbl">難易度</label>
-      <div class="diff-row" id="s-diff-row">
-        <button class="diff-btn" data-d="1" onclick="setDiff('s',1)">★☆☆☆☆<br><span class="dlbl" id="sd1"></span></button>
-        <button class="diff-btn" data-d="2" onclick="setDiff('s',2)">★★☆☆☆<br><span class="dlbl" id="sd2"></span></button>
-        <button class="diff-btn sel" data-d="3" onclick="setDiff('s',3)">★★★☆☆<br><span class="dlbl" id="sd3"></span></button>
-        <button class="diff-btn" data-d="4" onclick="setDiff('s',4)">★★★★☆<br><span class="dlbl" id="sd4"></span></button>
-        <button class="diff-btn" data-d="5" onclick="setDiff('s',5)">★★★★★<br><span class="dlbl" id="sd5"></span></button>
-      </div>
-      <div class="diff-desc" id="s-diff-desc"></div>
       <div class="auto-info" id="s-auto-info"></div>
       <button class="btn" id="s-gen-btn" onclick="generateSummary()"><span id="ui-s-gen">問題を生成する</span></button>
       <div id="s-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
@@ -405,6 +194,31 @@ textarea{resize:vertical;}
       <p class="slabel no-print" id="ui-s-inst">問題文を読み、各設問に答えてください</p>
       <div class="problem-box" id="s-problem-text"></div>
       <div id="s-questions"></div>
+      <div class="answer-mode-bar" id="s-answer-mode-bar">
+        <span class="label" id="ui-s-ans-mode-lbl">回答方法</span>
+        <div class="answer-mode-toggle">
+          <button type="button" class="amode-btn active" id="s-amode-text" onclick="setAnswerMode('s','text')">
+            <i class="ti ti-keyboard" aria-hidden="true"></i>
+            <span id="ui-s-amode-text">テキスト入力</span>
+          </button>
+          <button type="button" class="amode-btn" id="s-amode-photo" onclick="setAnswerMode('s','photo')">
+            <i class="ti ti-camera" aria-hidden="true"></i>
+            <span id="ui-s-amode-photo">写真で提出</span>
+          </button>
+        </div>
+      </div>
+      <div id="s-photo-area" style="display:none;margin-bottom:1rem;">
+        <span class="label" id="ui-s-photo-lbl">回答を書いた紙を撮影してください（最大2枚）</span>
+        <div class="upload-zone" id="s-upload-zone" onclick="document.getElementById('s-photo-input').click()">
+          <i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:.4rem;opacity:.5;"></i>
+          <span id="ui-s-upload-hint">タップして写真を選ぶ</span>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px;" id="ui-s-upload-note">JPEG / PNG / HEIC・最大2枚</div>
+        </div>
+        <input type="file" id="s-photo-input" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event,'s')"/>
+        <div class="photo-preview" id="s-photo-preview"></div>
+        <span class="label" style="margin-top:.5rem;display:block;" id="ui-s-memo-lbl">補足メモ（任意）</span>
+        <textarea id="s-photo-memo" rows="2" style="resize:none;font-size:13px;"></textarea>
+      </div>
       <div id="s-owarn" class="owarn"></div>
       <div class="action-bar no-print" id="s-print-area" style="display:none;">
         <button class="btn btn-icon btn-sm" onclick="doPrint('summary','q')"><i class="ti ti-printer"></i> <span id="ui-s-pq">問題を印刷</span></button>
@@ -414,6 +228,12 @@ textarea{resize:vertical;}
       </div>
       <div class="action-bar no-print" style="margin-top:8px;">
         <button class="btn btn-icon btn-sm" id="s-pa-btn" style="display:none;" onclick="doPrint('summary','a')"><i class="ti ti-printer"></i> <span id="ui-s-pa">解説を印刷</span></button>
+      </div>
+      <div class="action-bar no-print" id="s-copy-bar" style="display:none;margin-top:8px;">
+        <button class="btn btn-icon btn-sm" onclick="copyResult('summary')">
+          <i class="ti ti-clipboard-copy" aria-hidden="true"></i>
+          <span id="ui-s-copy">コピー（MD）</span>
+        </button>
       </div>
       <div id="s-fb"></div>
     </div>
@@ -444,1682 +264,383 @@ textarea{resize:vertical;}
     </div>
   </div>
 
-  <!-- 校閲 -->
-  <div id="review-panel" class="panel">
-    <div class="card no-print">
-      <button type="button" class="review-toggle" id="r-premise-toggle" onclick="toggleReviewPremise()" aria-expanded="false">
-        <span class="review-toggle-icon" id="r-premise-icon">▶</span>
-        <span id="ui-r-premise-toggle">前提情報を追加する（任意）</span>
+  <!-- 批判読み -->
+  <div id="critique-panel" class="panel">
+    <div class="sub-tabs no-print" id="critique-sub-tabs">
+      <button class="sub-tab active" id="critique-sub-new" onclick="switchSub('critique','new')">
+        <i class="ti ti-plus"></i> <span id="ui-c-sub-new">新規生成</span>
       </button>
-      <div id="r-premise-body" class="review-premise-body" hidden>
-        <div class="review-field">
-          <label id="ui-r-images-lbl">参考画像（複数可）</label>
-          <input type="file" id="r-images" accept="image/*" multiple onchange="onReviewImagesChange()">
-          <div id="r-image-preview" class="review-img-preview"></div>
-        </div>
-        <div class="review-field">
-          <label id="ui-r-premise-lbl">前提情報（テキスト）</label>
-          <textarea id="r-premise" class="sum-ta" style="min-height:100px;" placeholder=""></textarea>
-        </div>
-      </div>
-      <div class="review-field">
-        <label id="ui-r-lbl" class="review-required">校閲する文章</label>
-        <textarea id="r-text" class="sum-ta" style="min-height:180px;"></textarea>
-        <div id="r-text-err" class="owarn"></div>
-      </div>
-      <button class="btn" style="margin-top:12px;" id="r-btn" onclick="doReview()"><span id="ui-r-btn">接続詞・論理性をチェックする</span></button>
+      <button class="sub-tab" id="critique-sub-past" onclick="switchSub('critique','past')">
+        <i class="ti ti-history"></i> <span id="ui-c-sub-past">過去問</span>
+      </button>
     </div>
-    <div id="r-result" style="display:none;"><div class="feedback-box" id="r-fb"></div></div>
+    <div id="critique-new-area">
+      <div class="card no-print">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-c-theme-lbl">テーマ</label>
+          <div id="c-theme-row" class="preset-row"></div>
+        </div>
+        <div class="industry-block" style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+          <div class="industry-preset-row"></div>
+        </div>
+        <label id="ui-c-diff-lbl">難易度</label>
+        <div class="diff-row" id="c-diff-row">
+          <button class="diff-btn" data-d="1" onclick="setDiff('c',1)">★☆☆☆☆<br><span class="dlbl" id="cd1"></span></button>
+          <button class="diff-btn" data-d="2" onclick="setDiff('c',2)">★★☆☆☆<br><span class="dlbl" id="cd2"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setDiff('c',3)">★★★☆☆<br><span class="dlbl" id="cd3"></span></button>
+          <button class="diff-btn" data-d="4" onclick="setDiff('c',4)">★★★★☆<br><span class="dlbl" id="cd4"></span></button>
+          <button class="diff-btn" data-d="5" onclick="setDiff('c',5)">★★★★★<br><span class="dlbl" id="cd5"></span></button>
+        </div>
+        <div class="diff-desc" id="c-diff-desc"></div>
+        <div class="auto-info" id="c-auto-info"></div>
+        <button class="btn" id="c-gen-btn" onclick="generateCritique()">
+          <span id="ui-c-gen">問題を生成する</span>
+        </button>
+        <div id="c-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="ui-c-gen-loading">問題を生成中...</span>
+        </div>
+      </div>
+      <div id="critique-result" style="display:none;">
+        <div class="step-bar no-print">
+          <div class="step done" id="cs1"></div>
+          <div class="step active" id="cs2"></div>
+          <div class="step" id="cs3"></div>
+        </div>
+        <div id="c-theme-tag"></div>
+        <p class="slabel no-print" id="ui-c-inst">問題文を読み、各設問に答えてください</p>
+        <div class="problem-box" id="c-problem"></div>
+        <div id="c-questions"></div>
+        <div class="answer-mode-bar no-print" id="c-answer-mode-bar">
+          <span class="label" id="ui-c-ans-mode-lbl">回答方法</span>
+          <div class="answer-mode-toggle">
+            <button type="button" class="amode-btn active" id="c-amode-text" onclick="setAnswerMode('c','text')">
+              <i class="ti ti-keyboard" aria-hidden="true"></i>
+              <span id="ui-c-amode-text">テキスト入力</span>
+            </button>
+            <button type="button" class="amode-btn" id="c-amode-photo" onclick="setAnswerMode('c','photo')">
+              <i class="ti ti-camera" aria-hidden="true"></i>
+              <span id="ui-c-amode-photo">写真で提出</span>
+            </button>
+          </div>
+        </div>
+        <div id="c-photo-area" class="no-print" style="display:none;margin-bottom:1rem;">
+          <span class="label" id="ui-c-photo-lbl">回答を書いた紙を撮影してください（最大2枚）</span>
+          <div class="upload-zone" id="c-upload-zone" onclick="document.getElementById('c-photo-input').click()">
+            <i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:.4rem;opacity:.5;"></i>
+            <span id="ui-c-upload-hint">タップして写真を選ぶ</span>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px;" id="ui-c-upload-note">JPEG / PNG / HEIC・最大2枚</div>
+          </div>
+          <input type="file" id="c-photo-input" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event,'c')"/>
+          <div class="photo-preview" id="c-photo-preview"></div>
+          <span class="label" style="margin-top:.5rem;display:block;" id="ui-c-memo-lbl">補足メモ（任意）</span>
+          <textarea id="c-photo-memo" rows="2" style="resize:none;font-size:13px;"></textarea>
+        </div>
+        <div class="action-bar no-print" style="margin-top:1rem;">
+          <button class="btn" id="c-submit" onclick="submitCritique()">
+            <span id="ui-c-submit">添削してもらう</span>
+          </button>
+        </div>
+        <div class="action-bar no-print" style="margin-top:8px;">
+          <button class="btn btn-icon btn-sm" id="c-pa-btn" style="display:none;" onclick="doPrint('critique','a')">
+            <i class="ti ti-printer"></i> <span id="ui-c-pa">解説を印刷</span>
+          </button>
+        </div>
+        <div id="c-fb"></div>
+      </div>
+    </div>
+    <div id="critique-past-area" class="no-print" style="display:none;">
+      <div id="cp-list-view">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <div class="pf-tabs" id="cp-tabs" style="margin-bottom:0;flex:1;">
+            <button class="pf-tab active" data-f="all" onclick="filterPast('critique','all')" id="ui-cp-all">すべて</button>
+            <button class="pf-tab" data-f="1" onclick="filterPast('critique','1')">★1</button>
+            <button class="pf-tab" data-f="2" onclick="filterPast('critique','2')">★2</button>
+            <button class="pf-tab" data-f="3" onclick="filterPast('critique','3')">★3</button>
+            <button class="pf-tab" data-f="4" onclick="filterPast('critique','4')">★4</button>
+            <button class="pf-tab" data-f="5" onclick="filterPast('critique','5')">★5</button>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="randomPast('critique')" style="flex-shrink:0;margin-left:8px;">
+            <i class="ti ti-arrows-shuffle"></i>
+            <span id="ui-c-rand">ランダム出題</span>
+          </button>
+        </div>
+        <div class="ssync" style="margin-bottom:.75rem;">
+          <div class="sdot" id="cp-dot"></div>
+          <span id="cp-lbl">—</span>
+        </div>
+        <div class="plist" id="cp-list"></div>
+      </div>
+      <div id="cp-play" style="display:none;">
+        <button class="back-btn" onclick="closePP('critique')">
+          <i class="ti ti-arrow-left"></i> <span id="ui-c-back">一覧に戻る</span>
+        </button>
+        <div id="cp-play-content"></div>
+      </div>
+    </div>
   </div>
 
+  <!-- 空雨傘 -->
+  <div id="ame-panel" class="panel">
+    <div class="sub-tabs no-print" id="ame-sub-tabs">
+      <button class="sub-tab active" id="ame-sub-new" onclick="switchSub('ame','new')">
+        <i class="ti ti-plus"></i> <span id="ui-a-sub-new">新規生成</span>
+      </button>
+      <button class="sub-tab" id="ame-sub-past" onclick="switchSub('ame','past')">
+        <i class="ti ti-history"></i> <span id="ui-a-sub-past">過去問</span>
+      </button>
+    </div>
+    <div id="ame-new-area">
+      <div class="card no-print">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-a-theme-lbl">テーマ</label>
+          <div id="a-theme-row" class="preset-row"></div>
+        </div>
+        <div class="industry-block" style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+          <div class="industry-preset-row"></div>
+        </div>
+        <label id="ui-a-diff-lbl">難易度</label>
+        <div class="diff-row" id="a-diff-row">
+          <button class="diff-btn" data-d="1" onclick="setDiff('a',1)">★☆☆☆☆<br><span class="dlbl" id="ad1"></span></button>
+          <button class="diff-btn" data-d="2" onclick="setDiff('a',2)">★★☆☆☆<br><span class="dlbl" id="ad2"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setDiff('a',3)">★★★☆☆<br><span class="dlbl" id="ad3"></span></button>
+          <button class="diff-btn" data-d="4" onclick="setDiff('a',4)">★★★★☆<br><span class="dlbl" id="ad4"></span></button>
+          <button class="diff-btn" data-d="5" onclick="setDiff('a',5)">★★★★★<br><span class="dlbl" id="ad5"></span></button>
+        </div>
+        <div class="diff-desc" id="a-diff-desc"></div>
+        <button class="btn" id="a-gen-btn" onclick="generateAme()">
+          <span id="ui-a-gen">問題を生成する</span>
+        </button>
+        <div id="a-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="ui-a-gen-loading">問題を生成中...</span>
+        </div>
+      </div>
+      <div id="ame-result" style="display:none;">
+        <div class="step-bar no-print">
+          <div class="step done" id="as1"></div>
+          <div class="step active" id="as2"></div>
+          <div class="step" id="as3"></div>
+        </div>
+        <div id="a-theme-tag"></div>
+        <div id="a-law-box" style="display:none;margin-bottom:1rem;">
+          <p class="slabel no-print" id="ui-a-law-lbl">法則・前提</p>
+          <div class="mode-bar" id="a-law-text"></div>
+        </div>
+        <p class="slabel no-print" id="ui-a-article-lbl">記事</p>
+        <div class="problem-box" id="a-article"></div>
+        <div id="a-questions"></div>
+        <div class="answer-mode-bar no-print" id="a-answer-mode-bar">
+          <span class="label" id="ui-a-ans-mode-lbl">回答方法</span>
+          <div class="answer-mode-toggle">
+            <button type="button" class="amode-btn active" id="a-amode-text" onclick="setAnswerMode('a','text')">
+              <i class="ti ti-keyboard" aria-hidden="true"></i>
+              <span id="ui-a-amode-text">テキスト入力</span>
+            </button>
+            <button type="button" class="amode-btn" id="a-amode-photo" onclick="setAnswerMode('a','photo')">
+              <i class="ti ti-camera" aria-hidden="true"></i>
+              <span id="ui-a-amode-photo">写真で提出</span>
+            </button>
+          </div>
+        </div>
+        <div id="a-photo-area" class="no-print" style="display:none;margin-bottom:1rem;">
+          <span class="label" id="ui-a-photo-lbl">回答を書いた紙を撮影してください（最大2枚）</span>
+          <div class="upload-zone" id="a-upload-zone" onclick="document.getElementById('a-photo-input').click()">
+            <i class="ti ti-camera-plus" aria-hidden="true" style="font-size:28px;display:block;margin-bottom:.4rem;opacity:.5;"></i>
+            <span id="ui-a-upload-hint">タップして写真を選ぶ</span>
+            <div style="font-size:11px;color:var(--text2);margin-top:4px;" id="ui-a-upload-note">JPEG / PNG / HEIC・最大2枚</div>
+          </div>
+          <input type="file" id="a-photo-input" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event,'a')"/>
+          <div class="photo-preview" id="a-photo-preview"></div>
+          <span class="label" style="margin-top:.5rem;display:block;" id="ui-a-memo-lbl">補足メモ（任意）</span>
+          <textarea id="a-photo-memo" rows="2" style="resize:none;font-size:13px;"></textarea>
+        </div>
+        <div class="action-bar no-print" style="margin-top:1rem;">
+          <button class="btn" id="a-submit" onclick="submitAme()">
+            <span id="ui-a-submit">添削してもらう</span>
+          </button>
+        </div>
+        <div class="action-bar no-print" style="margin-top:8px;">
+          <button class="btn btn-icon btn-sm" id="a-pa-btn" style="display:none;" onclick="doPrint('ame','a')">
+            <i class="ti ti-printer"></i> <span id="ui-a-pa">解説を印刷</span>
+          </button>
+        </div>
+        <div id="a-fb"></div>
+      </div>
+    </div>
+    <div id="ame-past-area" class="no-print" style="display:none;">
+      <div id="ap-list-view">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <div class="pf-tabs" id="ap-tabs" style="margin-bottom:0;flex:1;">
+            <button class="pf-tab active" data-f="all" onclick="filterPast('ame','all')" id="ui-ap-all">すべて</button>
+            <button class="pf-tab" data-f="1" onclick="filterPast('ame','1')">★1</button>
+            <button class="pf-tab" data-f="2" onclick="filterPast('ame','2')">★2</button>
+            <button class="pf-tab" data-f="3" onclick="filterPast('ame','3')">★3</button>
+            <button class="pf-tab" data-f="4" onclick="filterPast('ame','4')">★4</button>
+            <button class="pf-tab" data-f="5" onclick="filterPast('ame','5')">★5</button>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="randomPast('ame')" style="flex-shrink:0;margin-left:8px;">
+            <i class="ti ti-arrows-shuffle"></i>
+            <span id="ui-a-rand">ランダム出題</span>
+          </button>
+        </div>
+        <div class="ssync" style="margin-bottom:.75rem;">
+          <div class="sdot" id="ap-dot"></div>
+          <span id="ap-lbl">—</span>
+        </div>
+        <div class="plist" id="ap-list"></div>
+      </div>
+      <div id="ap-play" style="display:none;">
+        <button class="back-btn" onclick="closePP('ame')">
+          <i class="ti ti-arrow-left"></i> <span id="ui-a-back">一覧に戻る</span>
+        </button>
+        <div id="ap-play-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 気配り -->
+  <div id="kibari-panel" class="panel">
+    <div class="sub-tabs no-print" id="kibari-sub-tabs">
+      <button class="sub-tab active" id="kibari-sub-new" onclick="switchSub('kibari','new')">
+        <i class="ti ti-plus"></i> <span id="ui-kb-sub-new">新規生成</span>
+      </button>
+      <button class="sub-tab" id="kibari-sub-past" onclick="switchSub('kibari','past')">
+        <i class="ti ti-history"></i> <span id="ui-kb-sub-past">過去問</span>
+      </button>
+    </div>
+    <div id="kibari-new-area">
+      <div class="card no-print">
+        <div style="margin-bottom:12px;">
+          <label id="ui-kb-theme-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">テーマ</label>
+          <div id="kb-theme-row" class="preset-row"></div>
+        </div>
+        <div class="industry-block" style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+          <div class="industry-preset-row"></div>
+        </div>
+        <label id="ui-kb-diff-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">難易度</label>
+        <div class="diff-row" id="kb-diff-row">
+          <button class="diff-btn" data-d="1" onclick="setDiff('kb',1)">★☆☆☆☆<br><span class="dlbl" id="kbd1"></span></button>
+          <button class="diff-btn" data-d="2" onclick="setDiff('kb',2)">★★☆☆☆<br><span class="dlbl" id="kbd2"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setDiff('kb',3)">★★★☆☆<br><span class="dlbl" id="kbd3"></span></button>
+          <button class="diff-btn" data-d="4" onclick="setDiff('kb',4)">★★★★☆<br><span class="dlbl" id="kbd4"></span></button>
+          <button class="diff-btn" data-d="5" onclick="setDiff('kb',5)">★★★★★<br><span class="dlbl" id="kbd5"></span></button>
+        </div>
+        <div class="diff-desc" id="kb-diff-desc"></div>
+        <button class="btn" id="kb-gen-btn" onclick="generateKibari()">
+          <span id="ui-kb-gen">問題を生成する</span>
+        </button>
+        <div id="kb-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="ui-kb-gen-loading">問題を生成中...</span>
+        </div>
+      </div>
+      <div id="kibari-result" style="display:none;">
+        <div class="step-bar no-print">
+          <div class="step done" id="kbs1"></div>
+          <div class="step active" id="kbs2"></div>
+          <div class="step" id="kbs3"></div>
+        </div>
+        <div id="kb-theme-tag"></div>
+        <p class="slabel no-print" id="ui-kb-situation-lbl">状況</p>
+        <div class="problem-box" id="kb-situation"></div>
+        <div id="kb-rounds"></div>
+        <div class="action-bar no-print" id="kb-submit-bar" style="display:none;">
+          <button class="btn" id="kb-submit" onclick="submitKibari()">
+            <span id="ui-kb-submit">採点してもらう</span>
+          </button>
+        </div>
+        <div class="action-bar no-print" style="margin-top:8px;">
+          <button class="btn btn-icon btn-sm" id="kb-pa-btn" style="display:none;" onclick="doPrint('kibari','a')">
+            <i class="ti ti-printer"></i> <span id="ui-kb-pa">解説を印刷</span>
+          </button>
+        </div>
+        <div id="kb-fb"></div>
+      </div>
+    </div>
+    <div id="kibari-past-area" class="no-print" style="display:none;">
+      <div id="kbp-list-view">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <div class="pf-tabs" id="kbp-tabs" style="margin-bottom:0;flex:1;">
+            <button class="pf-tab active" data-f="all" onclick="filterPast('kibari','all')" id="ui-kbp-all">すべて</button>
+            <button class="pf-tab" data-f="1" onclick="filterPast('kibari','1')">★1</button>
+            <button class="pf-tab" data-f="2" onclick="filterPast('kibari','2')">★2</button>
+            <button class="pf-tab" data-f="3" onclick="filterPast('kibari','3')">★3</button>
+            <button class="pf-tab" data-f="4" onclick="filterPast('kibari','4')">★4</button>
+            <button class="pf-tab" data-f="5" onclick="filterPast('kibari','5')">★5</button>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="randomPast('kibari')" style="flex-shrink:0;margin-left:8px;">
+            <i class="ti ti-arrows-shuffle"></i>
+            <span id="ui-kb-rand">ランダム出題</span>
+          </button>
+        </div>
+        <div class="ssync" style="margin-bottom:.75rem;">
+          <div class="sdot" id="kbp-dot"></div>
+          <span id="kbp-lbl">—</span>
+        </div>
+        <div class="plist" id="kbp-list"></div>
+      </div>
+      <div id="kbp-play" style="display:none;">
+        <button class="back-btn" onclick="closePP('kibari')">
+          <i class="ti ti-arrow-left"></i> <span id="ui-kb-back">一覧に戻る</span>
+        </button>
+        <div id="kbp-play-content"></div>
+      </div>
+    </div>
+  </div>
 
 </div>
+
+<!-- ガイドモーダル -->
+<div class="guide-overlay no-print" id="guide-overlay" onclick="onGuideOverlayClick(event)">
+  <div class="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-modal-title">
+    <div class="guide-modal-header">
+      <span class="guide-modal-title" id="guide-modal-title">📖 <span id="ui-guide-title">トレーニングガイド</span></span>
+      <button class="guide-close-btn" onclick="closeGuide()" aria-label="閉じる">×</button>
+    </div>
+    <div class="guide-tabs" id="guide-tabs">
+      <button class="guide-tab active" data-guide="overview" onclick="switchGuideTab('overview')">
+        <span id="ui-gtab-overview">概要</span>
+      </button>
+      <button class="guide-tab" data-guide="fill" onclick="switchGuideTab('fill')">
+        <span id="ui-gtab-fill">穴埋め</span>
+      </button>
+      <button class="guide-tab" data-guide="summary" onclick="switchGuideTab('summary')">
+        <span id="ui-gtab-summary">要約</span>
+      </button>
+      <button class="guide-tab" data-guide="critique" onclick="switchGuideTab('critique')">
+        <span id="ui-gtab-critique">批判読み</span>
+      </button>
+      <button class="guide-tab" data-guide="ame" onclick="switchGuideTab('ame')">
+        <span id="ui-gtab-ame">空雨傘</span>
+      </button>
+      <button class="guide-tab" data-guide="kibari" onclick="switchGuideTab('kibari')">
+        <span id="ui-gtab-kibari">気配り</span>
+      </button>
+    </div>
+    <div class="guide-body" id="guide-body">
+      <p class="guide-loading" id="guide-loading">読み込み中...</p>
+    </div>
+  </div>
+</div>
+
+<!-- 気配りプレビューモーダル -->
+<div class="guide-overlay no-print" id="kb-preview-overlay"
+  onclick="if(event.target===this)closeKibariPreview()">
+  <div class="guide-modal" role="dialog" aria-modal="true" style="max-width:560px;">
+    <div class="guide-modal-header">
+      <span class="guide-modal-title" id="kb-preview-title">メッセージのプレビュー</span>
+      <button class="guide-close-btn" onclick="closeKibariPreview()" aria-label="閉じる">×</button>
+    </div>
+    <div class="guide-body" id="kb-preview-body" style="min-height:120px;"></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script>
-const GAS_URL='https://script.google.com/macros/s/AKfycbx4IH1k8qVsfvpWpOsBLrs1s72MQQpUg6mPazBgR3GPserD3RVwR2E7TR0Yy2mZFATp/exec';
-const APIKEY_KEY='logic_v10_apikey';
-const LANG_KEY='logic_v10_lang';
-
-// ── i18n ─────────────────────────────────────────────────
-const L={
-  ja:{
-    appTitle:'論理トレーニング',
-    subNew:'新規生成',subPast:'過去問',
-    apiLbl:'Claude APIキー',saveBtn:'保存',saved:'保存済み',
-    tabFill:'穴埋め',tabReview:'校閲',tabSum:'要約',
-    fThemeLbl:'テーマ',optional:'（省略可）',fLenLbl:'文字数（目安）',
-    sLenLbl:'問題文の文字数（目安）',diffLbl:'難易度',
-    dLabels:['入門','基礎','標準','上級','超難問'],
-    fDescs:[
-      '中学〜高校レベルの平易な論説文。基本的な接続詞のみ。ヒントあり。',
-      '高校〜大学入試標準レベルの論説文。因果・逆接を含む接続詞。軽いヒントあり。',
-      '大学入試上位校レベルの評論文。類似する接続詞の精確な使い分けが問われる。ヒントなし。',
-      '最難関入試レベル。語彙は平易だが接続詞の選択が論旨を左右する精緻な構造。ヒントなし。',
-      '東京大学現代文レベル以上。専門的文体・文語的接続詞・多層的論証構造。ヒントなし。'
-    ],
-    sDescs:[
-      '難易度1（基礎）: 高校教科書レベルの平易な論説文。各ブロックは約60%に要約できる内容。',
-      '難易度2（標準）: 大学入試レベルの論説・評論文。各ブロックは約50%に要約できる内容。',
-      '難易度3（応用）: 大学入試上位校レベルの評論文。抽象概念を含む。各ブロックは約40%に要約できる内容。',
-      '難易度4（上級）: 平易な語彙だが論理構造が精緻な評論文。各ブロックは約30%に要約できる内容。',
-      '難易度5（超難問）: 東京大学現代文レベル以上の難解な評論文。専門用語・複雑な論証を含む。各ブロックは約20%に要約できる内容。'
-    ],
-    genBtn:'問題を生成する',genBtnBusy:'生成中…',genLoading:'問題を生成中...',gradingLoading:'答え合わせ中...',modeKeyword:'キーワード',modeQuestion:'課題・疑問',
-    genPhaseLlm:'AIが問題を作成しています',genPhaseProcess:'問題を整理しています',
-    gradePhaseLlm:'AIが答え合わせしています',gradePhaseProcess:'解説を表示しています',
-    fInst:'問題文 — 空欄に当てはまる接続詞を答えてください',
-    answerBox:'回答欄',submitBtn:'答え合わせをする',submitBtnBusy:'答え合わせ中…',
-    pq:'問題を印刷',pa:'解説を印刷',
-    fPastTitle:'穴埋め 過去問',sPastTitle:'要約 過去問',
-    rand:'ランダム出題',syncLoading:'集計中...',back:'一覧に戻る',all:'すべて',
-    rPremiseToggle:'前提情報を追加する（任意）',rPremiseClose:'前提情報を閉じる',
-    rImagesLbl:'参考画像（複数可）',rPremiseLbl:'前提情報（テキスト）',
-    rPremisePlaceholder:'参考資料の説明や背景情報など',
-    rLbl:'校閲する文章',rBtn:'接続詞・論理性をチェックする',rTextRequired:'校閲する文章を入力してください。',
-    sGenBtn:'問題を生成する',sInst:'問題文を読み、各設問に答えてください',
-    yourSum:'あなたの回答',sSubmit:'添削してもらう',
-    autoFill:'穴埋め数（自動）：',autoQuestions:'設問数（自動）：',
-    offlineBtn:'オフライン採点（前回の解説を表示）',apiBtn:'APIで新たに添削してもらう',
-    overwriteBtn:'この添削で上書き保存',overwriteNote:'※ APIで添削後に「上書き保存」も可能です',
-    scoreResult:'採点結果',correctTxt:'正解文',prevFb:'前回の詳細添削',
-    noPrevFb:'前回の詳細添削はありません。「APIで新たに添削」を使用してください。',
-    gradingErr:'添削に失敗しました',
-    overWarn:'⚠ 文字数オーバーの設問があります。修正してから添削してください。',
-    charOver:'文字オーバーです',charOf:'文字',charTarget:'目標',charWithin:'文字以内',
-    qLbl:'設問',qInst:'文字以内で答えてください',
-    savedOk:'過去問を保存しました ✓',sSavedOk:'要約問題を保存しました ✓',
-    deletedOk:'削除しました',overwriteOk:'添削を上書き保存しました ✓',
-    delConfirm:'この過去問を削除しますか？',
-    noApiKey:'APIキーを入力してください。',apiKeyHint:'APIキーを入力して「保存」を押してください',
-    saveBtnDone:'保存しました',
-    genFailed:'問題の生成に失敗しました。',reviewFailed:'校閲に失敗しました',
-    apiKeySaved:'APIキーを保存しました ✓',
-    fPrintInst:'指示：空欄（　　）に適切な接続詞を入れてください。',
-    sPrintInst:'指示：問題文を読み、各設問に指定文字数以内で答えてください。',
-    loading:'添削中',syncItems:'件',syncFailed:'失敗',
-    noData:'過去問はありません。',chooseGrading:'答え合わせ方法を選んでください',
-    fThemePlaceholder:'例: AI と社会',sThemePlaceholder:'例: 環境問題',
-    rPlaceholder:'校閲したい文章を入力または貼り付けてください',
-    theme:'テーマ：',diff:'難易度：',
-    sVolLbl:'ボリューム',volShort:'さくっと',volMid:'普通',volLong:'じっくり',
-  },
-  en:{
-    appTitle:'Logic Training',
-    subNew:'New Problem',subPast:'Past Problems',
-    apiLbl:'Claude API Key',saveBtn:'Save',saved:'Saved',
-    tabFill:'Fill-in',tabReview:'Proofread',tabSum:'Summarize',
-    fThemeLbl:'Theme',optional:'(optional)',fLenLbl:'Length (approx.)',
-    sLenLbl:'Problem text length (approx.)',diffLbl:'Difficulty',
-    dLabels:['Beginner','Basic','Standard','Advanced','Master'],
-    fDescs:[
-      'Simple essay at middle to high school level. Basic conjunctions only. Hints provided.',
-      'Standard university entrance exam essay. Causal and adversative conjunctions. Light hints.',
-      'Top-tier entrance exam level. Precise selection among similar conjunctions. No hints.',
-      'Elite exam level. Plain vocabulary, extremely precise logic. Conjunction choice is critical. No hints.',
-      'Beyond top university exam level. Academic prose, formal conjunctions, layered logic. No hints.'
-    ],
-    sDescs:[
-      'Difficulty 1 (Basic): Plain argumentative text at high school level. Target: ~60% of original.',
-      'Difficulty 2 (Standard): University entrance exam level essay. Target: ~50% of original.',
-      'Difficulty 3 (Advanced): Top-tier entrance exam essay with abstract concepts. Target: ~40% of original.',
-      'Difficulty 4 (Expert): Plain vocabulary, precise logic. Target: ~30% of original.',
-      'Difficulty 5 (Master): Beyond top university exam level. Dense academic prose. Target: ~20% of original.'
-    ],
-    genBtn:'Generate Problem',genBtnBusy:'Generating…',genLoading:'Generating problem...',gradingLoading:'Grading...',modeKeyword:'Keyword',modeQuestion:'Question',
-    genPhaseLlm:'AI is generating the problem',genPhaseProcess:'Organizing the problem',
-    gradePhaseLlm:'AI is checking your answers',gradePhaseProcess:'Preparing your feedback',
-    fInst:'Fill in the blanks with the appropriate conjunctions',
-    answerBox:'Answers',submitBtn:'Check Answers',submitBtnBusy:'Checking…',
-    pq:'Print Problem',pa:'Print Explanation',
-    fPastTitle:'Fill-in Past Problems',sPastTitle:'Summary Past Problems',
-    rand:'Random Problem',syncLoading:'Loading...',back:'Back to List',all:'All',
-    rPremiseToggle:'Add context (optional)',rPremiseClose:'Hide context',
-    rImagesLbl:'Reference images (multiple allowed)',rPremiseLbl:'Context (text)',
-    rPremisePlaceholder:'Notes on reference materials, background, etc.',
-    rLbl:'Text to proofread',rBtn:'Check Conjunctions & Logic',rTextRequired:'Please enter the text to proofread.',
-    sGenBtn:'Generate Problem',sInst:'Read the passage and answer each question',
-    yourSum:'Your Answer',sSubmit:'Get Feedback',
-    autoFill:'Blanks (auto):',autoQuestions:'Questions (auto):',
-    offlineBtn:'Offline Scoring (show previous feedback)',apiBtn:'Get New AI Feedback',
-    overwriteBtn:'Save this feedback (overwrite)',overwriteNote:'※ You can overwrite after getting new AI feedback.',
-    scoreResult:'Score',correctTxt:'Correct Text',prevFb:'Previous Feedback',
-    noPrevFb:'No previous feedback. Use "Get New AI Feedback".',
-    gradingErr:'Grading failed',
-    overWarn:'⚠ Some questions exceed the limit. Please fix before submitting.',
-    charOver:'chars over limit',charOf:'chars',charTarget:'Target',charWithin:'chars or less',
-    qLbl:'Q',qInst:'chars or less',
-    savedOk:'Saved ✓',sSavedOk:'Summary saved ✓',
-    deletedOk:'Deleted',overwriteOk:'Overwritten ✓',
-    delConfirm:'Delete this past problem?',
-    noApiKey:'Please enter your API key.',apiKeyHint:'Enter your API key and click Save',
-    saveBtnDone:'Saved',
-    genFailed:'Failed to generate problem.',reviewFailed:'Review failed',
-    apiKeySaved:'API key saved ✓',
-    fPrintInst:'Fill in each blank with an appropriate conjunction.',
-    sPrintInst:'Read the passage and answer each question within the specified word count.',
-    loading:'Generating feedback',syncItems:' items',syncFailed:'Failed',
-    noData:'No past problems found.',chooseGrading:'Choose how to check your answers',
-    fThemePlaceholder:'e.g. AI and Society',sThemePlaceholder:'e.g. Climate Change',
-    rPlaceholder:'Enter or paste the text you want proofread',
-    theme:'Theme: ',diff:'Difficulty: ',
-    sVolLbl:'Volume',volShort:'Quick',volMid:'Normal',volLong:'Deep',
-  }
-};
-
-let _reviewImageFiles=[];
-
-// ── State ─────────────────────────────────────────────────
-const st={lang:'ja',fDiff:3,sDiff:3,sVolume:'short',fThemeMode:'keyword',sThemeMode:'keyword',fFilter:'all',sFilter:'all',fPast:[],sPast:[],fill:null,summary:null,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
-let _genLockedEls=[];
-let _gradeLockedEls=[];
-function isBusy(){return st.genBusy||st.gradeBusy;}
-function setAppBusyClass(){document.querySelector('.app').classList.toggle('is-busy',!!isBusy());}
-
-// ── 穴埋め数 / ブロック数の自動計算 ─────────────────────
-// 文字数80%・難易度20%の重みで決定
-// 穴埋め数の難易度係数（文字数80%・難易度20%の重み）
-// 除数100: 300文字→base3.0、200文字→base2.0
-// 係数: 難易度が上がるほど若干増やすが控えめに
-const F_COEFF={1:.7,2:.85,3:1.0,4:1.1,5:1.2};
-// ブロック数の係数（要約）
-const B_COEFF={1:.7,2:.85,3:1.0,4:1.1,5:1.2};
-const F_LENGTH={1:200,2:350,3:500,4:700,5:800};
-const S_LENGTH_FIXED={1:300,2:400,3:500};
-const S_LENGTH_VARIABLE={
-  short:{ja:'さくっと',en:'Quick',chars:500},
-  mid:{ja:'普通',en:'Normal',chars:2000},
-  long:{ja:'じっくり',en:'Deep',chars:4000}
-};
-function getSummaryLength(diff){
-  if(diff<=3) return S_LENGTH_FIXED[diff];
-  const vol=st.sVolume||'short';
-  return S_LENGTH_VARIABLE[vol].chars;
-}
-const S_RATIO={1:.6,2:.5,3:.4,4:.3,5:.2};
-
-function calcBlanks(length,diff){
-  const base=length/150;
-  return Math.min(5,Math.max(2,Math.round(base*F_COEFF[diff])+1));
-}
-function calcBlocks(length,diff){
-  const base=length/200;
-  return Math.min(4,Math.max(1,Math.round(base*B_COEFF[diff])));
-}
-function getSumQuestionTypes(diff){
-  if(diff<=2)return ['語句説明','主張要約'];
-  if(diff===3)return ['語句説明','主張要約','理由説明'];
-  return ['語句説明','主張要約','理由説明','課題抽出','対比説明'];
-}
-const SUM_TYPE_LABELS={
-  ja:{'語句説明':'語句説明','主張要約':'主張要約','理由説明':'理由説明','課題抽出':'課題抽出','対比説明':'対比説明'},
-  en:{'語句説明':'Term','主張要約':'Main claim','理由説明':'Reason','課題抽出':'Issue','対比説明':'Contrast'}
-};
-function normSummaryProb(prob){
-  const lang=prob.lang||prob.rang||st.lang;
-  let text=String(prob.text||'').trim();
-  let questions=Array.isArray(prob.questions)?prob.questions:(parseF(prob.questions)||[]);
-  const qRaw=String(prob.questions||'').trim();
-  if(!questions.length&&qRaw&&/^0?\.\d+$/.test(qRaw)&&!prob.ratio){
-    prob={...prob,ratio:qRaw,questions:''};
-  }
-  const blocks=parseF(prob.blocks);
-  if(!text&&blocks&&blocks.length){
-    text=blocks.map(b=>(typeof b==='string'?b:(b&&b.text)||'')).filter(Boolean).join('\n\n');
-  }
-  if(!questions.length&&blocks&&blocks.length){
-    questions=blocks.map((b,i)=>{
-      const o=typeof b==='object'&&b?b:{};
-      const label=o.label||'';
-      return {
-        id:i+1,
-        type:label||'主張要約',
-        question:label?(lang==='en'?`Summarize: ${label}`:`「${label}」を要約しなさい。`):((lang==='en'?'Question ':'設問')+(i+1)),
-        targetChars:parseInt(o.targetChars,10)||50
-      };
-    });
-  }
-  return {...prob,text,questions};
-}
-function sumTypeLabel(type,lang){return(SUM_TYPE_LABELS[lang]||SUM_TYPE_LABELS.ja)[type]||type;}
-function buildSummaryQuestionHtml(q,i,lang,mode){
-  const l=L[lang]||L.ja;
-  const pfx=mode==='pp'?'pp-':'';
-  const tc=q.targetChars||50;
-  const lines=Math.max(4,Math.ceil(tc/18));
-const printLines=Array(lines).fill('<div style="border-bottom:1px solid #ccc;height:26px;margin-bottom:1px;"></div>').join('');
-  const taId=pfx?(pfx+'sans-'+i):('sans-'+i);
-  const lblId=pfx?(pfx+'lbl-'+i):('slbl-'+i);
-  const warnId=pfx?(pfx+'warn-'+i):('swarn-'+i);
-  const onCC=mode==='pp'?`ppCC(${i})`:`updateCC(${i})`;
-  const badge=sumTypeLabel(q.type,lang);
-  return `<div class="sum-q-block">
-    <div class="sum-q-lbl no-print">${l.qLbl}${q.id||i+1} <span class="q-type-badge">${esc(badge)}</span> <span style="font-size:11px;color:var(--text2);">（${l.charTarget} ${tc}${l.charWithin}）</span></div>
-    <p class="sum-q-text">${esc(q.question||'')}</p>
-    <div class="no-print">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
-        <p class="slabel" style="margin:0;">${l.yourSum}</p>
-        <span id="${lblId}" class="cc">0 / ${tc}${l.charOf}</span>
-      </div>
-      <textarea class="sum-ta" id="${taId}" style="min-height:${Math.max(80,tc*1.6)}px" data-target="${tc}" oninput="${onCC}" onblur="${onCC}" placeholder=""></textarea>
-      <div id="${warnId}" class="owarn"></div>
-    </div>
-    <div class="summary-block-print"><p style="font-size:10pt;font-weight:bold;margin-bottom:.3rem;">${l.qLbl}${q.id||i+1}（${tc}${l.charWithin}）</p>${printLines}</div>
-  </div>`;
-}
-function collectSummaryAnswers(prob,mode){
-  const pfx=mode==='pp'?'pp-':'';
-  return normSummaryProb(prob).questions.map((_,i)=>document.getElementById(pfx+'sans-'+i)?.value.trim()||'—');
-}
-function buildSummaryGradePrompt(prob,userTexts){
-  const pLang=prob.lang||st.lang;
-  const isEN=pLang==='en';
-  const p=normSummaryProb(prob);
-  const passage=isEN?`[Passage]\n${p.text}`:`【問題文】\n${p.text}`;
-  const qs=p.questions.map((q,i)=>{
-    const ut=userTexts[i]||'—';
-    const n=ut.replace(/\s/g,'').length;
-    return isEN
-      ?`[Question ${q.id||i+1}] Type: ${q.type}\n${q.question}\nCriteria: within ${q.targetChars} chars; evaluate accuracy, conciseness, and expression.\nLearner's answer (${n} chars):\n${ut}`
-      :`【設問${q.id||i+1}】タイプ: ${q.type}\n${q.question}\n模範解答の条件: ${q.targetChars}文字以内。内容の正確さ・簡潔さ・表現を評価すること。\n学習者の回答（${n}文字）:\n${ut}`;
-  }).join('\n\n---\n\n');
-  const body=isEN
-    ?`${passage}\n\n${qs}\n\nGrade each question individually (accuracy, conciseness, expression). Provide a model-answer direction per question.\n\n## Per-Question Evaluation\nFor each question: content accuracy, conciseness, expression, and an improved example within the limit.\n\n## Overall Feedback\nSummarize strengths and areas to improve.`
-    :`${passage}\n\n${qs}\n\n文章全体を踏まえ、各設問を個別に採点してください（内容の正確さ・簡潔さ・表現）。\n\n## 設問別評価\n各設問ごとに：内容の正確さ、簡潔さ、表現、改善例（文字数以内）\n\n## 総合講評\n全体の評価と学習アドバイス。`;
-  return body+(isEN?SUM_SCORE_NOTE_EN:SUM_SCORE_NOTE_JA);
-}
-
-// ── i18n 適用 ─────────────────────────────────────────────
-const DIFF_LABELS_JA={1:'★入門',2:'★★基礎',3:'★★★標準',4:'★★★★上級',5:'★★★★★超難問'};
-const DIFF_LABELS_EN={1:'★Beginner',2:'★★Basic',3:'★★★Standard',4:'★★★★Advanced',5:'★★★★★Master'};
-const FILL_HINT_NONE_NOTE_JA='\n\n重要：難易度3以上ではhintsフィールドはすべて必ず空文字列("")にしてください。ヒントを含む文字列を返してはいけません。';
-const FILL_HINT_NONE_NOTE_EN='\n\nIMPORTANT: For difficulty 3 and above, every hints field must be an empty string (""). Do not return any hint text.';
-const FILL_FORMAT_NOTE_JA='文章の書式ルール：\n- 段落の冒頭は全角スペース「　」を1つ入れてインデントすること\n- 段落の区切りには改行を入れること\n- 読みやすさを重視し、1段落は3〜5文程度にまとめること';
-const FILL_FORMAT_NOTE_EN='Formatting rules:\n- Indent the first line of each paragraph with a single space or em-space\n- Add a line break between paragraphs\n- Keep each paragraph to 3-5 sentences for readability';
-const SUM_FORMAT_NOTE_JA='文章の書式ルール：\n- 段落の冒頭は全角スペース「　」を1つ入れてインデントすること\n- 段落の区切りには改行を入れること';
-const SUM_FORMAT_NOTE_EN='Formatting rules:\n- Indent the first line of each paragraph\n- Add a line break between paragraphs';
-function dlabel(d){return(st.lang==='ja'?DIFF_LABELS_JA:DIFF_LABELS_EN)[d]||'—';}
-const BADGE={1:'b1',2:'b2',3:'b3',4:'b4',5:'b5'};
-
-function ui(id,txt){const e=document.getElementById(id);if(e)e.textContent=txt;}
-function applyLang(){
-  const l=L[st.lang];
-  ui('ui-app-title',l.appTitle);
-  ui('ui-f-sub-new',l.subNew);ui('ui-f-sub-past',l.subPast);
-  ui('ui-s-sub-new',l.subNew);ui('ui-s-sub-past',l.subPast);
-  ui('ui-api-lbl',l.apiLbl);ui('ui-save-btn',l.saveBtn);
-  if(localStorage.getItem(APIKEY_KEY)){
-    const statusEl=document.getElementById('api-bar-status');
-    if(statusEl)statusEl.textContent='✓ '+l.saved;
-  }
-  ui('ui-tab-fill',l.tabFill);ui('ui-tab-review',l.tabReview);ui('ui-tab-sum',l.tabSum);
-  document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-f-diff-lbl',l.diffLbl);
-  ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
-  ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
-  ui('ui-f-mode-keyword',l.modeKeyword);ui('ui-f-mode-question',l.modeQuestion);
-  ui('ui-f-gen-loading',l.genLoading);
-  ui('ui-f-rand',l.rand);
-  ui('ui-f-back',l.back);ui('ui-fp-all',l.all);
-  ui('ui-r-premise-toggle',document.getElementById('r-premise-body')?.hidden!==false?l.rPremiseToggle:l.rPremiseClose);
-  ui('ui-r-images-lbl',l.rImagesLbl);ui('ui-r-premise-lbl',l.rPremiseLbl);
-  ui('ui-r-lbl',l.rLbl);ui('ui-r-btn',l.rBtn);
-  const rp=document.getElementById('r-premise');
-  if(rp)rp.placeholder='';
-  document.getElementById('ui-s-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
-  ui('ui-s-diff-lbl',l.diffLbl);
-  ui('ui-s-vol-lbl',l.sVolLbl);ui('ui-vol-short',l.volShort);ui('ui-vol-mid',l.volMid);ui('ui-vol-long',l.volLong);
-  const fmtVolChars=n=>st.lang==='ja'?n.toLocaleString('ja-JP')+'字':n.toLocaleString('en-US')+' chars';
-  ui('ui-vol-short-chars',fmtVolChars(S_LENGTH_VARIABLE.short.chars));
-  ui('ui-vol-mid-chars',fmtVolChars(S_LENGTH_VARIABLE.mid.chars));
-  ui('ui-vol-long-chars',fmtVolChars(S_LENGTH_VARIABLE.long.chars));
-  ui('ui-s-gen',l.sGenBtn);ui('ui-s-inst',l.sInst);ui('ui-s-submit',l.sSubmit);
-  ui('ui-s-pq',l.pq);ui('ui-s-pa',l.pa);
-  ui('ui-s-mode-keyword',l.modeKeyword);ui('ui-s-mode-question',l.modeQuestion);
-  ui('ui-s-gen-loading',l.genLoading);
-  ui('ui-s-rand',l.rand);
-  ui('ui-s-back',l.back);ui('ui-sp-all',l.all);
-  // diff labels
-  for(let d=1;d<=5;d++){
-    const fe=document.getElementById('fd'+d),se=document.getElementById('sd'+d);
-    if(fe)fe.textContent=l.dLabels[d-1];
-    if(se)se.textContent=l.dLabels[d-1];
-  }
-  // diff desc & auto info
-  updateDiffUI('f');updateDiffUI('s');
-  // placeholders removed
-  ['f-theme','s-theme','r-text'].forEach(id=>{const el=document.getElementById(id);if(el)el.placeholder='';});
-  const rte=document.getElementById('r-text-err');
-  if(rte&&!rte.classList.contains('show'))rte.textContent=l.rTextRequired;
-  // lang buttons
-  document.querySelectorAll('.lang-btn').forEach((b,i)=>b.classList.toggle('active',i===(st.lang==='ja'?0:1)));
-  document.documentElement.lang=st.lang;
-  if(st.genBusy)updateGenStatusUI(st.genBusy);
-  if(st.gradeBusy)updateGradeStatusUI(st.gradeBusy);
-  setThemeMode('f',st.fThemeMode||'keyword');
-  setThemeMode('s',st.sThemeMode||'keyword');
-  updateApiKeyUI();
-}
-
-function genPrefix(mode){return mode==='fill'?'f':'s';}
-function updateGenStatusUI(mode){
-  const l=L[st.lang],p=genPrefix(mode);
-  ui(p+'-gen-lbl-llm',l.genPhaseLlm);
-  ui(p+'-gen-lbl-process',l.genPhaseProcess);
-  const btn=document.getElementById(p+'-gen-btn');
-  if(btn&&st.genBusy===mode)btn.querySelector('span').textContent=l.genBtnBusy;
-  if(st.genPhase){
-    const title=document.getElementById(p+'-gen-status-title');
-    if(title)title.textContent=st.genPhase==='llm'?l.genPhaseLlm:l.genPhaseProcess;
-  }
-}
-function setGenPhase(mode,phase){
-  st.genPhase=phase;
-  const order=['llm','process'];
-  order.forEach(s=>{
-    const el=document.getElementById(genPrefix(mode)+'-gen-step-'+s);
-    if(!el)return;
-    el.classList.remove('pending','active','done');
-    if(!phase){el.classList.add('pending');return;}
-    const pi=order.indexOf(phase),si=order.indexOf(s);
-    if(si<pi)el.classList.add('done');
-    else if(si===pi)el.classList.add('active');
-    else el.classList.add('pending');
-  });
-  updateGenStatusUI(mode);
-}
-function collectGenLockEls(mode){
-  const panel='#'+(mode==='fill'?'fill':'summary')+'-panel';
-  return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, .sub-tab, '+panel+' .card button, '+panel+' .card input, '+panel+' .card textarea, '+panel+' .mode-btn, #'+mode+'-past-area button, #'+mode+'-past-area .pf-tab, #'+mode+'-past-area .pcard, #'+mode+'-past-area .back-btn, #'+mode+'-past-area .back-btn'
-  );
-}
-function lockEl(el,skipIds){
-  const skip=Array.isArray(skipIds)?skipIds:[];
-  if(skip.includes(el.id)||el.id==='f-gen-btn'||el.id==='s-gen-btn')return;
-  if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.tagName==='TEXTAREA'){
-    el.dataset.genWasDisabled=el.disabled?'1':'0';
-    el.disabled=true;
-  }else{
-    el.dataset.genLocked='1';
-    el.style.pointerEvents='none';
-    el.style.opacity='0.55';
-  }
-}
-function unlockEl(el){
-  if(el.dataset.genLocked){
-    delete el.dataset.genLocked;
-    el.style.pointerEvents='';
-    el.style.opacity='';
-  }else if(el.dataset.genWasDisabled!==undefined){
-    el.disabled=el.dataset.genWasDisabled==='1';
-    delete el.dataset.genWasDisabled;
-  }
-}
-function beginGen(mode){
-  if(isBusy())return false;
-  st.genBusy=mode;
-  const p=genPrefix(mode);
-  setAppBusyClass();
-  const loadEl=document.getElementById(p+'-gen-loading');
-  if(loadEl)loadEl.style.display='flex';
-  ui(p+'-gen-loading',L[st.lang].genLoading);
-
-  const btn=document.getElementById(p+'-gen-btn');
-  btn.disabled=true;
-  btn.classList.add('is-loading');
-  _genLockedEls=[...collectGenLockEls(mode)];
-  _genLockedEls.forEach(el=>lockEl(el));
-  return true;
-}
-function endGen(mode){
-  if(st.genBusy!==mode)return;
-  st.genBusy=null;
-  st.genPhase=null;
-  const p=genPrefix(mode);
-  setAppBusyClass();
-  const loadEl=document.getElementById(p+'-gen-loading');
-  if(loadEl)loadEl.style.display='none';
-  const btn=document.getElementById(p+'-gen-btn');
-  btn.classList.remove('is-loading');
-  btn.querySelector('span').textContent=mode==='fill'?L[st.lang].genBtn:L[st.lang].sGenBtn;
-  _genLockedEls.forEach(unlockEl);
-  _genLockedEls=[];
-  setGenPhase(mode,null);
-  updateApiKeyUI();
-}
-
-function updateGradeStatusUI(){
-  const l=L[st.lang];
-  ui('f-grade-lbl-llm',l.gradePhaseLlm);
-  ui('f-grade-lbl-process',l.gradePhaseProcess);
-  const btn=document.getElementById('f-submit');
-  if(btn&&st.gradeBusy)btn.querySelector('span').textContent=l.submitBtnBusy;
-  if(st.gradePhase){
-    const title=document.getElementById('f-grade-status-title');
-    if(title)title.textContent=st.gradePhase==='llm'?l.gradingLoading:l.gradePhaseProcess;
-  }
-}
-function setGradePhase(phase){
-  st.gradePhase=phase;
-  ['llm','process'].forEach(s=>{
-    const el=document.getElementById('f-grade-step-'+s);
-    if(!el)return;
-    el.classList.remove('pending','active','done');
-    if(!phase){el.classList.add('pending');return;}
-    const order=['llm','process'],pi=order.indexOf(phase),si=order.indexOf(s);
-    if(si<pi)el.classList.add('done');
-    else if(si===pi)el.classList.add('active');
-    else el.classList.add('pending');
-  });
-  updateGradeStatusUI();
-}
-function collectGradeLockEls(){
-  return document.querySelectorAll(
-    '.tab, .lang-btn, .api-save-btn, #apikey, #r-btn, #r-text, #r-premise, #r-images, #r-premise-toggle, #fill-panel button, #fill-panel input, #fill-panel textarea, #fill-panel .pcard, #fill-panel .back-btn, #fill-panel .back-btn'
-  );
-}
-function beginGrade(){
-  if(isBusy())return false;
-  st.gradeBusy='fill';
-  setAppBusyClass();
-  document.getElementById('f-grade-status').hidden=false;
-  document.getElementById('f-fb').innerHTML='';
-  updateGradeStatusUI();
-  setGradePhase('llm');
-  const btn=document.getElementById('f-submit');
-  btn.disabled=true;
-  btn.classList.add('is-loading');
-  _gradeLockedEls=[...collectGradeLockEls()];
-  _gradeLockedEls.forEach(el=>lockEl(el,['f-submit']));
-  return true;
-}
-function endGrade(){
-  if(st.gradeBusy!=='fill')return;
-  st.gradeBusy=null;
-  st.gradePhase=null;
-  setAppBusyClass();
-  document.getElementById('f-grade-status').hidden=true;
-  const btn=document.getElementById('f-submit');
-  btn.classList.remove('is-loading');
-  btn.querySelector('span').textContent=L[st.lang].submitBtn;
-  _gradeLockedEls.forEach(unlockEl);
-  _gradeLockedEls=[];
-  setGradePhase(null);
-  updateApiKeyUI();
-}
-
-function updateDiffUI(m){
-  const l=L[st.lang];
-  const diff=m==='f'?st.fDiff:st.sDiff;
-  const length=m==='f'?F_LENGTH[diff]:getSummaryLength(diff);
-  document.getElementById(m+'-diff-desc').textContent=m==='f'?l.fDescs[diff-1]:l.sDescs[diff-1];
-  if(m==='f'){
-    const b=calcBlanks(length,diff);
-    document.getElementById('f-auto-info').textContent=l.autoFill+b+(st.lang==='ja'?'個':' blanks');
-  } else {
-    const nq=calcBlocks(length,diff);
-    document.getElementById('s-auto-info').textContent=l.autoQuestions+nq+(st.lang==='ja'?'問':' questions');
-  }
-}
-
-function resetUIOnLangSwitch(){
-  st.fill=null;
-  st.summary=null;
-  ['fill-result','summary-result','r-result'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.style.display='none';
-  });
-  ['f-fb','s-fb','r-fb'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.innerHTML='';
-  });
-  ['f-savebar','s-savebar'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el)el.style.display='none';
-  });
-  const fs1=document.getElementById('fs1'),fs2=document.getElementById('fs2'),fs3=document.getElementById('fs3');
-  if(fs1)fs1.className='step done';
-  if(fs2)fs2.className='step active';
-  if(fs3)fs3.className='step';
-  const ss1=document.getElementById('ss1'),ss2=document.getElementById('ss2'),ss3=document.getElementById('ss3');
-  if(ss1)ss1.className='step done';
-  if(ss2)ss2.className='step active';
-  if(ss3)ss3.className='step';
-  const fpa=document.getElementById('f-pa-btn'),spa=document.getElementById('s-pa-btn');
-  if(fpa)fpa.style.display='none';
-  if(spa)spa.style.display='none';
-  const fpq=document.getElementById('f-print-area'),spq=document.getElementById('s-print-area');
-  if(fpq)fpq.style.display='none';
-  if(spq)spq.style.display='none';
-  const spt=document.getElementById('s-problem-text'),sq=document.getElementById('s-questions');
-  if(spt)spt.innerHTML='';
-  if(sq)sq.innerHTML='';
-  const rt=document.getElementById('r-text'),rp=document.getElementById('r-premise'),ri=document.getElementById('r-images');
-  if(rt)rt.value='';
-  if(rp)rp.value='';
-  if(ri)ri.value='';
-  _reviewImageFiles=[];
-  renderReviewImagePreview();
-  const rb=document.getElementById('r-premise-body');
-  if(rb){rb.hidden=true;}
-  const rbtn=document.getElementById('r-premise-toggle');
-  if(rbtn)rbtn.setAttribute('aria-expanded','false');
-  const ric=document.getElementById('r-premise-icon');
-  if(ric)ric.textContent='▶';
-  const rte=document.getElementById('r-text-err');
-  if(rte){rte.textContent='';rte.classList.remove('show');}
-  updateApiKeyUI();
-}
-function setLang(lang){
-  if(isBusy())return;
-  st.lang=lang;
-  localStorage.setItem(LANG_KEY,lang);
-  resetUIOnLangSwitch();
-  applyLang();
-  if(document.getElementById('fill-sub-past')?.classList.contains('active'))renderPL('fill');
-  if(document.getElementById('summary-sub-past')?.classList.contains('active'))renderPL('summary');
-}
-function setVolume(v){
-  if(isBusy())return;
-  st.sVolume=v;
-  document.querySelectorAll('#s-volume-selector .vol-btn').forEach(b=>b.classList.toggle('active',b.dataset.v===v));
-  updateDiffUI('s');
-}
-function setDiff(m,d){
-  if(isBusy())return;
-  if(m==='f')st.fDiff=d;else st.sDiff=d;
-  document.querySelectorAll('#'+(m==='f'?'f':'s')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
-  if(m==='s'){
-    const vs=document.getElementById('s-volume-selector');
-    if(vs) vs.style.display=d>=4?'':'none';
-  }
-  updateDiffUI(m);
-}
-function switchSub(mode,sub){
-  document.getElementById(mode+'-sub-new').classList.toggle('active',sub==='new');
-  document.getElementById(mode+'-sub-past').classList.toggle('active',sub==='past');
-  const newArea=document.getElementById(mode+'-new-area');
-  const pastArea=document.getElementById(mode+'-past-area');
-  if(newArea)newArea.style.display=sub==='new'?'':'none';
-  if(pastArea)pastArea.style.display=sub==='past'?'':'none';
-  if(sub==='past')loadPast(mode);
-}
-function switchTab(name){
-  if(isBusy())return;
-  ['fill','summary','review'].forEach((n,i)=>{
-    document.querySelectorAll('.tab')[i].classList.toggle('active',n===name);
-    document.getElementById(n+'-panel').classList.toggle('active',n===name);
-  });
-  if(name==='fill')switchSub('fill','new');
-  if(name==='summary')switchSub('summary','new');
-}
-
-// ── Helpers ───────────────────────────────────────────────
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-function calcFillScore(answers,ua){
-  const total=answers.length;
-  let correct=0;
-  answers.forEach((ans,i)=>{if(String(ua[i]||'').trim()===String(ans).trim())correct++;});
-  const pct=total?Math.round(correct/total*100):0;
-  return {correct,total,pct};
-}
-function fillScoreColor(pct){
-  if(pct>=80)return 'var(--green)';
-  if(pct>=60)return 'var(--amber)';
-  return '#c0453a';
-}
-function fillScoreHtml(correct,total,lang){
-  const pct=total?Math.round(correct/total*100):0;
-  const color=fillScoreColor(pct);
-  const isJa=(lang||st.lang)==='ja';
-  const text=isJa?`${correct} / ${total} 問正解（${pct}%）`:`${correct} / ${total} correct (${pct}%)`;
-  return `<p class="fill-score" style="font-size:18px;font-weight:600;color:${color};margin:0 0 1rem;">${text}</p>`;
-}
-const SUM_SCORE_NOTE_JA='\n\n【重要】フィードバック全体の最初の1行目に、総合スコアのみを「★X/5」の形式で記載してください（例：★4/5）。2行目から本文を書いてください。';
-const SUM_SCORE_NOTE_EN='\n\nIMPORTANT: The very first line of your entire response must be the overall score only, in the format ★X/5 (e.g. ★4/5). Start the rest of the feedback from the second line.';
-function formatSummaryFeedback(raw){
-  let text=String(raw||'').trim();
-  const m=text.match(/^★([1-5])\/5[^\n]*(?:\n|$)/);
-  let head='';
-  if(m){
-    const n=+m[1];
-    head=`<p class="sum-score" style="font-size:22px;font-weight:600;color:var(--purple);margin:0 0 1rem;">${'★'.repeat(n)}${'☆'.repeat(5-n)} <span style="font-size:16px;color:var(--text);">(${n}/5)</span></p>`;
-    text=text.slice(m[0].length).trim();
-  }
-  return head+md2h(text);
-}
-function fmtDate(s){if(!s)return'';const d=new Date(s);return`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;}
-function showToast(msg,ms=3500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
-function setSync(mode,cls,msg){const pfx=mode==='fill'?'fp':'sp';document.getElementById(pfx+'-dot').className='sdot'+(cls?' '+cls:'');document.getElementById(pfx+'-lbl').textContent=msg;}
-function parseF(v){if(Array.isArray(v))return v;try{return JSON.parse(v);}catch{return[];}}
-
-// ── md → HTML ─────────────────────────────────────────────
-function styleCompletedConj(html){
-  return html.replace(/(<div class="completed-text">)([\s\S]*?)(<\/div>)/g,(_,open,inner,close)=>{
-    const s=inner.replace(/<strong>([^<]+)<\/strong>\[([^\]]+)\]/g,'<span class="conj"><strong>$1</strong><span class="conj-role">[$2]</span></span>');
-    return open+s+close;
-  });
-}
-function mdInline(s){
-  return String(s||'')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/✓/g,'<span class="ok">✓</span>')
-    .replace(/✗/g,'<span class="ng">✗</span>');
-}
-function isTableSepRow(line){
-  const cells=line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|');
-  return cells.length>0&&cells.every(c=>/^:?-{2,}:?$/.test(c.trim()));
-}
-function parseMdRow(line){
-  return line.trim().replace(/^\|/,'').replace(/\|$/,'').split('|').map(c=>c.trim());
-}
-function renderMdTable(lines){
-  const header=parseMdRow(lines[0]);
-  const body=lines.slice(2).map(parseMdRow).filter(r=>r.some(c=>c.length));
-  let h='<table class="md-table"><thead><tr>';
-  header.forEach(c=>{h+=`<th>${mdInline(c)}</th>`;});
-  h+='</tr></thead><tbody>';
-  body.forEach(row=>{
-    h+='<tr>';
-    for(let i=0;i<header.length;i++) h+=`<td>${mdInline(row[i]||'')}</td>`;
-    h+='</tr>';
-  });
-  return h+'</tbody></table>';
-}
-function parseMdTables(text){
-  const lines=text.split('\n');
-  const out=[];
-  let i=0;
-  while(i<lines.length){
-    const tr=lines[i].trim();
-    if(tr.startsWith('|')&&tr.endsWith('|')){
-      const block=[];
-      while(i<lines.length){
-        const t=lines[i].trim();
-        if(!t.startsWith('|')||!t.endsWith('|'))break;
-        block.push(t);
-        i++;
-      }
-      if(block.length>=2&&isTableSepRow(block[1])) out.push(renderMdTable(block));
-      else out.push(...block);
-      continue;
-    }
-    out.push(lines[i]);
-    i++;
-  }
-  return out.join('\n');
-}
-function mdWrapTextBlocks(html){
-  const re=/(<table[\s\S]*?<\/table>|<hr>|<h2>[\s\S]*?<\/h2>|<h3>[\s\S]*?<\/h3>|<h4>[\s\S]*?<\/h4>|<ul>[\s\S]*?<\/ul>|<div class="completed-text">[\s\S]*?<\/div>)/gi;
-  return html.split(re).map(part=>{
-    if(!part||/^<(table|hr|h[234]|ul|div)/i.test(part.trim()))return part;
-    let p=part.trim();
-    if(!p)return '';
-    p=mdInline(p).replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
-    if(p&&!p.startsWith('<p>'))p='<p>'+p;
-    if(p&&!p.endsWith('</p>'))p+='</p>';
-    return p;
-  }).join('');
-}
-function md2h(tx){
-  let raw=String(tx||'').trim();
-  if(!raw)return '';
-  const blockquotes=[];
-  raw=raw.replace(/^> (.+)$/gm,(_,line)=>{
-    blockquotes.push('<blockquote>'+esc(line)+'</blockquote>');
-    return `\x01BQ${blockquotes.length-1}\x01`;
-  });
-  let h=esc(raw);
-  blockquotes.forEach((bq,i)=>{h=h.replace(`\x01BQ${i}\x01`,bq);});
-  h=parseMdTables(h);
-  h=h
-    .replace(/^#### (.+)$/gm,(_,t)=>'<h4>'+mdInline(t)+'</h4>')
-    .replace(/^### (.+)$/gm,(_,t)=>'<h3>'+mdInline(t)+'</h3>')
-    .replace(/^## (.+)$/gm,(_,t)=>'<h2>'+mdInline(t)+'</h2>')
-    .replace(/^# (.+)$/gm,(_,t)=>'<h2>'+mdInline(t)+'</h2>')
-    .replace(/^---+?\s*$/gm,'<hr>')
-    .replace(/^\d+\. (.+)$/gm,(_,t)=>'<li>'+mdInline(t)+'</li>')
-    .replace(/^[-*・] (.+)$/gm,(_,t)=>'<li>'+mdInline(t)+'</li>')
-    .replace(/((?:<li>[\s\S]*?<\/li>\s*)+)/g,'<ul>$1</ul>');
-  h=mdWrapTextBlocks(h);
-  const blockEnd='(?=<h[234]>|<table|<hr|<ul>|<div class="completed-text"|$)';
-  h=h
-    .replace(new RegExp('「完全補完文」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
-    .replace(new RegExp('「Fully Supplemented Text」([\\s\\S]*?)'+blockEnd,'g'),'<div class="completed-text">$1</div>')
-    .replace(/<h3>完全補完文<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>完全補完文</h3><div class="completed-text">$1</div>')
-    .replace(/<h3>Fully Supplemented Text<\/h3>([\s\S]*?)(?=<h[234]>|<table|<hr|<ul>|$)/g,'<h3>Fully Supplemented Text</h3><div class="completed-text">$1</div>');
-  h=h.replace(/⁽(\d+)⁾/g,'<sup style="font-size:10px;color:var(--text2);">($1)</sup>');
-  return styleCompletedConj(h);
-}
-
-// ── APIキー ───────────────────────────────────────────────
-function hasApiKey(){return !!document.getElementById('apikey')?.value.trim();}
-function updateApiKeyUI(){
-  const l=L[st.lang],busy=isBusy(),ok=hasApiKey();
-  ['f-gen-btn','s-gen-btn'].forEach(id=>{
-    const b=document.getElementById(id);
-    if(!b)return;
-    b.disabled=busy||!ok;
-    b.classList.toggle('needs-apikey',!ok&&!busy);
-    b.title=!ok?l.apiKeyHint:'';
-  });
-  const sub=document.getElementById('f-submit');
-  if(sub){
-    const canGrade=ok&&!busy&&!!st.fill;
-    sub.disabled=!canGrade;
-    sub.classList.toggle('needs-apikey',!ok);
-    sub.title=!ok?l.apiKeyHint:(!st.fill?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
-  }
-  const rb=document.getElementById('r-btn');
-  if(rb){
-    rb.disabled=busy||!ok;
-    rb.classList.toggle('needs-apikey',!ok&&!busy);
-    rb.title=!ok?l.apiKeyHint:'';
-  }
-}
-function toggleApiBar(){
-  const body=document.getElementById('api-bar-body');
-  const chevron=document.getElementById('api-bar-chevron');
-  const isCollapsed=body.classList.contains('collapsed');
-  body.classList.toggle('collapsed',!isCollapsed);
-  chevron.classList.toggle('collapsed',!isCollapsed);
-}
-function collapseApiBar(){
-  const statusEl=document.getElementById('api-bar-status');
-  if(statusEl)statusEl.textContent='✓ '+L[st.lang].saved;
-  const body=document.getElementById('api-bar-body');
-  const chevron=document.getElementById('api-bar-chevron');
-  if(body)body.classList.add('collapsed');
-  if(chevron)chevron.classList.add('collapsed');
-}
-function loadApiKey(){
-  const v=localStorage.getItem(APIKEY_KEY);
-  if(v){
-    document.getElementById('apikey').value=v;
-    collapseApiBar();
-  }
-  updateApiKeyUI();
-}
-function saveApiKey(){
-  const k=document.getElementById('apikey').value.trim();
-  if(!k){alert(L[st.lang].noApiKey);return;}
-  localStorage.setItem(APIKEY_KEY,k);
-  const bar=document.getElementById('api-bar');
-  const btn=document.querySelector('.api-save-btn');
-  const lbl=document.getElementById('ui-save-btn');
-  bar.classList.add('flash-saved');
-  btn.classList.add('saved');
-  if(lbl)lbl.textContent=L[st.lang].saveBtnDone;
-  showToast(L[st.lang].apiKeySaved);
-  collapseApiBar();
-  updateApiKeyUI();
-  setTimeout(()=>{
-    bar.classList.remove('flash-saved');
-    btn.classList.remove('saved');
-    if(lbl)lbl.textContent=L[st.lang].saveBtn;
-  },2000);
-}
-function getKey(silent){
-  const k=document.getElementById('apikey').value.trim();
-  if(!k){if(!silent)alert(L[st.lang].noApiKey);return null;}
-  return k;
-}
-
-// ── Claude API ────────────────────────────────────────────
-async function callClaude(prompt,sys,maxTok=2500){
-  return callClaudeMsg(sys,prompt,maxTok);
-}
-async function callClaudeMsg(sys,content,maxTok=2500){
-  const key=getKey();if(!key)return null;
-  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTok,system:sys,messages:[{role:'user',content}]})});
-  if(!res.ok){let m='API error '+res.status;try{const e=await res.json();m=e.error?.message||m;}catch{}throw new Error(m);}
-  const d=await res.json();return d.content?.[0]?.text||'';
-}
-function fileToBase64(file){
-  return new Promise((resolve,reject)=>{
-    const r=new FileReader();
-    r.onload=()=>resolve(String(r.result).split(',')[1]||'');
-    r.onerror=()=>reject(new Error('Failed to read image'));
-    r.readAsDataURL(file);
-  });
-}
-async function buildReviewImageBlocks(files){
-  const blocks=[];
-  for(const f of files){
-    if(!f.type||!f.type.startsWith('image/'))continue;
-    const data=await fileToBase64(f);
-    blocks.push({type:'image',source:{type:'base64',media_type:f.type,data}});
-  }
-  return blocks;
-}
-function toggleReviewPremise(){
-  const body=document.getElementById('r-premise-body');
-  const btn=document.getElementById('r-premise-toggle');
-  const icon=document.getElementById('r-premise-icon');
-  const l=L[st.lang];
-  if(!body||!btn)return;
-  const open=body.hidden;
-  body.hidden=!open;
-  btn.setAttribute('aria-expanded',open?'true':'false');
-  if(icon)icon.textContent=open?'▼':'▶';
-  ui('ui-r-premise-toggle',open?l.rPremiseClose:l.rPremiseToggle);
-}
-function onReviewImagesChange(){
-  const input=document.getElementById('r-images');
-  if(!input)return;
-  _reviewImageFiles=[...(_reviewImageFiles||[]),...input.files];
-  input.value='';
-  renderReviewImagePreview();
-}
-function renderReviewImagePreview(){
-  const box=document.getElementById('r-image-preview');
-  if(!box)return;
-  if(!_reviewImageFiles.length){box.innerHTML='';return;}
-  box.innerHTML=_reviewImageFiles.map((f,i)=>{
-    const url=URL.createObjectURL(f);
-    return `<div class="review-img-thumb" data-idx="${i}"><img src="${url}" alt=""><button type="button" onclick="removeReviewImage(${i})" title="×">×</button></div>`;
-  }).join('');
-}
-function removeReviewImage(idx){
-  _reviewImageFiles.splice(idx,1);
-  renderReviewImagePreview();
-}
-function buildReviewPrompt(text,premise,isEN){
-  const sections=isEN
-    ?`Proofread the text below. Focus on appropriate conjunction use and logical consistency. Use any provided images and context as reference.\n\n## Conjunction Supplement Suggestions\n## Conjunction Appropriateness Check\n## Logical Consistency Evaluation\n## Revision Suggestions\n## Fully Supplemented Text\n「Fully Supplemented Text」 — Add appropriate conjunctions at all sentence boundaries. Mark added conjunctions in **bold**.\n## 1/2 Summary\nSummarize the input text to about half its character count (by characters, not sentences).\n## 1/4 Summary\nSummarize the input text to about one quarter of its character count.\n## Overall Score (★1–5)`
-    :`以下の文章を校閲してください。「接続詞の適切な使用」と「文章の論理性」に焦点を当ててください。画像・前提情報がある場合は参考にしてください。\n\n## 接続詞の補完提案\n## 接続詞の適切性チェック\n## 論理的一貫性の評価\n## 改善案\n## 完全補完文\n「完全補完文」として、すべての文と文の間に適切な接続詞を補完した文章を作成してください。補完した接続詞は**太字**で示してください。\n## 1/2 要約\n入力文章を文字数ベースで約半分に要約してください。\n## 1/4 要約\n入力文章を文字数ベースで約1/4に要約してください。\n## 総評（★1〜5）`;
-  let body='';
-  if(premise)body+=isEN?`[Context]\n${premise}\n\n`:`【前提情報】\n${premise}\n\n`;
-  body+=isEN?`[Text to proofread]\n${text}\n\n${sections}`:`【校閲対象文章】\n${text}\n\n${sections}`;
-  return body;
-}
-function safeJSON(raw){const m=raw.match(/\{[\s\S]*\}/);if(!m)throw new Error('JSON not found');return JSON.parse(m[0]);}
-
-// ── GAS ──────────────────────────────────────────────────
-async function gasGet(sheet){const r=await fetch(GAS_URL+'?sheet='+sheet+'&t='+Date.now());if(!r.ok)throw new Error('Load failed '+r.status);return r.json();}
-async function gasPost(data){const r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(data)});if(!r.ok)throw new Error('Write failed '+r.status);return r.json();}
-let gasV3Ok=null;
-async function gasPing(){
-  try{
-    const r=await fetch(GAS_URL+'?ping=1&t='+Date.now(),{redirect:'follow'});
-    if(r.status>=400)return null;
-    const text=await r.text();
-    if(!text)return null;
-    try{return JSON.parse(text);}catch{
-      const m=text.match(/\{[\s\S]*\}/);
-      return m?JSON.parse(m[0]):null;
-    }
-  }catch{return null;}
-}
-function isGasV3Payload(p){
-  return !!(p&&(Number(p.version)===3||(Array.isArray(p.summaryCols)&&p.summaryCols.includes('text'))));
-}
-async function ensureGasV3(){
-  if(gasV3Ok===true)return true;
-  const p=await gasPing();
-  if(isGasV3Payload(p)){gasV3Ok=true;return true;}
-  if(p===null){
-    // ping が CORS/リダイレクトで失敗しても POST は通ることがある → 保存は試す
-    return true;
-  }
-  gasV3Ok=false;
-  const msg=st.lang==='ja'
-    ?'GASがv3ではありません。Apps Scriptに gas-script-v3.js を貼り「新しいデプロイ」し、index.html の GAS_URL を新URLに合わせてください。'
-    :'GAS is not v3. Redeploy gas-script-v3.js and set GAS_URL to the new web app URL.';
-  alert(msg);
-  return false;
-}
-
-// ── 印刷 ─────────────────────────────────────────────────
-function doPrint(mode,part){
-  if(part==='a'){const fb=document.getElementById(mode==='fill'?'f-fb':'s-fb');if(!fb||fb.innerHTML.trim()===''){alert(mode==='fill'?'先に答え合わせを実行してください。':'Please grade first.');return;}}
-  window.print();
-}
-
-// ══════════════════════════════════════════════════════════
-// 穴埋め
-// ══════════════════════════════════════════════════════════
-
-function autoResize(el){
-  el.style.height='auto';
-  el.style.height=el.scrollHeight+'px';
-}
-function setThemeMode(m,mode){
-  const key=m+'ThemeMode';
-  st[key]=mode;
-  document.querySelectorAll(`#${m}-theme-mode .mode-btn`).forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
-  const input=document.getElementById(`${m}-theme`);
-  if(!input)return;
-  input.placeholder='';
-  if(mode==='keyword'){
-    input.rows=1;
-    input.style.height='';
-    autoResize(input);
-  }else{
-    input.style.height='72px';
-  }
-}
-function buildThemeInst(themeIn,themeMode,length,isEN,forSummary){
-  if(!themeIn){
-    if(isEN){
-      return forSummary
-        ?`Choose a theme from: recent global economic topics, cutting-edge science and technology, or health and medicine. Create one reading passage of approximately ${length} characters.`
-        :`Choose a theme from: recent global economic topics, cutting-edge science and technology, or health and medicine. Write a logical text of approximately ${length} characters.`;
-    }
-    return `テーマは以下のカテゴリから選んでください：最近の世界経済のトピック、科学技術の最前線、健康・医療に関するトピック。約${length}文字の${forSummary?'読解用文章（問題文）を1つ':'論理的な文章を'}作成してください。`;
-  }
-  if(themeMode==='keyword'){
-    return isEN
-      ?(forSummary?`Create one reading passage of about ${length} characters on the theme "${themeIn}".`:`Write a logical text of about ${length} characters on the theme "${themeIn}".`)
-      :(forSummary?`テーマ「${themeIn}」について、約${length}文字の読解用文章（問題文）を1つ作成してください。`:`テーマ「${themeIn}」について、約${length}文字の論理的な文章を作成してください。`);
-  }
-  return isEN
-    ?`The user has the following question or problem: "${themeIn}"
-Write a logical argumentative text of about ${length} characters that explores and answers this question.
-The text should naturally lead the reader toward understanding the answer through logical reasoning.
-The answer to the question should be embedded within the text's argument, not stated directly as a simple conclusion.`
-    :`ユーザーが気になっている課題・疑問：「${themeIn}」
-この課題・疑問に対して論理的に展開した約${length}文字の文章を作成してください。
-文章は課題への回答を直接述べるのではなく、論拠を積み重ねながら読者が自然に答えにたどり着けるよう構成してください。
-問題文中では課題への言及は冒頭の文脈設定程度に留め、主に論理的な論証の展開を重視してください。`;
-}
-function autoThemeInst(length,isEN,forSummary){
-  if(isEN){
-    return `Choose a theme from the following categories:
-recent global economic topics (inflation, monetary policy, industrial transformation, etc.),
-cutting-edge science and technology (AI, quantum computing, space exploration, biotechnology, etc.),
-or health and medicine (public health, mental health, aging society, etc.).
-${forSummary?`Create one reading passage of approximately ${length} characters.`:`Write a logical text of approximately ${length} characters.`}`;
-  }
-  return `テーマは以下のカテゴリから適切なものを選んでください：
-最近の世界経済のトピック（インフレ・金融政策・産業転換など）、
-科学技術の最前線（AI・量子コンピュータ・宇宙開発・バイオテクノロジーなど）、
-健康・医療に関するトピック（公衆衛生・精神健康・老齢化社会など）。
-約${length}文字の${forSummary?'読解用文章（問題文）を1つ':'論理的な文章を'}作成してください。`;
-}
-function hasFillHint(h){return !!(h&&String(h).trim());}
-function buildFillAnswerItem(i,hint,inputId,noPrint){
-  const item=document.createElement('div');
-  item.className='answer-item';
-  const row=document.createElement('div');
-  row.className='answer-row';
-  const num=i+1;
-  row.innerHTML=`<label>（${num}）</label><input type="text" id="${inputId}" placeholder=""
-    oninput="syncBlank(${num}, this.value)"
-    onblur="syncBlank(${num}, this.value)"/>`;
-  item.appendChild(row);
-  if(hasFillHint(hint)){
-    const ht=document.createElement('div');
-    ht.className='hint-text'+(noPrint?' no-print':'');
-    ht.textContent=hint;
-    item.appendChild(ht);
-  }
-  return item;
-}
-function syncBlank(num,value){
-  const blankEl=document.getElementById(`blank-${num}`);
-  if(!blankEl) return;
-  blankEl.style.borderColor='';
-  blankEl.style.background='';
-  blankEl.style.color='';
-  const v=value.trim();
-  if(v===''){
-    blankEl.textContent=`（${num}）`;
-    blankEl.classList.remove('filled');
-  }else{
-    blankEl.textContent=v.length>5?v.slice(0,5)+'…':v;
-    blankEl.classList.add('filled');
-  }
-}
-function resetBlankStyles(){
-  document.querySelectorAll('.blank').forEach(el=>{
-    el.style.borderColor='';
-    el.style.background='';
-    el.style.color='';
-    el.classList.remove('filled');
-  });
-}
-function applyFillBlankGrade(prob){
-  prob.answers.forEach((ans,i)=>{
-    const blankEl=document.getElementById(`blank-${i+1}`);
-    if(!blankEl) return;
-    const userAns=prob.userAnswers?.[i]||'';
-    const isCorrect=String(userAns).trim()===String(ans).trim();
-    blankEl.style.borderColor=isCorrect?'var(--green)':'#c0453a';
-    blankEl.style.background=isCorrect?'var(--green-bg)':'#fce8e8';
-    blankEl.style.color=isCorrect?'var(--green-text)':'#701510';
-  });
-}
-function getFillPrompts(){
-  const l=st.lang;
-  if(l==='ja') return {
-    1:`難易度1（入門）:
-- 文体：中学〜高校教科書レベルの平易な説明文・論説文
-- 接続詞：「しかし」「そのため」「また」「一方」「つまり」など
-  中学生でも知っている基本的なもののみ
-- 構造：主張→根拠→まとめのシンプルな構成
-- ヒント：各空欄に「逆接」「順接」などの関係性を必ず明記すること`,
-    2:`難易度2（基礎）:
-- 文体：高校教科書〜大学入試標準レベルの論説文
-- 接続詞：「ところが」「したがって」「なぜなら」「それゆえ」など
-  因果・逆接・補足を含む標準的なもの
-- 構造：複数の論点を持ち、段落間の論理的接続が問われる
-- ヒント：前後の文脈から推測できる軽いヒントを付けること`,
-    3:`難易度3（標準）:
-- 文体：大学入試上位校レベルの評論文
-  語彙は平易だが抽象的な概念を含む
-- 接続詞：「もっとも」「ただし」「むしろ」「他方」など
-  似た意味の中から正確なものを選ぶ力が問われる
-- 構造：対比・譲歩・反論を含む複雑な論証構造
-- ヒント：なし（hintsはすべて空文字列）`,
-    4:`難易度4（上級）:
-- 文体：大学入試上位校〜最難関レベルの評論文
-  語彙レベルは難易度3と同等（平易な語彙を維持）だが
-  論理構造が極めて精緻で、接続詞の選択が論旨の成否を決める
-- 接続詞：「しかるに」「それゆえ」「のみならず」「ひいては」「翻って」など
-  高度に精密な論理的接続を要求する
-  類似する接続詞との差異が明確に問われるよう設計すること
-  接続詞を変えると論旨が崩れるよう文章を構成すること
-- 構造：複数の論点が複雑に絡み合う多層的な論証構造
-- ヒント：なし（hintsはすべて空文字列）`,
-    5:`難易度5（超難問）:
-- 文体：東京大学現代文レベル以上の難解な評論文
-  哲学・社会科学・自然科学の専門的文体を使い
-  難解な概念・専門用語を積極的に含める
-- 接続詞：「蓋し」「しかるに」「してみれば」「ないしは」「もとより」など
-  高度な文語的・論理的接続詞を使用
-  複数の解釈が成立しうる文脈に配置し
-  正答が一意に定まるよう緻密に設計すること
-- 構造：東大現代文の問題文を超える複雑さを目指す
-  論証の多層構造・逆説・留保を含む
-- ヒント：なし（hintsはすべて空文字列）`
-  };
-  return {
-    1:`Difficulty 1 (Beginner):
-- Style: Simple explanatory/argumentative text at middle to high school level
-- Conjunctions: basic only (however, therefore, also, in contrast, in other words,
-  because, so, but) — familiar to any high school student
-- Structure: simple 3-part (claim → evidence → conclusion)
-- Hints: specify the logical relation (e.g. "adversative", "causal") for each blank`,
-    2:`Difficulty 2 (Basic):
-- Style: Standard university entrance exam level essay
-- Conjunctions: include causal, adversative, supplementary
-  (nevertheless, consequently, because, thus, furthermore, however)
-- Structure: multiple points with logical connections between paragraphs
-- Hints: light contextual hints`,
-    3:`Difficulty 3 (Standard):
-- Style: Top-tier university entrance exam essay
-  Plain vocabulary but includes abstract concepts
-- Conjunctions: precise selection required among similar options
-  (nonetheless, admittedly, rather, on the other hand, by contrast)
-- Structure: complex argumentation with contrast, concession, rebuttal
-- Hints: none (all hints must be empty strings)`,
-    4:`Difficulty 4 (Advanced):
-- Style: Highly selective university exam level essay
-  Vocabulary level same as Difficulty 3 (plain language maintained)
-  but logical structure is extremely precise
-- Conjunctions: highly precise logical connectors where substitution collapses the argument
-  (notwithstanding, insofar as, inasmuch as, by extension, conversely,
-  it follows that, in so doing)
-  Design sentences so that only one conjunction is logically correct
-- Structure: multiple intertwined arguments in a multi-layered structure
-- Hints: none (all hints must be empty strings)`,
-    5:`Difficulty 5 (Master):
-- Style: Beyond top university exam level
-  Dense academic prose with specialist terminology in
-  philosophy, social science, or natural science
-- Conjunctions: archaic or highly formal connectors
-  (hitherto, whereupon, inasmuch, albeit, notwithstanding, in contradistinction to)
-  placed in contexts with multiple plausible interpretations
-  but designed so only one is definitively correct
-- Structure: multi-layered argumentation with paradox and qualification
-  exceeding the complexity of top university entrance exams
-- Hints: none (all hints must be empty strings)`
-  };
-}
-function getSumPrompts(){
-  const l=st.lang;
-  if(l==='ja') return {
-    1:'難易度1（基礎）: 高校教科書レベルの平易な論説文。各ブロックは約60%に要約できる内容。',
-    2:'難易度2（標準）: 大学入試レベルの論説・評論文。各ブロックは約50%に要約できる内容。',
-    3:'難易度3（応用）: 大学入試上位校レベルの評論文。抽象概念を含む。各ブロックは約40%に要約できる内容。',
-    4:'難易度4（上級）: 平易な語彙だが論理構造が精緻な評論文。各ブロックは約30%に要約できる内容。',
-    5:'難易度5（超難問）: 東京大学現代文レベル以上の難解な評論文。専門用語・複雑な論証を含む。各ブロックは約20%に要約できる内容。'
-  };
-  return {
-    1:'Difficulty 1 (Basic): Plain argumentative text at high school level. Target: ~60% of original.',
-    2:'Difficulty 2 (Standard): University entrance exam level essay. Target: ~50% of original.',
-    3:'Difficulty 3 (Advanced): Top-tier entrance exam essay with abstract concepts. Target: ~40% of original.',
-    4:'Difficulty 4 (Expert): Plain vocabulary, precise logic. Target: ~30% of original.',
-    5:'Difficulty 5 (Master): Beyond top university exam level. Dense academic prose. Target: ~20% of original.'
-  };
-}
-
-async function generateFill(){
-  if(isBusy()||!hasApiKey())return;
-  const themeMode=st.fThemeMode||'keyword';
-  const themeIn=document.getElementById('f-theme').value.trim();
-  const diff=st.fDiff;
-  const length=F_LENGTH[diff];
-  const blanks=calcBlanks(length,diff);
-  const isEN=st.lang==='en';
-  document.getElementById('fill-result').style.display='none';
-  const fpa=document.getElementById('f-print-area');if(fpa)fpa.style.display='none';
-  if(!beginGen('fill'))return;
-
-  const sys=isEN
-    ?'You are an expert in logical writing and education. Respond ONLY in valid JSON format. No markdown, no explanation before or after the JSON.'
-    :'あなたは論理的文章の作成と教育の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
-  const themeInst=buildThemeInst(themeIn,themeMode,length,isEN,false);
-  const diffPrompt=getFillPrompts()[diff];
-  let jsonInst=isEN
-    ?`Replace ${blanks} conjunctions with placeholders [_1_][_2_]... Return ONLY this JSON:\n{"theme":"topic in 5 words or less","text":"problem text with placeholders","answers":["conj1","conj2"],"hints":["hint1","hint2"]}`
-    :`その文章の中で接続詞のうち${blanks}個を選び、【_1_】【_2_】...のような番号付きプレースホルダーで置き換えてください。\n返答はJSON形式のみ：\n{"theme":"テーマを10文字以内で","text":"問題文","answers":["接続詞1"],"hints":["ヒント1"]}`;
-  if(diff>=3) jsonInst+=isEN?FILL_HINT_NONE_NOTE_EN:FILL_HINT_NONE_NOTE_JA;
-
-  try{
-    const genMaxTokens=Math.round(length*3.5);
-    const formatNote=isEN?FILL_FORMAT_NOTE_EN:FILL_FORMAT_NOTE_JA;
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}\n${formatNote}`,sys,genMaxTokens);
-    if(!raw)return;
-    const p=safeJSON(raw);
-    if(!p.text||!Array.isArray(p.answers))throw new Error('Invalid JSON structure');
-    if(isEN){
-      let t=p.text;
-      for(let i=1;i<=p.answers.length;i++) t=t.replace(`[_${i}_]`,`【_${i}_】`);
-      p.text=t;
-    }
-    if(diff>=3) p.hints=(p.answers||[]).map(()=>'');
-    st.fill={...p,id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),blanks,feedback:null,userAnswers:null,lang:st.lang};
-    renderFill(st.fill);
-    try{await syncPastOnGen('fill',st.fill);}
-    catch(syncErr){setSync('fill','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
-  }catch(e){alert(L[st.lang].genFailed+'\n'+e.message);}
-  finally{endGen('fill');}
-}
-
-function renderFill(prob){
-  resetBlankStyles();
-  const l=L[st.lang];
-  document.getElementById('f-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
-  document.getElementById('f-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabFill}</h2><p>${l.theme}${esc(prob.theme||'—')}　${l.diff}${dlabel(prob.diff)}　${fmtDate(prob.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.fPrintInst}</p>`;
-  let html=esc(prob.text);
-  for(let i=1;i<=prob.answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank" id="blank-${i}">（${i}）</span>`);
-  document.getElementById('f-problem').innerHTML=html;
-  const sec=document.getElementById('f-answers');sec.innerHTML=`<p class="slabel no-print">${l.answerBox}</p>`;
-  prob.answers.forEach((_,i)=>{
-    sec.appendChild(buildFillAnswerItem(i,prob.hints?.[i],`fans-${i}`,true));
-  });
-  document.getElementById('f-fb').innerHTML='';
-  document.getElementById('f-pa-btn').style.display='none';
-  document.getElementById('f-print-area').style.display='flex';
-  document.getElementById('fill-result').style.display='block';
-  document.getElementById('fs1').className='step done';
-  document.getElementById('fs2').className='step active';
-  document.getElementById('fs3').className='step';
-  updateApiKeyUI();
-}
-
-async function submitFill(){
-  if(isBusy()||!hasApiKey())return;
-  const prob=st.fill;if(!prob)return;
-  const ua=prob.answers.map((_,i)=>document.getElementById(`fans-${i}`)?.value.trim()||'—');
-  if(!beginGrade())return;
-  const fb=document.getElementById('f-fb');
-  try{
-    setGradePhase('llm');
-    const res=await gradeFill(prob,ua);if(!res)return;
-    setGradePhase('process');
-    prob.feedback=res;prob.userAnswers=ua;
-    const {correct,total}=calcFillScore(prob.answers,ua);
-    fb.innerHTML=`<div class="feedback-box">${fillScoreHtml(correct,total,prob.lang)}${md2h(res)}</div>`;
-    applyFillBlankGrade(prob);
-    document.getElementById('fs2').className='step done';
-    document.getElementById('fs3').className='step done';
-    document.getElementById('f-pa-btn').style.display='';
-  }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].gradingErr}: ${e.message}</p>`;}
-  finally{endGrade();}
-}
-
-async function gradeFill(prob,ua){
-  const isEN=prob.lang==='en'||(prob.lang===undefined&&st.lang==='en');
-  const sys=isEN
-    ?'You are an expert educator in logical writing. Give structured feedback in English using markdown (## headings, **bold**, numbered lists).'
-    :'あなたは論理的文章の教育専門家です。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
-  const ct=prob.answers.reduce((t,a,i)=>t.replace(`【_${i+1}_】`,`[${a}]`),prob.text);
-  const prompt=isEN?`Grade this fill-in-the-blank problem (Difficulty ${prob.diff}/5).
-
-[Problem with correct answers]
-${ct}
-
-[Correct answers]
-${prob.answers.map((a,i)=>`(${i+1}) ${a}`).join('\n')}
-
-[Learner's answers]
-${ua.map((a,i)=>`(${i+1}) ${a}`).join('\n')}
-
-## Fully Supplemented Text
-「Fully Supplemented Text」 — Rewrite the original text with ALL sentence boundaries supplemented with appropriate conjunctions (not just the blanks). Show every supplemented conjunction in **bold**.
-For conjunctions that correspond to the fill-in-the-blank answers, add the question number as a superscript immediately after the conjunction. Example: "however⁽¹⁾"
-
-## Individual Question Feedback
-For each number, mark ✓ correct or ✗ incorrect. Explain why the conjunction is appropriate and the logical relationship between sentences. Suggest alternatives if any.
-At the end of each question's explanation, provide 2 short example sentences (20 words or less each) using the correct conjunction in plain everyday contexts. Do not provide example sentences for alternative conjunctions.`
-  :`穴埋め問題（難易度${prob.diff}/5）の添削をしてください。
-
-【問題文（正解入り）】${ct}
-【正解】${prob.answers.map((a,i)=>`（${i+1}）${a}`).join('\n')}
-【学習者の回答】${ua.map((a,i)=>`（${i+1}）${a}`).join('\n')}
-
-## 完全補完文
-「完全補完文」として、元の文章のすべての文と文の間（穴埋め箇所以外も含む）に接続詞を補完した、論理的に完全な文章を作成してください。
-補完した接続詞はすべて**太字**で示してください。
-穴埋め問題の空欄に対応する接続詞には、補完した接続詞の直後に上付き文字で設問番号を示してください。例：「しかるに⁽¹⁾」のように記述してください。
-
-## 各設問の正誤と解説
-各番号について ✓正解 または ✗不正解 を明示し、なぜその接続詞が適切か前後の論理関係を説明してください。代替接続詞があれば添えてください。
-各設問の解説の末尾に、正解の接続詞を使った端的で平易な例文を2つ示してください。例文は短く（20字以内）、日常的な文脈で使えるものにしてください。代替接続詞の例文は不要です。`;
-  const length=F_LENGTH[prob.diff]||500;
-  const gradeMaxTokens=Math.round(length*4.0);
-  return callClaude(prompt,sys,gradeMaxTokens);
-}
-
-function buildFillEntry(prob){
-  return {id:prob.id||Date.now(),sheet:'fill',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text,answers:prob.answers,hints:prob.hints||[],feedback:prob.feedback||null,userAnswers:prob.userAnswers||[],lang:prob.lang||st.lang};
-}
-function buildSummaryEntry(prob){
-  const questions=prob.questions;
-  return {id:prob.id||Date.now(),sheet:'summary',theme:prob.theme||'—',diff:prob.diff,date:prob.date,text:prob.text||'',questions:typeof questions==='string'?questions:JSON.stringify(questions||[]),ratio:prob.ratio,lang:prob.lang||st.lang};
-}
-async function syncPastOnGen(mode,prob){
-  if(!await ensureGasV3())return;
-  const entry=mode==='fill'?buildFillEntry(prob):buildSummaryEntry(prob);
-  prob.id=entry.id;
-  setSync(mode,'spin',L[st.lang].genPhaseProcess+'...');
-  const res=await gasPost(entry);
-  if(isGasV3Payload(res))gasV3Ok=true;
-  if(mode==='fill')st.fPast.unshift(entry);else st.sPast.unshift(entry);
-  renderPL(mode);
-  setSync(mode,'ok',(mode==='fill'?st.fPast:st.sPast).length+L[st.lang].syncItems);
-  showToast(mode==='fill'?L[st.lang].savedOk:L[st.lang].sSavedOk);
-}
-
-// ══════════════════════════════════════════════════════════
-// 要約
-// ══════════════════════════════════════════════════════════
-async function generateSummary(){
-  if(isBusy()||!hasApiKey())return;
-  const themeIn=document.getElementById('s-theme').value.trim();
-  const diff=st.sDiff;
-  let length;
-  if(diff<=3){length=S_LENGTH_FIXED[diff];}
-  else{const vol=st.sVolume||'short';length=S_LENGTH_VARIABLE[vol].chars;}
-  const numQ=calcBlocks(length,diff);
-  const ratio=S_RATIO[diff];
-  const themeMode=st.sThemeMode||'keyword';
-  const isEN=st.lang==='en';
-  document.getElementById('summary-result').style.display='none';
-  const spa=document.getElementById('s-print-area');if(spa)spa.style.display='none';
-  if(!beginGen('summary'))return;
-
-  const sys=isEN
-    ?'You are an expert in Japanese university entrance exam modern-text (現代文) education. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
-    :'あなたは大学受験・現代文の読解・記述指導の専門家です。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
-  const themeInst=buildThemeInst(themeIn,themeMode,length,isEN,true);
-  const diffPrompt=getSumPrompts()[diff];
-  const types=getSumQuestionTypes(diff);
-  const typesList=types.join(isEN ? ', ' : '、');
-  const typeGuide=isEN
-    ?`Generate exactly ${numQ} questions about the passage. Choose types from: ${typesList}. Vary types when possible.\ntargetChars guide: 語句説明 ~50, 主張要約 80-150, 理由説明 ~100, 課題抽出 ~120, 対比説明 ~100. Use the Japanese type names in the "type" field.`
-    :`設問はちょうど${numQ}問。タイプは次から選ぶ: ${typesList}。可能ならタイプを分散させる。\ntargetCharsの目安: 語句説明50字、主張要約80〜150字、理由説明100字、課題抽出120字、対比説明100字。`;
-  const jsonInst=isEN
-    ?`Return ONLY this JSON:\n{"theme":"topic in 10 chars or less","text":"full passage ~${length} chars","questions":[{"id":1,"type":"語句説明","question":"...","targetChars":50}]}\nquestions must have exactly ${numQ} items. "text" is one unified passage (modern Japanese exam style).`
-    :`返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"約${length}文字の問題文","questions":[{"id":1,"type":"語句説明","question":"本文中の「〇〇」とは…50字以内で説明しなさい。","targetChars":50}]}\nquestionsは${numQ}要素。textは1つの文章全体（大学受験・現代文型）。`;
-
-  try{
-    const genMaxTokens=length<=500?1200:length<=2000?3000:6000;
-    const formatNote=isEN?SUM_FORMAT_NOTE_EN:SUM_FORMAT_NOTE_JA;
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}\n${formatNote}`,sys,genMaxTokens);
-    if(!raw)return;
-    const p=safeJSON(raw);
-    if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
-    const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張要約',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
-    st.summary={id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||'short'):null,feedback:null,lang:st.lang};
-    renderSummary(st.summary);
-    try{await syncPastOnGen('summary',st.summary);}
-    catch(syncErr){setSync('summary','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
-  }catch(e){alert(L[st.lang].genFailed+'\n'+e.message);}
-  finally{endGen('summary');}
-}
-
-function renderSummary(prob){
-  const l=L[st.lang];
-  const p=normSummaryProb(prob);
-  document.getElementById('s-theme-tag').innerHTML=`<span class="theme-tag">${l.theme}${esc(p.theme||'—')}</span>`;
-  document.getElementById('s-ph').innerHTML=`<h2>${l.appTitle} — ${l.tabSum}</h2><p>${l.theme}${esc(p.theme||'—')}　${l.diff}${dlabel(p.diff)}　${fmtDate(p.date)}</p><p style="font-size:10pt;margin-top:.4rem;">${l.sPrintInst}</p>`;
-  document.getElementById('s-problem-text').innerHTML=esc(p.text);
-  document.getElementById('s-questions').innerHTML=p.questions.map((q,i)=>buildSummaryQuestionHtml(q,i,p.lang||st.lang,'live')).join('');
-  document.getElementById('s-fb').innerHTML='';
-  document.getElementById('s-pa-btn').style.display='none';
-  document.getElementById('s-owarn').classList.remove('show');
-  document.getElementById('s-submit').disabled=false;
-  document.getElementById('s-print-area').style.display='flex';
-  document.getElementById('summary-result').style.display='block';
-  document.getElementById('ss1').className='step done';
-  document.getElementById('ss2').className='step active';
-  document.getElementById('ss3').className='step';
-}
-
-function updateSumCC(i,mode){
-  const taId=mode==='pp'?`pp-sans-${i}`:`sans-${i}`;
-  const lblId=mode==='pp'?`pp-lbl-${i}`:`slbl-${i}`;
-  const warnId=mode==='pp'?`pp-warn-${i}`:`swarn-${i}`;
-  const ta=document.getElementById(taId);if(!ta)return;
-  const target=parseInt(ta.dataset.target)||0;
-  const cnt=ta.value.replace(/\s/g,'').length;
-  const lbl=document.getElementById(lblId);
-  const warn=document.getElementById(warnId);
-  const l=L[st.lang];
-  if(lbl){lbl.textContent=cnt+' / '+target+l.charOf;lbl.className='cc '+(cnt>target?'over':'ok2');}
-  ta.classList.toggle('overlimit',cnt>target);
-  if(warn){warn.textContent=cnt>target?`⚠ ${cnt-target}${l.charOver}`:'';warn.classList.toggle('show',cnt>target);}
-  const sel=mode==='pp'?'[id^="pp-sans-"]':'[id^="sans-"]';
-  const anyOver=[...document.querySelectorAll(sel)].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
-  const gw=document.getElementById(mode==='pp'?'pp-owarn':'s-owarn');
-  if(gw){gw.textContent=anyOver?l.overWarn:'';gw.classList.toggle('show',anyOver);}
-  const btn=document.getElementById(mode==='pp'?'pp-submit':'s-submit');
-  if(btn)btn.disabled=anyOver;
-}
-function updateCC(i){updateSumCC(i,'live');}
-
-async function submitSummary(){
-  const prob=st.summary;if(!prob)return;
-  const anyOver=[...document.querySelectorAll('[id^="sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
-  if(anyOver){alert(L[st.lang].overWarn);return;}
-  const userTexts=collectSummaryAnswers(prob,'live');
-  const btn=document.getElementById('s-submit');btn.disabled=true;
-  const fb=document.getElementById('s-fb');
-  fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
-  const isEN=prob.lang==='en';
-  const sys=isEN
-    ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. Give structured feedback in English using markdown (## headings, **bold**, numbered lists).'
-    :'あなたは大学受験・現代文の記述指導の専門家です。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
-  const prompt=buildSummaryGradePrompt(prob,userTexts);
-  try{
-    const diff=prob.diff||st.sDiff;
-    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
-    const gradeMaxTokens=length<=500?1500:length<=2000?3500:7000;
-    const res=await callClaude(prompt,sys,gradeMaxTokens);if(!res)return;
-    fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res)}</div>`;
-    prob.feedback=res;
-    document.getElementById('ss2').className='step done';
-    document.getElementById('ss3').className='step done';
-    document.getElementById('s-pa-btn').style.display='';
-  }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].gradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
-}
-
-// ══════════════════════════════════════════════════════════
-// 過去問共通
-// ══════════════════════════════════════════════════════════
-function filterPast(mode,f){
-  if(mode==='fill')st.fFilter=f;else st.sFilter=f;
-  document.querySelectorAll('#'+(mode==='fill'?'fp':'sp')+'-tabs .pf-tab').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
-  renderPL(mode);
-}
-async function loadPast(mode){
-  setSync(mode,'spin',L[st.lang].syncLoading);
-  try{
-    if(!await ensureGasV3()){setSync(mode,'err',L[st.lang].syncFailed);return;}
-    const d=await gasGet(mode);if(mode==='fill')st.fPast=d;else st.sPast=d;setSync(mode,'ok',d.length+L[st.lang].syncItems);renderPL(mode);
-  }
-  catch(e){setSync(mode,'err',L[st.lang].syncFailed);document.getElementById((mode==='fill'?'fp':'sp')+'-list').innerHTML=`<div class="pempty">${esc(e.message)}</div>`;}
-}
-function renderPL(mode){
-  const all=mode==='fill'?st.fPast:st.sPast;
-  const f=mode==='fill'?st.fFilter:st.sFilter;
-  const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
-  const list=byDiff.filter(p=>(p.lang||'ja')===st.lang);
-  const c=document.getElementById((mode==='fill'?'fp':'sp')+'-list');
-  if(!list.length){c.innerHTML=`<div class="pempty"><i class="ti ti-inbox" style="font-size:26px;display:block;margin-bottom:.4rem;"></i>${L[st.lang].noData}</div>`;return;}
-  c.innerHTML=list.map(p=>`
-    <div class="pcard" onclick="openPast('${mode}','${p.id}')">
-      <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
-        <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span></div></div>
-      <div class="pc-pre">${esc(String(mode==='fill'?p.text:normSummaryProb(p).text).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
-      <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
-    </div>`).join('');
-}
-function randomPast(mode){
-  const all=mode==='fill'?st.fPast:st.sPast;
-  const f=mode==='fill'?st.fFilter:st.sFilter;
-  const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
-  const pool=byDiff.filter(p=>(p.lang||'ja')===st.lang);
-  if(!pool.length){alert(L[st.lang].noData);return;}
-  openPast(mode,pool[Math.floor(Math.random()*pool.length)].id);
-}
-
-function openPast(mode,id){
-  const all=mode==='fill'?st.fPast:st.sPast;
-  const prob=all.find(p=>String(p.id)===String(id));if(!prob)return;
-  const pLang=prob.lang||'ja';const l=L[pLang];
-  document.getElementById((mode==='fill'?'fp':'sp')+'-list-view').style.display='none';
-  document.getElementById((mode==='fill'?'fp':'sp')+'-play').style.display='block';
-  const cnt=document.getElementById((mode==='fill'?'fp':'sp')+'-play-content');
-
-  if(mode==='fill'){
-    const answers=parseF(prob.answers);const hints=parseF(prob.hints);
-    let html=esc(prob.text);
-    for(let i=1;i<=answers.length;i++) html=html.replace(`【_${i}_】`,`<span class="blank" id="blank-${i}">（${i}）</span>`);
-    cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
-      <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
-      <div class="problem-box">${html}</div>
-      <div class="answer-section" id="pp-inputs" style="margin-top:1rem;margin-bottom:1rem;"></div>
-      <div class="divider"></div>
-      <p class="slabel" style="margin-bottom:.5rem;">${l.chooseGrading}</p>
-      <div class="action-bar" style="margin-top:0;">
-        <button class="btn btn-icon" id="pp-offline-btn" onclick="ppOffline('${id}')"><i class="ti ti-list-check"></i> ${l.offlineBtn}</button>
-      </div>
-      <div class="action-bar" style="margin-top:8px;">
-        <button class="btn btn-icon btn-outline" id="pp-api-btn" onclick="ppAPI('${id}')"><i class="ti ti-sparkles"></i> ${l.apiBtn}</button>
-      </div>
-      <div class="action-bar" style="margin-top:8px;">
-        <button class="btn btn-icon btn-sm" onclick="window.print()">
-          <i class="ti ti-printer"></i>
-          <span>${l.pq}</span>
-        </button>
-      </div>
-      <p style="font-size:11px;color:var(--text2);margin-top:6px;">${l.overwriteNote}</p>
-      <div id="pp-fb" style="margin-top:.5rem;"></div>
-      <div id="pp-ow-bar" class="action-bar" style="display:none;margin-top:.5rem;">
-        <button class="btn btn-icon btn-sm" onclick="ppOverwrite('${id}')"><i class="ti ti-cloud-upload"></i> ${l.overwriteBtn}</button>
-      </div>`;
-    const sec=document.getElementById('pp-inputs');sec.innerHTML=`<p class="slabel">${l.answerBox}</p>`;
-    const noHints=(prob.diff||1)>=3;
-    answers.forEach((_,i)=>{
-      sec.appendChild(buildFillAnswerItem(i,noHints?'':hints[i],`ppans-${i}`,false));
-    });
-  } else {
-    const p=normSummaryProb(prob);
-    const qHtml=p.questions.map((q,i)=>buildSummaryQuestionHtml(q,i,pLang,'pp')).join('');
-    cnt.innerHTML=`
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
-        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
-      <div class="step-bar"><div class="step done"></div><div class="step active" id="pp-s2"></div><div class="step" id="pp-s3"></div></div>
-      <p class="slabel">${l.sInst}</p>
-      <div class="problem-box">${esc(p.text)}</div>
-      ${qHtml}
-      <div id="pp-owarn" class="owarn" style="margin-bottom:.5rem;"></div>
-      <button class="btn" id="pp-submit" onclick="ppSummary('${id}')"><span>${l.sSubmit}</span></button>
-      <div class="action-bar" style="margin-top:8px;">
-        <button class="btn btn-icon btn-sm" onclick="window.print()">
-          <i class="ti ti-printer"></i>
-          <span>${l.pq}</span>
-        </button>
-      </div>
-      <div id="pp-fb"></div>`;
-  }
-}
-
-function ppCC(i){updateSumCC(i,'pp');}
-
-
-function ppOffline(id){
-  const prob=st.fPast.find(p=>String(p.id)===String(id));if(!prob)return;
-  const pLang=prob.lang||'ja';const l=L[pLang];
-  const answers=parseF(prob.answers);const hints=parseF(prob.hints);
-  const ua=answers.map((_,i)=>document.getElementById(`ppans-${i}`)?.value.trim()||'—');
-  let correct=0,rows='';
-  answers.forEach((ans,i)=>{const u=ua[i],ok=u===ans;if(ok)correct++;
-    rows+=`<p style="margin-bottom:.5rem;">${ok?'<span class="ok">✓</span>':'<span class="ng">✗</span>'} <strong>（${i+1}）</strong> ${u} → ${esc(ans)}${hints[i]?` <span style="font-size:12px;color:var(--text2);">${esc(hints[i])}</span>`:''}</p>`;});
-  const ct=answers.reduce((t,a,i)=>t.replace(`【_${i+1}_】`,`<strong>${esc(a)}</strong>`),esc(String(prob.text||'')));
-  const mbar=`<div class="mode-bar"><i class="ti ti-list-check"></i> <strong>${l.offlineBtn}</strong></div>`;
-  const scoreH=fillScoreHtml(correct,answers.length,pLang);
-  document.getElementById('pp-fb').innerHTML=`${mbar}<div class="feedback-box">${scoreH}${rows}<h3>${l.correctTxt}</h3><p style="line-height:2.1;">${ct}</p>${prob.feedback?`<h3>${l.prevFb}</h3>${md2h(prob.feedback)}`:`<p style="color:var(--text2);font-size:13px;">${l.noPrevFb}</p>`}</div>`;
-  document.getElementById('pp-s2').className='step done';
-  document.getElementById('pp-s3').className='step done';
-  document.getElementById('pp-offline-btn').disabled=true;
-}
-
-async function ppAPI(id){
-  const prob=st.fPast.find(p=>String(p.id)===String(id));if(!prob)return;
-  const pLang=prob.lang||'ja';const l=L[pLang];
-  const answers=parseF(prob.answers);
-  const ua=answers.map((_,i)=>document.getElementById(`ppans-${i}`)?.value.trim()||'—');
-  const fbEl=document.getElementById('pp-fb');
-  const mbar=`<div class="mode-bar"><i class="ti ti-sparkles"></i> <strong>${l.apiGrading}</strong></div>`;
-  fbEl.innerHTML=mbar+`<p class="loading"><span class="dots">${l.loading}</span></p>`;
-  const apiBtn=document.getElementById('pp-api-btn');if(apiBtn)apiBtn.disabled=true;
-  try{
-    const res=await gradeFill({...prob,answers,lang:pLang},ua);if(!res)return;
-    fbEl.innerHTML=mbar+`<div class="feedback-box">${md2h(res)}</div>`;
-    const owBar=document.getElementById('pp-ow-bar');
-    if(owBar){owBar.style.display='flex';owBar.dataset.feedback=res;owBar.dataset.ua=JSON.stringify(ua);}
-    document.getElementById('pp-s2').className='step done';
-    document.getElementById('pp-s3').className='step done';
-  }catch(e){fbEl.innerHTML=mbar+`<p class="err">${l.gradingErr}: ${e.message}</p>`;}
-  if(apiBtn)apiBtn.disabled=false;
-}
-
-async function ppOverwrite(id){
-  const owBar=document.getElementById('pp-ow-bar');if(!owBar)return;
-  const newFb=owBar.dataset.feedback;const newUA=JSON.parse(owBar.dataset.ua||'[]');
-  if(!newFb)return;
-  const prob=st.fPast.find(p=>String(p.id)===String(id));if(!prob)return;
-  setSync('fill','spin',L[st.lang].loading+'...');
-  try{
-    await gasPost({action:'delete',id:String(id),sheet:'fill'});
-    const updated={...prob,answers:parseF(prob.answers),hints:parseF(prob.hints),feedback:newFb,userAnswers:newUA,sheet:'fill'};
-    await gasPost(updated);
-    const idx=st.fPast.findIndex(p=>String(p.id)===String(id));
-    if(idx>=0)st.fPast[idx]={...st.fPast[idx],feedback:newFb,userAnswers:newUA};
-    setSync('fill','ok',L[st.lang].overwriteOk);
-    showToast(L[st.lang].overwriteOk);
-    owBar.style.display='none';
-  }catch(e){setSync('fill','err',L[st.lang].syncFailed);showToast('Error: '+e.message,4000);}
-}
-
-async function ppSummary(id){
-  const prob=st.sPast.find(p=>String(p.id)===String(id));if(!prob)return;
-  const pLang=prob.lang||'ja';const l=L[pLang];
-  const anyOver=[...document.querySelectorAll('[id^="pp-sans-"]')].some(t=>t.value.replace(/\s/g,'').length>parseInt(t.dataset.target||0));
-  if(anyOver){alert(l.overWarn);return;}
-  const userTexts=collectSummaryAnswers(prob,'pp');
-  const btn=document.getElementById('pp-submit');btn.disabled=true;
-  const fb=document.getElementById('pp-fb');
-  fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
-  const isEN=pLang==='en';
-  const sys=isEN
-    ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. Give structured feedback in English using markdown.'
-    :'あなたは大学受験・現代文の記述指導の専門家です。マークダウンを使って構造的に日本語でフィードバックしてください。';
-  const prompt=buildSummaryGradePrompt(prob,userTexts);
-  try{
-    const diff=prob.diff||st.sDiff;
-    const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
-    const gradeMaxTokens=length<=500?1500:length<=2000?3500:7000;
-    const res=await callClaude(prompt,sys,gradeMaxTokens);if(!res)return;
-    fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res)}</div>`;
-    document.getElementById('pp-s2').className='step done';
-    document.getElementById('pp-s3').className='step done';
-  }catch(e){fb.innerHTML=`<p class="err">${l.gradingErr}: ${e.message}</p>`;}
-  btn.disabled=false;
-}
-
-
-function closePP(mode){
-  document.getElementById((mode==='fill'?'fp':'sp')+'-list-view').style.display='';
-  document.getElementById((mode==='fill'?'fp':'sp')+'-play').style.display='none';
-  document.getElementById((mode==='fill'?'fp':'sp')+'-play-content').innerHTML='';
-}
-async function deletePast(mode,id){
-  if(!confirm(L[st.lang].delConfirm))return;
-  setSync(mode,'spin',L[st.lang].loading+'...');
-  try{
-    await gasPost({action:'delete',id:String(id),sheet:mode});
-    if(mode==='fill')st.fPast=st.fPast.filter(p=>String(p.id)!==String(id));
-    else st.sPast=st.sPast.filter(p=>String(p.id)!==String(id));
-    const n=mode==='fill'?st.fPast.length:st.sPast.length;
-    setSync(mode,'ok',n+L[st.lang].syncItems);renderPL(mode);showToast(L[st.lang].deletedOk);
-  }catch(e){setSync(mode,'err',L[st.lang].syncFailed);showToast('Error: '+e.message,4000);}
-}
-
-// ── 校閲 ─────────────────────────────────────────────────
-async function doReview(){
-  const l=L[st.lang];
-  const text=document.getElementById('r-text').value.trim();
-  const errEl=document.getElementById('r-text-err');
-  if(!text){
-    if(errEl){errEl.textContent=l.rTextRequired;errEl.classList.add('show');}
-    document.getElementById('r-text')?.focus();
-    return;
-  }
-  if(errEl){errEl.textContent='';errEl.classList.remove('show');}
-  if(isBusy()||!hasApiKey())return;
-  const btn=document.getElementById('r-btn');
-  btn.disabled=true;
-  document.getElementById('r-result').style.display='none';
-  const fbEl=document.getElementById('r-fb');
-  fbEl.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
-  document.getElementById('r-result').style.display='block';
-  const isEN=st.lang==='en';
-  const premise=document.getElementById('r-premise')?.value.trim()||'';
-  const sys=isEN
-    ?'You are a professional editor. Give structured feedback using markdown. When images are provided, use them as reference for context.'
-    :'あなたは日本語の論理的文章の専門編集者です。マークダウンを使って構造的に書いてください。画像が添付されている場合は前提情報として参照してください。';
-  const promptText=buildReviewPrompt(text,premise,isEN);
-  try{
-    const images=await buildReviewImageBlocks(_reviewImageFiles||[]);
-    const content=images.length
-      ?[...images,{type:'text',text:promptText}]
-      :promptText;
-    const fb=await callClaudeMsg(sys,content,3000);if(!fb)return;
-    fbEl.innerHTML=md2h(fb);
-  }catch(e){
-    fbEl.innerHTML=`<p class="err">${l.reviewFailed}: ${esc(e.message)}</p>`;
-  }
-  btn.disabled=!hasApiKey();
-  updateApiKeyUI();
-}
-
-// ── Init ─────────────────────────────────────────────────
-function init(){
-  const savedLang=localStorage.getItem(LANG_KEY);
-  if(savedLang)st.lang=savedLang;
-  loadApiKey();
-  applyLang();
-  switchSub('fill','new');
-  switchSub('summary','new');
-  document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
-  setDiff('s',st.sDiff);
-  setThemeMode('f',st.fThemeMode||'keyword');
-  setThemeMode('s',st.sThemeMode||'keyword');
-}
-init();
-</script>
+<script src="app.js" defer></script>
 </body>
 </html>
