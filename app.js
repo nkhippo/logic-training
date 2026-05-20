@@ -41,14 +41,24 @@ const L={
     cInst:'問題文を読み、各設問に答えてください',cSubmit:'添削してもらう',cPastTitle:'批判読み 過去問',
     cSavedOk:'批判読み問題を保存しました ✓',cGenFailed:'問題の生成に失敗しました。',cGradingErr:'添削に失敗しました',
     cDescs:[
-      '短い論証3問。「本当にそう言える？」という部分を見つけ、論理の弱点を指摘する練習。',
-      '短い論証3問。論理の弱点の指摘・条件の補完・反論への応答を練習。',
-      '論説文1本・設問4問。論証の流れを整理し、飛躍・条件・反論を問う。',
-      '論説文1本・設問5問。対偶の検証を含む高度な論証構造の分析。',
-      '論説文1本・設問5問。アブダクションを含む複雑な多層論証の批判的検証。',
+      'ビジネスの短い論証3問。「本当にそう言える？」という部分を見つける練習。',
+      'ビジネスの短い論証3問。論理の弱点の指摘・条件の補完・反対意見への応答を練習。',
+      'ビジネス文書1本・設問4問。話の流れを整理し、弱点・条件・反対意見を問う。',
+      'ビジネス文書1本・設問5問。立場が異なる人からの疑問を含む高度な論証の検証。',
+      'ビジネス文書1本・設問5問。多層的な論証構造を持つ経営・戦略文書の批判的検証。',
     ],
     cAutoInfo:'設問数：',
-    cQTypes:{'論証構造の整理':'論証構造の整理','飛躍の指摘':'飛躍の指摘','条件の補完':'条件の補完','対偶の検証':'対偶の検証','反論への応答':'反論への応答'},
+    cQTypes:{
+      '話の流れの整理':'話の流れの整理',
+      '本当にそう言える？の指摘':'本当にそう言える？',
+      '結論が成立するための条件':'成立するための条件',
+      '反対意見への応答':'反対意見への応答',
+      '立場が異なる人からの疑問':'立場からの疑問',
+      '論証構造の整理':'話の流れの整理',
+      '飛躍の指摘':'本当にそう言える？',
+      '条件の補完':'成立するための条件',
+      '反論への応答':'反対意見への応答',
+    },
     tabAme:'空雨傘',
     aThemeLbl:'テーマ',
     aDiffLbl:'難易度',
@@ -76,11 +86,31 @@ const L={
       '帰納型約30%・演繹型約70%。5設問構成。自己検証または法則の限界を問う。',
     ],
     cTooltips:{
-      '飛躍の指摘':{label:'論理的な飛躍とは？',body:'「AだからB」と言っているけれど、AだけではBとは言い切れない、という状態のことです。',example:'例：「売上が下がった→景気が悪いからだ」（他の原因の可能性を考慮していない）'},
-      '条件の補完':{label:'推論が成立する条件とは？',body:'この結論が正しいと言えるためには、文章に書かれていない「前提」として何が必要か、を考えます。',example:'例：「雨が降った→地面が濡れた」が成立するには「屋外である」という条件が必要。'},
-      '対偶の検証':{label:'対偶とは？',body:'「AならばB」が正しいとき、「BでなければAでもない」も必ず正しくなります。これを対偶といいます。',example:'例：「雨が降れば地面が濡れる」→対偶は「地面が濡れていなければ雨は降っていない」'},
-      '反論への応答':{label:'反論への応答とは？',body:'「それでも○○ではないか」という別の意見に対して、元の主張の立場から筋道を立てて答えることです。',example:'例：「値上げは反対だ」という反論に対し「値上げで品質を維持できる」と根拠を示して応答する。'},
-      '論証構造の整理':{label:'論証構造の整理とは？',body:'文章の話の流れを「○○だから△△、そして□□」という形で段階的に整理することです。',example:'例：「需要増加→価格上昇→消費減少」のように論理のステップを順番に並べる。'},
+      '本当にそう言える？の指摘':{
+        label:'「本当にそう言える？」とは？',
+        body:'「AだからB」という主張を見たとき、「AがなくてもBになる場合はないか？」「他に見落としている原因はないか？」と問い直すことです。',
+        example:'例：「売上が下がった→景気が悪いからだ」（競合他社の台頭や自社製品の問題など他の原因の可能性を考慮していない）'
+      },
+      '結論が成立するための条件':{
+        label:'「成立するための条件」とは？',
+        body:'この結論が正しいと言えるためには、文書に書かれていない「前提」として何が必要か、を考えます。',
+        example:'例：「コスト削減のために人員を減らす」が成立するには「業務量が変わらない」という前提が必要。'
+      },
+      '反対意見への応答':{
+        label:'「反対意見への応答」とは？',
+        body:'「それでも○○ではないか」という別の立場からの意見に対して、元の主張の立場から筋道を立てて答えることです。',
+        example:'例：「値上げに反対だ」という意見に対し「値上げで品質を維持しコスト増加を防げる」と根拠を示して応答する。'
+      },
+      '話の流れの整理':{
+        label:'「話の流れの整理」とは？',
+        body:'文書の主張の展開を「○○という課題があり→△△という根拠から→□□という結論を導いている」という形で順番に整理することです。',
+        example:'例：「売上減少→コスト構造の問題→価格戦略の見直しが必要」のように論理のステップを順番に並べる。'
+      },
+      '立場が異なる人からの疑問':{
+        label:'「立場が異なる人からの疑問」とは？',
+        body:'同じ文書でも、読み手の立場（現場担当者・管理職・顧客・株主など）によって「疑問に思う点」や「納得できない点」が異なります。その視点から疑問を考えます。',
+        example:'例：「コスト削減のため人員を減らす」という提言に対し、現場担当者は「業務が回るのか？」、株主は「短期的な効果はあるか？」という異なる疑問を持つ。'
+      },
     },
     sGenBtn:'問題を生成する',sInst:'問題文を読み、各設問に答えてください',
     yourSum:'あなたの回答',sSubmit:'添削してもらう',
@@ -148,14 +178,24 @@ const L={
     cInst:'Read the passage and answer each question',cSubmit:'Get Feedback',cPastTitle:'Critical Reading Past Problems',
     cSavedOk:'Saved ✓',cGenFailed:'Failed to generate problem.',cGradingErr:'Grading failed',
     cDescs:[
-      '3 short arguments. Find the weak point and identify the logical gap.',
-      '3 short arguments. Practice identifying gaps, supplementing conditions, and responding to counterarguments.',
-      'One essay, 4 questions. Organize argument flow, identify gaps and conditions, respond to counterarguments.',
-      'One essay, 5 questions. Includes contrapositive verification and advanced argument analysis.',
-      'One essay, 5 questions. Critical verification of complex multi-layer arguments including abduction.',
+      '3 short business arguments. Practice finding the logical gap.',
+      '3 short business arguments. Practice identifying gaps, missing conditions, and responding to objections.',
+      '1 business document, 4 questions. Summarize the argument flow, identify gaps, conditions, and objections.',
+      '1 business document, 5 questions. Includes stakeholder perspective questions.',
+      '1 business document, 5 questions. Critical review of complex multi-layer strategy documents.',
     ],
     cAutoInfo:'Questions: ',
-    cQTypes:{'論証構造の整理':'Argument structure','飛躍の指摘':'Logical gap','条件の補完':'Missing condition','対偶の検証':'Contrapositive','反論への応答':'Counterargument'},
+    cQTypes:{
+      '話の流れの整理':'Argument flow',
+      '本当にそう言える？の指摘':'Is this valid?',
+      '結論が成立するための条件':'Missing condition',
+      '反対意見への応答':'Counterargument',
+      '立場が異なる人からの疑問':'Stakeholder view',
+      '論証構造の整理':'Argument flow',
+      '飛躍の指摘':'Is this valid?',
+      '条件の補完':'Missing condition',
+      '反論への応答':'Counterargument',
+    },
     tabAme:'Sky-Rain-Umbrella',
     aThemeLbl:'Theme',
     aDiffLbl:'Difficulty',
@@ -183,11 +223,31 @@ const L={
       '~30% inductive / ~70% deductive. 5 questions. Includes self-verification or law limitation.',
     ],
     cTooltips:{
-      '飛躍の指摘':{label:'What is a logical gap?',body:'A situation where "A therefore B" is claimed, but A alone is not sufficient to conclude B.',example:'e.g. "Sales dropped → the economy is bad" (ignores other possible causes)'},
-      '条件の補完':{label:'What is a missing condition?',body:"An unstated premise that must be true for the argument's conclusion to hold.",example:'e.g. "It rained → the ground is wet" requires the condition "the ground is outdoors".'},
-      '対偶の検証':{label:'What is a contrapositive?',body:'If "A implies B" is true, then "not B implies not A" must also be true. This is the contrapositive.',example:'e.g. "If it rains, the ground is wet" → contrapositive: "If the ground is not wet, it did not rain"'},
-      '反論への応答':{label:'What is responding to a counterargument?',body:"Answering an opposing view with reasoned support from the original argument's position.",example:'e.g. Responding to "I oppose the price increase" with "The increase maintains product quality".'},
-      '論証構造の整理':{label:'What is organizing argument structure?',body:"Breaking down a passage's reasoning into a step-by-step chain: \"because A, therefore B, and thus C\".",example:'e.g. "Demand rises → prices increase → consumption falls"'},
+      '本当にそう言える？の指摘':{
+        label:'What does "Is this valid?" mean?',
+        body:'When you see "A, therefore B", ask yourself: "Could B happen without A?" or "Are there other causes being ignored?"',
+        example:'e.g. "Sales dropped → the economy is bad" (ignores other causes like competitor growth or product issues)'
+      },
+      '結論が成立するための条件':{
+        label:'What is a "missing condition"?',
+        body:'What unstated assumption must be true for this conclusion to hold? Think about what the document takes for granted.',
+        example:'e.g. "Reduce headcount to cut costs" assumes "workload stays the same" — an unstated condition.'
+      },
+      '反対意見への応答':{
+        label:'What is "responding to a counterargument"?',
+        body:'When someone says "but what about X?", answer from the original argument\'s position with a clear reason.',
+        example:'e.g. In response to "I oppose the price increase", argue "The increase maintains quality and prevents cost overruns."'
+      },
+      '話の流れの整理':{
+        label:'What is "argument flow summary"?',
+        body:'Break down the document\'s reasoning step by step: "There is a problem X → based on evidence Y → therefore conclusion Z."',
+        example:'e.g. "Sales decline → cost structure issues → need to revise pricing strategy"'
+      },
+      '立場が異なる人からの疑問':{
+        label:'What is "stakeholder perspective"?',
+        body:'The same document raises different questions depending on the reader\'s role — frontline staff, management, customers, or shareholders. Think from one of these perspectives.',
+        example:'e.g. "Reduce headcount to cut costs": frontline asks "Can we manage the workload?", shareholders ask "Will this show short-term results?"'
+      },
     },
     sGenBtn:'Generate Problem',sInst:'Read the passage and answer each question',
     yourSum:'Your Answer',sSubmit:'Get Feedback',
@@ -2021,26 +2081,27 @@ async function syncAmePast(prob){
   showToast(L[st.lang].aSavedOk);
 }
 function getCritiqueQuestionTypes(diff){
-  if(diff===1)return ['飛躍の指摘','飛躍の指摘','条件の補完'];
-  if(diff===2)return ['飛躍の指摘','条件の補完','反論への応答'];
-  if(diff===3)return ['論証構造の整理','飛躍の指摘','条件の補完','反論への応答'];
-  return ['論証構造の整理','飛躍の指摘','条件の補完','対偶の検証','反論への応答'];
+  if(diff===1)return ['本当にそう言える？の指摘','本当にそう言える？の指摘','結論が成立するための条件'];
+  if(diff===2)return ['本当にそう言える？の指摘','結論が成立するための条件','反対意見への応答'];
+  if(diff===3)return ['話の流れの整理','本当にそう言える？の指摘','結論が成立するための条件','反対意見への応答'];
+  if(diff===4)return ['話の流れの整理','本当にそう言える？の指摘','結論が成立するための条件','反対意見への応答','立場が異なる人からの疑問'];
+  return ['話の流れの整理','本当にそう言える？の指摘','結論が成立するための条件','反対意見への応答','立場が異なる人からの疑問'];
 }
 function getCritiquePrompts(){
   const l=st.lang;
   if(l==='ja')return{
-    1:`難易度1（入門）・B形式:\n- 短い論証を3つ生成する（各50〜80字）\n- 各論証は「AだからB」という単純な因果構造\n- 論理の飛躍が1箇所だけ含まれるよう設計する\n- 設問は平易な言葉で「この文章では〜と結論づけています。その間に「本当にそう言える？」と感じる部分はどこですか？」という形式にする\n- targetChars: 100字`,
-    2:`難易度2（基礎）・B形式:\n- 短い論証を3つ生成する（各60〜90字）\n- 論証タイプ: 飛躍の指摘・条件の補完・反論への応答の順\n- 各論証の論理構造は異なるものにする\n- 設問は平易な言葉で表現する（専門用語を避ける）\n- targetChars: 飛躍100字、条件120字、反論120字`,
-    3:`難易度3（標準）・A形式:\n- 約400字の論説文を1本生成する\n- 構造：「問題提起→論拠2〜3つ→反論への言及→結論」\n- 文体：大学入試上位校レベル、語彙は平易だが抽象概念を含む\n- 設問タイプ：論証構造の整理・飛躍の指摘・条件の補完・反論への応答\n- 設問はすべて平易な言葉で表現する（ツールチップで補足されるため専門用語可）\n- targetChars: 論証構造150字、飛躍120字、条件130字、反論150字`,
-    4:`難易度4（上級）・A形式:\n- 約400字の論説文を1本生成する\n- 構造：「問題提起→論拠2〜3つ→反論処理→結論」の2層構造\n- 文体：最難関入試レベル、論理構造が精緻で対偶が問いやすい構造にする\n- 設問タイプ：論証構造の整理・飛躍の指摘・条件の補完・対偶の検証・反論への応答\n- 対偶の検証では「筆者は〜と言っているが、〜でないならどうなるか」という1段階の対偶を問う\n- targetChars: 論証構造150字、飛躍130字、条件140字、対偶150字、反論160字`,
-    5:`難易度5（超難問）・A形式:\n- 約400字の論説文を1本生成する\n- 構造：「問題提起→論拠3つ以上→留保→反論処理→結論」の3層構造\n- 文体：東大現代文レベル以上、哲学・社会科学的文体、アブダクション（最良説明への推論）を含む\n- 設問タイプ：論証構造の整理・飛躍の指摘・条件の補完・対偶の検証・反論への応答\n- 対偶の検証では連鎖する対偶（2段階）を問う\n- targetChars: 論証構造180字、飛躍150字、条件160字、対偶180字、反論200字`,
+    1:`難易度1（入門）・B形式:\n- 短い論証を3つ生成する（各50〜80字）\n- ビジネス現場で起こりうる単純な因果構造（「〜だから〜すべき」「〜なので〜になる」など）\n- 各論証に論理のつながりが不十分な箇所を1つだけ含める\n- 設問は平易な言葉で「この文章では〜と結論づけています。その間に「本当にそう言える？」と感じる部分はどこですか？」という形式にする\n- targetChars: 100字`,
+    2:`難易度2（基礎）・B形式:\n- 短い論証を3つ生成する（各60〜90字）\n- ビジネス現場の状況（売上・人事・プロジェクト・施策など）を題材にする\n- 設問タイプの順序: 本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答\n- 各論証の論理構造は異なるものにする\n- 設問は平易なビジネス表現で書く（論理学の専門用語を使わない）\n- targetChars: 指摘100字、条件120字、応答120字`,
+    3:`難易度3（標準）・A形式:\n- 約400字のビジネス文書（提案書・報告書・企画書の一節）を1本生成する\n- 構造：「課題提起→根拠2〜3つ→反論への言及→提案・結論」\n- 文体：ビジネス文書として自然な文体。論理の弱点を意図的に含めること\n- 設問タイプ：話の流れの整理・本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答\n- 設問はすべて平易なビジネス表現で書く\n- targetChars: 整理150字、指摘120字、条件130字、応答150字`,
+    4:`難易度4（上級）・A形式:\n- 約400字のビジネス文書（分析レポート・稟議書・提言書の一節）を1本生成する\n- 構造：「課題提起→根拠2〜3つ→反論処理→結論・提言」の2層構造\n- 文体：上位職向けのビジネス文書。論理構造が精緻で、読み手の立場によって疑問が生じる設計にする\n- 設問タイプ：話の流れの整理・本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答・立場が異なる人からの疑問\n- 「立場が異なる人からの疑問」では、現場担当者・管理職・顧客など立場の異なる人が持ちうる疑問を問う\n- 設問はすべて平易なビジネス表現で書く\n- targetChars: 整理150字、指摘130字、条件140字、応答150字、疑問160字`,
+    5:`難易度5（超難問）・A形式:\n- 約400字のビジネス文書（経営戦略文書・コンサルレポート・提言書の一節）を1本生成する\n- 構造：「課題提起→根拠3つ以上→留保・例外→反論処理→結論・提言」の3層構造\n- 文体：経営層・意思決定者向けの高度なビジネス文書。多層的な論証・留保を含むこと\n- 設問タイプ：話の流れの整理・本当にそう言える？の指摘・結論が成立するための条件・反対意見への応答・立場が異なる人からの疑問\n- 「立場が異なる人からの疑問」では、複数の利害関係者（株主・現場・顧客・社会）の立場から最も論証を揺るがす疑問を問う\n- 設問はすべて平易なビジネス表現で書く\n- targetChars: 整理180字、指摘150字、条件160字、応答170字、疑問180字`,
   };
   return{
-    1:`Difficulty 1 (Beginner) · Form B:\n- Generate 3 independent short arguments (50-80 chars each)\n- Each argument has a simple causal structure "A therefore B"\n- Design each so there is exactly one logical gap\n- Questions must use plain language: "This text concludes X from Y. Where does it feel like a stretch?"\n- targetChars: 100`,
-    2:`Difficulty 2 (Basic) · Form B:\n- Generate 3 independent short arguments (60-90 chars each)\n- Question types in order: logical gap, missing condition, counterargument response\n- Each argument must have a different logical structure\n- Use plain language in all questions (avoid jargon)\n- targetChars: gap 100, condition 120, counterargument 120`,
-    3:`Difficulty 3 (Standard) · Form A:\n- Generate one essay of approximately 400 characters\n- Structure: problem → 2-3 pieces of evidence → reference to counterargument → conclusion\n- Style: top-tier entrance exam level, plain vocabulary with abstract concepts\n- Question types: argument structure, logical gap, missing condition, counterargument response\n- Use plain language in questions (technical terms allowed since tooltips provide definitions)\n- targetChars: structure 150, gap 120, condition 130, counterargument 150`,
-    4:`Difficulty 4 (Advanced) · Form A:\n- Generate one essay of approximately 400 characters\n- Structure: problem → 2-3 pieces of evidence → counterargument handling → conclusion (2-layer)\n- Style: elite exam level, precise logic, structure amenable to contrapositive analysis\n- Question types: argument structure, logical gap, missing condition, contrapositive, counterargument response\n- Contrapositive: ask a 1-step contrapositive ("if the author says X, what follows if not-X?")\n- targetChars: structure 150, gap 130, condition 140, contrapositive 150, counterargument 160`,
-    5:`Difficulty 5 (Master) · Form A:\n- Generate one essay of approximately 400 characters\n- Structure: problem → 3+ pieces of evidence → reservation → counterargument handling → conclusion (3-layer)\n- Style: beyond top university exam level, philosophical/social-science register, includes abductive reasoning\n- Question types: argument structure, logical gap, missing condition, contrapositive, counterargument response\n- Contrapositive: ask a 2-step chained contrapositive\n- targetChars: structure 180, gap 150, condition 160, contrapositive 180, counterargument 200`,
+    1:`Difficulty 1 (Beginner) · Form B:\n- Generate 3 independent short arguments (50-80 chars each)\n- Use business scenarios with simple causal structure ("because X, we should Y")\n- Each argument must contain exactly one logical gap\n- Questions must use plain language: "This text concludes X. Where does it feel like a stretch?"\n- targetChars: 100`,
+    2:`Difficulty 2 (Basic) · Form B:\n- Generate 3 independent short arguments (60-90 chars each)\n- Use business scenarios (sales, HR, projects, initiatives)\n- Question types in order: logical gap, missing condition, counterargument response\n- Each argument must have a different logical structure\n- Use plain business language in all questions (no academic jargon)\n- targetChars: gap 100, condition 120, response 120`,
+    3:`Difficulty 3 (Standard) · Form A:\n- Generate one business document excerpt (~400 characters): proposal, report, or plan\n- Structure: issue → 2-3 pieces of evidence → reference to counterargument → proposal/conclusion\n- Style: natural business writing with intentional logical weaknesses\n- Question types: flow summary, logical gap, missing condition, counterargument response\n- Use plain business language in all questions\n- targetChars: flow 150, gap 120, condition 130, response 150`,
+    4:`Difficulty 4 (Advanced) · Form A:\n- Generate one business document excerpt (~400 characters): analysis report, approval document, or recommendation\n- Structure: issue → 2-3 pieces of evidence → counterargument handling → conclusion/recommendation (2-layer)\n- Style: senior-level business document with precise logic and viewpoint-dependent questions\n- Question types: flow summary, logical gap, missing condition, counterargument response, stakeholder perspective\n- "Stakeholder perspective": ask about questions that arise from different roles (frontline staff, management, customers)\n- Use plain business language in all questions\n- targetChars: flow 150, gap 130, condition 140, response 150, perspective 160`,
+    5:`Difficulty 5 (Master) · Form A:\n- Generate one business document excerpt (~400 characters): strategy document, consulting report, or policy recommendation\n- Structure: issue → 3+ pieces of evidence → reservation/exception → counterargument handling → conclusion (3-layer)\n- Style: executive-level business document with multi-layer reasoning and reservations\n- Question types: flow summary, logical gap, missing condition, counterargument response, stakeholder perspective\n- "Stakeholder perspective": ask which stakeholder's perspective (shareholders, frontline, customers, society) most challenges the argument\n- Use plain business language in all questions\n- targetChars: flow 180, gap 150, condition 160, response 170, perspective 180`,
   };
 }
 function toggleTooltip(id){
@@ -2053,7 +2114,7 @@ function toggleTooltip(id){
 function buildCritiqueQuestionHtml(q,i,lang,form,mode){
   const l=L[lang]||L.ja;
   const tc=q.targetChars||120;
-  const type=q.type||'飛躍の指摘';
+  const type=q.type||'本当にそう言える？の指摘';
   const intentLabel=(l.cQTypes||{})[type]||type;
   const tooltip=(l.cTooltips||{})[type];
   const tooltipId=`c-tooltip-${mode==='pp'?'pp-':''}${i}`;
@@ -2098,20 +2159,20 @@ async function generateCritique(){
   document.getElementById('critique-result').style.display='none';
   if(!beginGen('critique'))return;
   const sys=isEN
-    ?'You are an expert in logical thinking education. The educational goal of this tab is to train learners to identify logical gaps in arguments and critically verify the validity of reasoning. Intentionally design passages and arguments with logical weaknesses (gaps, missing premises, room for counterarguments). Questions should lead learners to discover those weaknesses and articulate their findings in writing. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
-    :'あなたは論理的思考教育の専門家です。このタブの教育目的は「推論の飛躍を見抜き、論証の妥当性を批判的に検証する力を鍛えること」です。問題文・論証は意図的に論理的な弱点（飛躍・前提の欠如・反論の余地）を内包した構造にしてください。設問は学習者がその弱点を発見し、応答文として記述できる形式にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+    ?'You are an expert in business communication and logical thinking education. The educational goal of this tab is to train learners to identify logical gaps in business documents and critically verify the validity of business reasoning. Intentionally design passages and arguments with logical weaknesses relevant to business contexts (unverified assumptions, missing evidence, unstated conditions, room for stakeholder objections). Questions should lead learners to discover those weaknesses and articulate their findings in plain business language. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
+    :'あなたはビジネスコミュニケーションと論理的思考の教育専門家です。このタブの教育目的は「ビジネス文書における論理の弱点を見抜き、主張の妥当性を批判的に検証する力を鍛えること」です。問題文・論証はビジネス現場で実際に起こりうる状況を題材にし、論理的な弱点（前提の欠如・根拠の不足・反論の余地・立場による疑問）を意図的に含む構造にしてください。設問は学習者がその弱点を発見し、ビジネスの平易な言葉で応答文として記述できる形式にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const themeInst=buildThemeInst(themeIn,'keyword',C_TEXT_LENGTH,isEN,false);
   const diffPrompt=getCritiquePrompts()[diff];
   const qTypes=getCritiqueQuestionTypes(diff);
   let prompt;
   if(isAForm){
     prompt=isEN
-      ?`${themeInst}\n${diffPrompt}\n\nGenerate a logical essay of approximately ${C_TEXT_LENGTH} characters and exactly ${numQ} questions.\nQuestion types in order: ${qTypes.join(', ')}.\n\nReturn ONLY this JSON:\n{"theme":"topic in 10 chars","text":"essay text ~${C_TEXT_LENGTH} chars","questions":[{"id":1,"type":"論証構造の整理","question":"plain question text","targetChars":120}]}`
-      :`${themeInst}\n${diffPrompt}\n\n約${C_TEXT_LENGTH}文字の論説文と、ちょうど${numQ}問の設問を生成してください。\n設問タイプの順序: ${qTypes.join('、')}。\n\n返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"論説文約${C_TEXT_LENGTH}文字","questions":[{"id":1,"type":"論証構造の整理","question":"平易な表現の設問文","targetChars":120}]}`;
+      ?`${themeInst}\n${diffPrompt}\n\nGenerate a business document excerpt of approximately ${C_TEXT_LENGTH} characters and exactly ${numQ} questions.\nQuestion types in order: ${qTypes.join(', ')}.\n\nReturn ONLY this JSON:\n{"theme":"topic in 10 chars","text":"document text ~${C_TEXT_LENGTH} chars","questions":[{"id":1,"type":"話の流れの整理","question":"plain question text","targetChars":120}]}`
+      :`${themeInst}\n${diffPrompt}\n\n約${C_TEXT_LENGTH}文字のビジネス文書と、ちょうど${numQ}問の設問を生成してください。\n設問タイプの順序: ${qTypes.join('、')}。\n\n返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"ビジネス文書約${C_TEXT_LENGTH}文字","questions":[{"id":1,"type":"話の流れの整理","question":"平易な表現の設問文","targetChars":120}]}`;
   }else{
     prompt=isEN
-      ?`${themeInst}\n${diffPrompt}\n\nGenerate exactly ${numQ} independent short argument problems.\nQuestion types in order: ${qTypes.join(', ')}.\n\nReturn ONLY this JSON:\n{"theme":"topic in 10 chars","questions":[{"id":1,"type":"飛躍の指摘","argument":"short argument text 50-80 chars","question":"plain question text","targetChars":100}]}`
-      :`${themeInst}\n${diffPrompt}\n\nちょうど${numQ}問の独立した短い論証問題を生成してください。\n設問タイプの順序: ${qTypes.join('、')}。\n\n返答はJSONのみ：\n{"theme":"テーマ10文字以内","questions":[{"id":1,"type":"飛躍の指摘","argument":"50〜80字の短い論証文","question":"平易な表現の設問文","targetChars":100}]}`;
+      ?`${themeInst}\n${diffPrompt}\n\nGenerate exactly ${numQ} independent short argument problems.\nQuestion types in order: ${qTypes.join(', ')}.\n\nReturn ONLY this JSON:\n{"theme":"topic in 10 chars","questions":[{"id":1,"type":"本当にそう言える？の指摘","argument":"short argument text 50-80 chars","question":"plain question text","targetChars":100}]}`
+      :`${themeInst}\n${diffPrompt}\n\nちょうど${numQ}問の独立した短い論証問題を生成してください。\n設問タイプの順序: ${qTypes.join('、')}。\n\n返答はJSONのみ：\n{"theme":"テーマ10文字以内","questions":[{"id":1,"type":"本当にそう言える？の指摘","argument":"50〜80字の短い論証文","question":"平易な表現の設問文","targetChars":100}]}`;
   }
   try{
     const genMaxTokens=isAForm?2000:1200;
@@ -2119,7 +2180,7 @@ async function generateCritique(){
     if(!raw)return;
     const p=safeJSON(raw);
     if(!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
-    const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||qTypes[i]||'飛躍の指摘',question:q.question||'',argument:q.argument||'',targetChars:parseInt(q.targetChars)||100}));
+    const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||qTypes[i]||'本当にそう言える？の指摘',question:q.question||'',argument:q.argument||'',targetChars:parseInt(q.targetChars)||100}));
     st.critique={
       id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
       date:new Date().toISOString(),text:p.text||null,questions,
@@ -2154,8 +2215,8 @@ async function submitCritique(){
 async function gradeCritique(prob,userAnswers){
   const isEN=(prob.lang||st.lang)==='en';
   const sys=isEN
-    ?'You are an expert in logical thinking education. The goal of feedback is to evaluate how accurately the learner identified logical gaps, missing premises, or counterargument opportunities, and how well they articulated their findings in writing. Evaluate logical validity, accuracy of identification, and clarity of expression. Provide improved example answers. Give structured feedback in English using markdown.'
-    :'あなたは論理的思考教育の専門家です。フィードバックの目的は「飛躍・前提の欠如・反論の余地をどれだけ正確に特定し、論理的な応答文として表現できているか」を評価することです。学習者の回答の論理的妥当性・特定の正確さ・記述の明確さを具体的に評価し、改善例を示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+    ?'You are an expert in business communication and logical thinking education. The goal of feedback is to evaluate how accurately the learner identified logical gaps, missing conditions, or stakeholder objections in business contexts, and how clearly they expressed their findings in plain business language. Evaluate accuracy of identification, logical validity, and clarity of expression. Provide improved example answers. Give structured feedback in English using markdown.'
+    :'あなたはビジネスコミュニケーションと論理的思考の教育専門家です。フィードバックの目的は「ビジネス文書における論理の弱点・前提の欠如・立場による疑問をどれだけ正確に特定し、ビジネスの平易な言葉で応答文として表現できているか」を評価することです。特定の正確さ・論理的妥当性・記述の明確さを具体的に評価し、改善例を示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
   const passageSection=(prob.form==='A'&&prob.text)
     ?(isEN?`[Passage]\n${prob.text}\n\n`:`【問題文】\n${prob.text}\n\n`)
     :'';
@@ -2167,8 +2228,8 @@ async function gradeCritique(prob,userAnswers){
       :`【設問${q.id||i+1}】タイプ: ${q.type}\n${argPart}${q.question}\n目標: ${q.targetChars}字以内\n学習者の回答:\n${ua}`;
   }).join('\n\n---\n\n');
   const gradeInst=isEN
-    ?`Grade each question on the following axes and provide feedback:\n- Accuracy of gap/condition/structure identification\n- Logical validity of the learner's reasoning\n- Quality of written response (clarity, conciseness)\nProvide an improved example answer within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
-    :`各設問を以下の軸で採点し、フィードバックしてください。\n- 飛躍・条件・構造の特定の正確さ\n- 学習者の推論の論理的妥当性\n- 記述の質（明確さ・簡潔さ）\n各設問の末尾に、文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
+    ?`Grade each question on the following axes and provide feedback:\n- Accuracy of gap/condition/flow/stakeholder identification\n- Logical validity of the learner's reasoning in a business context\n- Quality of written response (clarity, conciseness, plain business language)\nProvide an improved example answer within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
+    :`各設問を以下の軸で採点し、フィードバックしてください。\n- 論理の弱点・前提の欠如・立場による疑問の特定の正確さ\n- 学習者の推論の論理的妥当性（ビジネス文脈）\n- 記述の質（明確さ・簡潔さ・平易なビジネス表現）\n各設問の末尾に、文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
   const prompt=`${passageSection}${qSection}\n\n${gradeInst}`;
   const gradeMaxTokens=prob.diff<=3?1500:2500;
   return callClaude(prompt,sys,gradeMaxTokens,0.3);
