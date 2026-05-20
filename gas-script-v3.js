@@ -13,6 +13,7 @@
  *   summary  — id, theme, diff, date, text, questions, ratio, lang
  *   critique — id, theme, diff, date, text, questions, feedback, form, lang
  *   ame      — id, theme, diff, date, law, article, constraint, questions, feedback, form, lang
+ *   kibari   — id, theme, diff, scene, date, situation, readers, points, constraint, firstAnswer, feedback, lang
  *
  * ※「要約」「穴埋め」タブは v3 では作りません。残っている場合は削除してください。
  */
@@ -22,6 +23,7 @@ const FILL_COLS = ['id', 'theme', 'diff', 'date', 'text', 'answers', 'hints', 'f
 const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'ratio', 'lang'];
 const CRITIQUE_COLS = ['id', 'theme', 'diff', 'date', 'text', 'questions', 'feedback', 'form', 'lang'];
 const AME_COLS = ['id', 'theme', 'diff', 'date', 'law', 'article', 'constraint', 'questions', 'feedback', 'form', 'lang'];
+const KIBARI_COLS = ['id', 'theme', 'diff', 'scene', 'date', 'situation', 'readers', 'points', 'constraint', 'firstAnswer', 'feedback', 'lang'];
 /** 旧シート名（読み書きは fill / summary / critique / ame） */
 const LEGACY_SHEET_NAMES = {
   fill: ['穴埋め'],
@@ -73,6 +75,7 @@ function colsForLogical_(logical) {
   if (logical === 'summary') return SUMMARY_COLS;
   if (logical === 'critique') return CRITIQUE_COLS;
   if (logical === 'ame') return AME_COLS;
+  if (logical === 'kibari') return KIBARI_COLS;
   return FILL_COLS;
 }
 
@@ -80,6 +83,7 @@ function sheetNameForLogical_(logical) {
   if (logical === 'summary') return 'summary';
   if (logical === 'critique') return 'critique';
   if (logical === 'ame') return 'ame';
+  if (logical === 'kibari') return 'kibari';
   return 'fill';
 }
 
@@ -178,13 +182,15 @@ function doGet(e) {
       fillCols: FILL_COLS,
       summaryCols: SUMMARY_COLS,
       critiqueCols: CRITIQUE_COLS,
-      ameCols: AME_COLS
+      ameCols: AME_COLS,
+      kibariCols: KIBARI_COLS
     });
   }
   const sheetName = String(e.parameter.sheet || 'fill').toLowerCase();
   if (sheetName === 'summary') return jsonOut_(readAllRows_('summary'));
   if (sheetName === 'critique') return jsonOut_(readAllRows_('critique'));
   if (sheetName === 'ame') return jsonOut_(readAllRows_('ame'));
+  if (sheetName === 'kibari') return jsonOut_(readAllRows_('kibari'));
   return jsonOut_(readAllRows_('fill'));
 }
 
@@ -201,6 +207,8 @@ function doPost(e) {
     writeCritique_(data);
   } else if (sheet === 'ame') {
     writeAme_(data);
+  } else if (sheet === 'kibari') {
+    writeKibari_(data);
   } else {
     writeFill_(data);
   }
@@ -286,12 +294,24 @@ function writeAme_(data) {
   sh.appendRow(row);
 }
 
+function writeKibari_(data) {
+  const sh = getSh_('kibari', KIBARI_COLS);
+  const row = KIBARI_COLS.map(c => {
+    const v = data[c];
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return v;
+  });
+  sh.appendRow(row);
+}
+
 function deleteById_(sheetName, id) {
   const s = String(sheetName).toLowerCase();
   let logical = 'fill';
   if (s === 'summary') logical = 'summary';
   else if (s === 'critique') logical = 'critique';
   else if (s === 'ame') logical = 'ame';
+  else if (s === 'kibari') logical = 'kibari';
   const names = [sheetNameForLogical_(logical)].concat(LEGACY_SHEET_NAMES[logical] || []);
   const ss = getSs_();
   names.forEach((name) => {

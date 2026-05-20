@@ -44,7 +44,7 @@ logic-training/
 | summary | 要約 | Summarize | ✅ 実装済み |
 | critique | 批判読み | Critical Reading | ✅ 実装済み |
 | ame | 空雨傘 | Sky-Rain-Umbrella | ✅ 実装済み |
-| kibari | 気配り | Consideration | ❌ 未実装（フェーズ2） |
+| kibari | 気配り | Consideration | ✅ 実装済み |
 
 ### 2-2. 定数・設定
 
@@ -198,11 +198,18 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | タイプ | 記号 | 出題難易度 |
 |---|---|---|
 | 空（事実の仕分け） | ☁ | 難易度2〜5 |
-| 雨（解釈の導出） | 🌧 | 全難易度 |
-| 傘（行動の提案） | ☂ | 全難易度 |
+| 雨（読み取り） | 🌧 | 全難易度 |
+| 傘（次の行動） | ☂ | 全難易度 |
 | 導出の説明 | 📐 | 難易度4〜5 |
 | 自己検証 | 🔍 | 難易度4〜5 |
 | 法則の限界の指摘 | ⚖ | 難易度4〜5・演繹型 |
+
+#### 回答UI（空・事実の仕分け）
+
+| 難易度 | 入力欄 |
+|---|---|
+| 2 | 1欄（記事内の客観的事実を整理） |
+| 3〜5 | **2欄** — 「事実として書かれている部分」「解釈・意見として書かれている部分」。文字数上限は設問の `targetChars` を概ね半分ずつ配分。採点時は `【事実】` / `【解釈・意見】` 形式に結合してAPIに渡す。GASの `questions` JSON構造は変更しない。 |
 
 #### GASシート：ame
 
@@ -219,6 +226,55 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | feedback | 採点フィードバック（JSON） |
 | form | 問題タイプ（inductive/deductive） |
 | lang | 言語 |
+
+---
+
+### 3-5. 気配りタブ（kibari）
+
+#### 問題の流れ
+
+1. 状況提示（AI生成）→ ユーザーがメッセージを書く
+2. AIが読み手として反応
+3. ユーザーが書き直す（難易度に応じて最大3往復）
+4. 最終採点・フィードバック
+
+#### 難易度と往復回数
+
+| 難易度 | 最大往復回数 | 読み手 |
+|---|---:|---|
+| 1 | 1回 | 1人・シンプル |
+| 2 | 1回 | 1人・軽微な利害関係あり |
+| 3 | 2回 | 2人・立場が異なる |
+| 4 | 2回 | 2〜3人・対立する利害関係あり |
+| 5 | 3回 | 複数・感情への配慮が必要 |
+
+#### 場面タイプ（プリセット）
+
+| キー | 日本語 |
+|---|---|
+| report | 報告・共有 |
+| request | 依頼・指示 |
+| proposal | 提案・説明 |
+| self | 自己表現 |
+
+#### GASシート：kibari
+
+| カラム | 内容 |
+|---|---|
+| id | タイムスタンプ |
+| theme | テーマ |
+| diff | 難易度 |
+| scene | 場面タイプ |
+| date | 保存日時 |
+| situation | 状況説明 |
+| readers | 読み手（JSON配列） |
+| points | 盛り込むべき観点（JSON配列） |
+| constraint | 文字数制限など |
+| firstAnswer | 初稿（1問目の回答のみ） |
+| feedback | 採点フィードバック |
+| lang | 言語 |
+
+> 過去問保存は生成時に状況を保存し、採点完了時に `firstAnswer` と `feedback` を更新する。
 
 ---
 
@@ -241,11 +297,13 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | GET | `?sheet=summary` | 要約過去問一覧取得 |
 | GET | `?sheet=critique` | 批判読み過去問一覧取得 |
 | GET | `?sheet=ame` | 空雨傘過去問一覧取得 |
+| GET | `?sheet=kibari` | 気配り過去問一覧取得 |
 | POST | `{ action: 'delete', sheet, id }` | 過去問削除 |
 | POST | `{ sheet: 'fill', ... }` | 穴埋め保存 |
 | POST | `{ sheet: 'summary', ... }` | 要約保存 |
 | POST | `{ sheet: 'critique', ... }` | 批判読み保存 |
 | POST | `{ sheet: 'ame', ... }` | 空雨傘保存 |
+| POST | `{ sheet: 'kibari', ... }` | 気配り保存 |
 
 ---
 
@@ -259,6 +317,21 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | APIキー管理 | ユーザーがlocalStorageに保存 |
 | systemプロンプトの方針 | 教育目的であることを明示。ビジネス文書向けに統一（進行中） |
 
+### 5-1. 採点時の `max_tokens`（答え合わせ）
+
+採点レスポンスが途中で切れないよう、全タブ共通で従来上限の **約1.5倍** を `app.js` の定数で管理する。問題生成の `max_tokens` は対象外。
+
+| 用途 | 条件 | max_tokens（従来 → 現在） |
+|---|---|---|
+| 穴埋め・批判読み・空雨傘 | 難易度1〜3 | 1500 → **2250** |
+| 穴埋め・批判読み・空雨傘 | 難易度4〜5 | 2500 → **3750** |
+| 要約（テキスト・写真） | 文章量 ≤500字 | 1200 → **1800** |
+| 要約 | 文章量 ≤2000字 | 3000 → **4500** |
+| 要約 | 文章量 >2000字 | 6000 → **9000** |
+| 写真採点（要約以外のデフォルト） | — | 2500 → **3750** |
+
+実装：`GRADE_MAX_TOKENS` 定数と `gradeMaxTokensByDiff()` / `gradeMaxTokensBySummaryLength()` を `callClaude` / `callClaudeMsg` の第3引数に渡す。
+
 ---
 
 ## 6. 変更履歴
@@ -269,3 +342,6 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | 1.2 | 2026-05-20 | 穴埋め・要約タブをビジネス向けに改修。getFillPrompts・getSumPrompts・getSumQuestionTypes・SUM_TYPE_LABELS・typeGuide・systemプロンプト（generateFill/gradeFill/generateSummary/ppSummary）・難易度説明文（fDescs/sDescs）をビジネス文書向けに更新。 |
 | 1.3 | 2026-05-20 | 批判読みタブをビジネス向けに改修。getCritiqueQuestionTypes・getCritiquePrompts・systemプロンプト・cDescs・cQTypes・cTooltipsをビジネス文書向けに更新。対偶の検証を削除し、難易度4〜5に「立場が異なる人からの疑問」を追加。 |
 | 1.4 | 2026-05-20 | 空雨傘タブをビジネス向けに改修。getAmePrompts・systemプロンプト（generateAme/gradeAme）・aDescs・設問ラベルをビジネス領域テーマに更新。難易度別テーマ領域を仕様書に追記。 |
+| 1.5 | 2026-05-20 | 採点APIの返却トークン上限を全タブで約1.5倍に引き上げ（GRADE_MAX_TOKENS）。空雨傘など複数設問のフィードバック途切れを防止。 |
+| 1.6 | 2026-05-20 | 空雨傘の「空（事実の仕分け）」を難易度3以上で事実欄・解釈欄の2入力に分割（collectAmeUserAnswers）。 |
+| 1.7 | 2026-05-20 | 気配りタブを新設。問題生成・読み手反応（往復）・採点の3ステップ構成。GASにkibariシートを追加。 |

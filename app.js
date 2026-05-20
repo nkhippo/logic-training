@@ -8,7 +8,7 @@ const L={
     appTitle:'論理トレーニング',
     subNew:'新規生成',subPast:'過去問',
     guideBtn:'ガイド',guideTitle:'トレーニングガイド',guideLoading:'読み込み中...',guideError:'ガイドの読み込みに失敗しました。',
-    gTabOverview:'概要',gTabFill:'穴埋め',gTabSummary:'要約',gTabCritique:'批判読み',gTabAme:'空雨傘',
+    gTabOverview:'概要',gTabFill:'穴埋め',gTabSummary:'要約',gTabCritique:'批判読み',gTabAme:'空雨傘',gTabKibari:'気配り',
     apiLbl:'Claude APIキー',saveBtn:'保存',saved:'保存済み',
     tabFill:'穴埋め',tabCritique:'批判読み',tabSum:'要約',
     fThemeLbl:'テーマ',optional:'（省略可）',fLenLbl:'文字数（目安）',
@@ -78,12 +78,42 @@ const L={
     aSelfCheck:'🔍 自分の考えの検証',
     aLawLimit:'⚖ 法則が当てはまらない場合',
     aConstraintLbl:'制約条件：',
+    aSoraFactLbl:'事実として書かれている部分',
+    aSoraInterpLbl:'解釈・意見として書かれている部分',
+    aSoraSplitTotal:'合計',
     aDescs:[
       '帰納型。ビジネスデータ（営業・売上）の記事。読み取りと次の行動を書く練習。',
       '帰納型。ビジネスデータ（人事・プロジェクト）の記事。事実の仕分けを含む3問構成。',
       '帰納型。ビジネスデータ（IT・マーケティング）の記事。事実と解釈が混在。傘に制約条件あり。',
       'ビジネスデータ（経営・営業）。帰納型約50%・演繹型約50%。5設問構成。',
       'ビジネスデータ（経営・IT）。帰納型約30%・演繹型約70%。5設問構成。',
+    ],
+    tabKibari:'気配り',
+    kbSceneLbl:'場面タイプ',
+    kbDiffLbl:'難易度',
+    kbGenBtn:'問題を生成する',
+    kbGenLoading:'問題を生成中...',
+    kbSituationLbl:'状況',
+    kbWriteLbl:'メッセージを書いてください',
+    kbRewriteLbl:'読み手の反応を踏まえて、書き直してください',
+    kbRvLbl:'読み手からの反応',
+    kbSubmit:'採点してもらう',
+    kbSavedOk:'気配り問題を保存しました ✓',
+    kbGenFailed:'問題の生成に失敗しました。',
+    kbGradingErr:'採点に失敗しました',
+    kbRvBtn:'読み手の反応を見る',
+    kbRvLoading:'読み手の反応を生成中...',
+    kbEmptyAnswer:'メッセージを入力してください。',
+    kbSceneReport:'報告・共有',
+    kbSceneRequest:'依頼・指示',
+    kbSceneProposal:'提案・説明',
+    kbSceneSelf:'自己表現',
+    kbDescs:[
+      'ビジネスメール・報告（読み手1人・シンプルな状況）。1回のやり取りで伝わるかを練習。',
+      'ビジネス報告・依頼（読み手1人・軽微な利害関係あり）。1回のやり取り。',
+      '提案・報告（読み手2人・立場が異なる）。2回のやり取り。',
+      '提案・依頼（読み手2〜3人・対立する利害関係あり）。2回のやり取り。',
+      '複雑な状況（複数の読み手・感情への配慮が必要）。3回のやり取り。',
     ],
     cTooltips:{
       '本当にそう言える？の指摘':{
@@ -145,7 +175,7 @@ const L={
     appTitle:'Logic Training',
     subNew:'New Problem',subPast:'Past Problems',
     guideBtn:'Guide',guideTitle:'Training Guide',guideLoading:'Loading...',guideError:'Failed to load guide.',
-    gTabOverview:'Overview',gTabFill:'Fill-in',gTabSummary:'Summary',gTabCritique:'Critical Reading',gTabAme:'Sky-Rain-Umbrella',
+    gTabOverview:'Overview',gTabFill:'Fill-in',gTabSummary:'Summary',gTabCritique:'Critical Reading',gTabAme:'Sky-Rain-Umbrella',gTabKibari:'Consideration',
     apiLbl:'Claude API Key',saveBtn:'Save',saved:'Saved',
     tabFill:'Fill-in',tabCritique:'Critical Reading',tabSum:'Summarize',
     fThemeLbl:'Theme',optional:'(optional)',fLenLbl:'Length (approx.)',
@@ -215,12 +245,42 @@ const L={
     aSelfCheck:'🔍 Self-verification',
     aLawLimit:'⚖ When the law doesn\'t apply',
     aConstraintLbl:'Constraint: ',
+    aSoraFactLbl:'Parts written as facts',
+    aSoraInterpLbl:'Parts written as interpretations/opinions',
+    aSoraSplitTotal:'Total',
     aDescs:[
       'Inductive. Business data article (Sales/Marketing). Practice writing interpretation and action.',
       'Inductive. Business data article (HR/Project Mgmt). 3-question format including fact sorting.',
       'Inductive. Business data article (IT/Marketing). Mixed facts and interpretations. Umbrella has a constraint.',
       'Business data (Strategy/Sales). ~50% inductive / ~50% deductive. 5-question format.',
       'Business data (Strategy/IT). ~30% inductive / ~70% deductive. 5-question format.',
+    ],
+    tabKibari:'Consideration',
+    kbSceneLbl:'Scene type',
+    kbDiffLbl:'Difficulty',
+    kbGenBtn:'Generate Problem',
+    kbGenLoading:'Generating problem...',
+    kbSituationLbl:'Situation',
+    kbWriteLbl:'Write your message',
+    kbRewriteLbl:'Revise your message based on the reader\'s response',
+    kbRvLbl:'Reader\'s response',
+    kbSubmit:'Get Feedback',
+    kbSavedOk:'Saved ✓',
+    kbGenFailed:'Failed to generate problem.',
+    kbGradingErr:'Grading failed',
+    kbRvBtn:'See reader\'s response',
+    kbRvLoading:'Generating reader\'s response...',
+    kbEmptyAnswer:'Please enter your message.',
+    kbSceneReport:'Report / Share',
+    kbSceneRequest:'Request / Instruction',
+    kbSceneProposal:'Proposal / Explanation',
+    kbSceneSelf:'Self-introduction',
+    kbDescs:[
+      'Business email / report (1 reader, simple). Practice getting your message across in 1 exchange.',
+      'Business report / request (1 reader, minor conflict). 1 exchange.',
+      'Proposal / report (2 readers, different perspectives). 2 exchanges.',
+      'Proposal / request (2-3 readers, conflicting interests). 2 exchanges.',
+      'Complex situation (multiple readers, emotional consideration needed). 3 exchanges.',
     ],
     cTooltips:{
       '本当にそう言える？の指摘':{
@@ -281,7 +341,7 @@ const L={
 };
 
 // ── State ─────────────────────────────────────────────────
-const st={lang:'ja',fDiff:3,sDiff:3,cDiff:3,sVolume:'short',sThemeMode:'keyword',answerMode:'text',answerScope:'s',fFilter:'all',sFilter:'all',cFilter:'all',aFilter:'all',fPast:[],sPast:[],cPast:[],fill:null,summary:null,critique:null,ame:null,aPast:[],aDiff:3,genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
+const st={lang:'ja',fDiff:3,sDiff:3,cDiff:3,sVolume:'short',sThemeMode:'keyword',answerMode:'text',answerScope:'s',fFilter:'all',sFilter:'all',cFilter:'all',aFilter:'all',kbFilter:'all',fPast:[],sPast:[],cPast:[],fill:null,summary:null,critique:null,ame:null,aPast:[],aDiff:3,kibariDiff:3,kibariScene:'report',kibari:null,kbPast:[],genBusy:null,genPhase:null,gradeBusy:null,gradePhase:null};
 let answerPhotos=[];
 let _genLockedEls=[];
 let _gradeLockedEls=[];
@@ -310,6 +370,26 @@ const C_TEXT_LENGTH=400;
 const A_DEDUCTIVE_RATE={1:0,2:0,3:0,4:0.5,5:0.7};
 const A_ARTICLE_LENGTH=350;
 
+const KB_MAX_ROUNDS={1:1,2:1,3:2,4:2,5:3};
+const KB_SCENE_LABELS={
+  ja:{report:'報告・共有',request:'依頼・指示',proposal:'提案・説明',self:'自己表現'},
+  en:{report:'Report/Share',request:'Request/Instruction',proposal:'Proposal/Explanation',self:'Self-introduction'},
+};
+
+/** 採点（答え合わせ）用 max_tokens — 従来比約1.5倍。問題生成には使わない */
+const GRADE_MAX_TOKENS={
+  diffLow:2250,diffHigh:3750,
+  summaryShort:1800,summaryMid:4500,summaryLong:9000,
+  default:3750,
+};
+function gradeMaxTokensByDiff(diff){
+  return (diff||3)<=3?GRADE_MAX_TOKENS.diffLow:GRADE_MAX_TOKENS.diffHigh;
+}
+function gradeMaxTokensBySummaryLength(length){
+  if(length<=500)return GRADE_MAX_TOKENS.summaryShort;
+  if(length<=2000)return GRADE_MAX_TOKENS.summaryMid;
+  return GRADE_MAX_TOKENS.summaryLong;
+}
 
 function calcBlanks(diff){
   return F_BLANKS[diff]||3;
@@ -427,8 +507,8 @@ function applyLang(){
   }
   ui('ui-guide-btn',l.guideBtn);ui('ui-guide-title',l.guideTitle);
   ui('ui-gtab-overview',l.gTabOverview);ui('ui-gtab-fill',l.gTabFill);ui('ui-gtab-summary',l.gTabSummary);
-  ui('ui-gtab-critique',l.gTabCritique);ui('ui-gtab-ame',l.gTabAme);
-  ui('ui-tab-fill',l.tabFill);ui('ui-tab-critique',l.tabCritique);ui('ui-tab-sum',l.tabSum);ui('ui-tab-ame',l.tabAme);
+  ui('ui-gtab-critique',l.gTabCritique);ui('ui-gtab-ame',l.gTabAme);ui('ui-gtab-kibari',l.gTabKibari);
+  ui('ui-tab-fill',l.tabFill);ui('ui-tab-critique',l.tabCritique);ui('ui-tab-sum',l.tabSum);ui('ui-tab-ame',l.tabAme);ui('ui-tab-kibari',l.tabKibari);
   document.getElementById('ui-f-theme-lbl').innerHTML=l.fThemeLbl+' <span style="font-size:11px;color:var(--text2);">'+l.optional+'</span>';
   ui('ui-f-diff-lbl',l.diffLbl);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
@@ -469,17 +549,26 @@ function applyLang(){
   ui('ui-a-law-lbl',l.aLawLbl);ui('ui-a-article-lbl',l.aArticleLbl);ui('ui-a-submit',l.aSubmit);ui('ui-a-pa',l.pa);
   ui('ui-a-rand',l.rand);ui('ui-a-back',l.back);ui('ui-ap-all',l.all);
   ui('ui-c-rand',l.rand);ui('ui-c-back',l.back);ui('ui-cp-all',l.all);
+  ui('ui-kb-sub-new',l.subNew);ui('ui-kb-sub-past',l.subPast);
+  ui('ui-kb-scene-lbl',l.kbSceneLbl);ui('ui-kb-diff-lbl',l.kbDiffLbl);
+  ui('ui-kb-gen',l.kbGenBtn);ui('ui-kb-gen-loading',l.kbGenLoading);
+  ui('ui-kb-situation-lbl',l.kbSituationLbl);ui('ui-kb-submit',l.kbSubmit);
+  ui('ui-kb-pa',l.pa);ui('ui-kb-rand',l.rand);ui('ui-kb-back',l.back);ui('ui-kbp-all',l.all);
+  ui('ui-kb-scene-report',l.kbSceneReport);ui('ui-kb-scene-request',l.kbSceneRequest);
+  ui('ui-kb-scene-proposal',l.kbSceneProposal);ui('ui-kb-scene-self',l.kbSceneSelf);
 
   // diff labels
   for(let d=1;d<=5;d++){
-    const fe=document.getElementById('fd'+d),se=document.getElementById('sd'+d),ce=document.getElementById('cd'+d),ae=document.getElementById('ad'+d);
+    const fe=document.getElementById('fd'+d),se=document.getElementById('sd'+d),ce=document.getElementById('cd'+d),ae=document.getElementById('ad'+d),kbe=document.getElementById('kbd'+d);
     if(fe)fe.textContent=l.dLabels[d-1];
     if(se)se.textContent=l.dLabels[d-1];
     if(ce)ce.textContent=l.dLabels[d-1];
     if(ae)ae.textContent=l.dLabels[d-1];
+    if(kbe)kbe.textContent=l.dLabels[d-1];
   }
   // diff desc & auto info
-  updateDiffUI('f');updateDiffUI('s');updateDiffUI('c');updateDiffUI('a');
+  updateDiffUI('f');updateDiffUI('s');updateDiffUI('c');updateDiffUI('a');updateDiffUI('kb');
+  setKibariScene(st.kibariScene||'report',true);
   // placeholders removed
   ['f-theme','s-theme','c-theme','a-theme'].forEach(id=>{const el=document.getElementById(id);if(el)el.placeholder='';});
   // lang buttons
@@ -491,7 +580,7 @@ function applyLang(){
   updateApiKeyUI();
 }
 
-function genPrefix(mode){if(mode==='fill')return 'f';if(mode==='summary')return 's';if(mode==='critique')return 'c';if(mode==='ame')return 'a';return mode;}
+function genPrefix(mode){if(mode==='fill')return 'f';if(mode==='summary')return 's';if(mode==='critique')return 'c';if(mode==='ame')return 'a';if(mode==='kibari')return 'kb';return mode;}
 function updateGenStatusUI(mode){
   const l=L[st.lang],p=genPrefix(mode);
   ui(p+'-gen-lbl-llm',l.genPhaseLlm);
@@ -519,14 +608,14 @@ function setGenPhase(mode,phase){
   updateGenStatusUI(mode);
 }
 function collectGenLockEls(mode){
-  const panel='#'+(mode==='fill'?'fill':mode==='summary'?'summary':mode==='critique'?'critique':'ame')+'-panel';
+  const panel='#'+(mode==='fill'?'fill':mode==='summary'?'summary':mode==='critique'?'critique':mode==='kibari'?'kibari':'ame')+'-panel';
   return document.querySelectorAll(
     '.tab, .lang-btn, .api-save-btn, #apikey, .sub-tab, '+panel+' .card button, '+panel+' .card input, '+panel+' .card textarea, '+panel+' .mode-btn, #'+pastPrefix(mode)+'-past-area button, #'+pastPrefix(mode)+'-past-area .pf-tab, #'+pastPrefix(mode)+'-past-area .pcard, #'+pastPrefix(mode)+'-past-area .back-btn'
   );
 }
 function lockEl(el,skipIds){
   const skip=Array.isArray(skipIds)?skipIds:[];
-  if(skip.includes(el.id)||el.id==='f-gen-btn'||el.id==='s-gen-btn'||el.id==='c-gen-btn'||el.id==='a-gen-btn')return;
+  if(skip.includes(el.id)||el.id==='f-gen-btn'||el.id==='s-gen-btn'||el.id==='c-gen-btn'||el.id==='a-gen-btn'||el.id==='kb-gen-btn')return;
   if(el.tagName==='BUTTON'||el.tagName==='INPUT'||el.tagName==='TEXTAREA'){
     el.dataset.genWasDisabled=el.disabled?'1':'0';
     el.disabled=true;
@@ -553,7 +642,8 @@ function beginGen(mode){
   setAppBusyClass();
   const loadEl=document.getElementById(p+'-gen-loading');
   if(loadEl)loadEl.style.display='flex';
-  ui(p+'-gen-loading',L[st.lang].genLoading);
+  const loadLbl=mode==='summary'?L[st.lang].sGenLoading:mode==='critique'?L[st.lang].cGenLoading:mode==='ame'?L[st.lang].aGenLoading:mode==='kibari'?L[st.lang].kbGenLoading:L[st.lang].genLoading;
+  ui(p+'-gen-loading',loadLbl);
 
   const btn=document.getElementById(p+'-gen-btn');
   btn.disabled=true;
@@ -572,7 +662,8 @@ function endGen(mode){
   if(loadEl)loadEl.style.display='none';
   const btn=document.getElementById(p+'-gen-btn');
   btn.classList.remove('is-loading');
-  btn.querySelector('span').textContent=mode==='fill'?L[st.lang].genBtn:mode==='summary'?L[st.lang].sGenBtn:L[st.lang].cGenBtn;
+  const genLbl=mode==='fill'?L[st.lang].genBtn:mode==='summary'?L[st.lang].sGenBtn:mode==='critique'?L[st.lang].cGenBtn:mode==='ame'?L[st.lang].aGenBtn:mode==='kibari'?L[st.lang].kbGenBtn:L[st.lang].cGenBtn;
+  btn.querySelector('span').textContent=genLbl;
   _genLockedEls.forEach(unlockEl);
   _genLockedEls=[];
   setGenPhase(mode,null);
@@ -641,7 +732,7 @@ function endGrade(){
 
 function updateDiffUI(m){
   const l=L[st.lang];
-  const diff=m==='f'?st.fDiff:m==='s'?st.sDiff:m==='c'?st.cDiff:st.aDiff;
+  const diff=m==='f'?st.fDiff:m==='s'?st.sDiff:m==='c'?st.cDiff:m==='kb'?st.kibariDiff:st.aDiff;
   if(m==='f'){
     document.getElementById('f-diff-desc').textContent=l.fDescs[diff-1];
     const b=calcBlanks(diff);
@@ -654,6 +745,9 @@ function updateDiffUI(m){
     document.getElementById('c-diff-desc').textContent=l.cDescs[diff-1];
     const nq=C_QUESTION_COUNTS[diff];
     document.getElementById('c-auto-info').textContent=l.cAutoInfo+nq+(st.lang==='ja'?'問':' questions');
+  }else if(m==='kb'){
+    const kbDesc=document.getElementById('kb-diff-desc');
+    if(kbDesc)kbDesc.textContent=l.kbDescs[diff-1];
   }else{
     document.getElementById('a-diff-desc').textContent=l.aDescs[diff-1];
   }
@@ -664,11 +758,12 @@ function resetUIOnLangSwitch(){
   st.summary=null;
   st.critique=null;
   st.ame=null;
-  ['fill-result','summary-result','critique-result','ame-result'].forEach(id=>{
+  st.kibari=null;
+  ['fill-result','summary-result','critique-result','ame-result','kibari-result'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.style.display='none';
   });
-  ['f-fb','s-fb','c-fb','a-fb'].forEach(id=>{
+  ['f-fb','s-fb','c-fb','a-fb','kb-fb'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML='';
   });
@@ -705,6 +800,18 @@ function resetUIOnLangSwitch(){
   if(as3)as3.className='step';
   const apa=document.getElementById('a-pa-btn');
   if(apa)apa.style.display='none';
+  const kbEl=document.getElementById('kibari-result');
+  if(kbEl)kbEl.style.display='none';
+  const kbRounds=document.getElementById('kb-rounds');
+  if(kbRounds)kbRounds.innerHTML='';
+  const kbSubmitBar=document.getElementById('kb-submit-bar');
+  if(kbSubmitBar)kbSubmitBar.style.display='none';
+  const kbpa=document.getElementById('kb-pa-btn');
+  if(kbpa)kbpa.style.display='none';
+  const kbs1=document.getElementById('kbs1'),kbs2=document.getElementById('kbs2'),kbs3=document.getElementById('kbs3');
+  if(kbs1)kbs1.className='step done';
+  if(kbs2)kbs2.className='step active';
+  if(kbs3)kbs3.className='step';
   updateApiKeyUI();
 }
 function setLang(lang){
@@ -728,8 +835,12 @@ function setVolume(v){
 }
 function setDiff(m,d){
   if(isBusy())return;
-  if(m==='f')st.fDiff=d;else if(m==='s')st.sDiff=d;else if(m==='c')st.cDiff=d;else st.aDiff=d;
-  document.querySelectorAll('#'+(m==='f'?'f':m==='s'?'s':m==='c'?'c':'a')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
+  if(m==='f')st.fDiff=d;
+  else if(m==='s')st.sDiff=d;
+  else if(m==='c')st.cDiff=d;
+  else if(m==='kb')st.kibariDiff=d;
+  else st.aDiff=d;
+  document.querySelectorAll('#'+(m==='f'?'f':m==='s'?'s':m==='c'?'c':m==='kb'?'kb':'a')+'-diff-row .diff-btn').forEach(b=>b.classList.toggle('sel',parseInt(b.dataset.d)===d));
   if(m==='s'){
     const vs=document.getElementById('s-volume-selector');
     if(vs) vs.style.display=d>=4?'':'none';
@@ -747,7 +858,7 @@ function switchSub(mode,sub){
 }
 function switchTab(name){
   if(isBusy())return;
-  ['fill','summary','critique','ame'].forEach((n,i)=>{
+  ['fill','summary','critique','ame','kibari'].forEach((n,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('active',n===name);
     document.getElementById(n+'-panel').classList.toggle('active',n===name);
   });
@@ -755,6 +866,7 @@ function switchTab(name){
   if(name==='summary')switchSub('summary','new');
   if(name==='critique')switchSub('critique','new');
   if(name==='ame')switchSub('ame','new');
+  if(name==='kibari')switchSub('kibari','new');
 }
 
 // ── Helpers ───────────────────────────────────────────────
@@ -927,7 +1039,7 @@ function md2h(tx){
 function hasApiKey(){return !!document.getElementById('apikey')?.value.trim();}
 function updateApiKeyUI(){
   const l=L[st.lang],busy=isBusy(),ok=hasApiKey();
-  ['f-gen-btn','s-gen-btn','c-gen-btn','a-gen-btn'].forEach(id=>{
+  ['f-gen-btn','s-gen-btn','c-gen-btn','a-gen-btn','kb-gen-btn'].forEach(id=>{
     const b=document.getElementById(id);
     if(!b)return;
     b.disabled=busy||!ok;
@@ -954,6 +1066,13 @@ function updateApiKeyUI(){
     asub.disabled=!canAme;
     asub.classList.toggle('needs-apikey',!ok);
     asub.title=!ok?l.apiKeyHint:(!st.ame?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
+  }
+  const kbsub=document.getElementById('kb-submit');
+  if(kbsub){
+    const canKb=ok&&!busy&&!!st.kibari&&document.getElementById('kb-submit-bar')?.style.display!=='none';
+    kbsub.disabled=!canKb;
+    kbsub.classList.toggle('needs-apikey',!ok);
+    kbsub.title=!ok?l.apiKeyHint:(!st.kibari?(st.lang==='ja'?'先に問題を生成してください':'Generate a problem first'):'');
   }
 }
 function toggleApiBar(){
@@ -1128,6 +1247,7 @@ function isGasV3Payload(p){
   return !!(p&&(Number(p.version)===3
     ||(Array.isArray(p.critiqueCols)&&p.critiqueCols.includes('questions'))
     ||(Array.isArray(p.ameCols)&&p.ameCols.includes('article'))
+    ||(Array.isArray(p.kibariCols)&&p.kibariCols.includes('situation'))
     ||(Array.isArray(p.summaryCols)&&p.summaryCols.includes('text'))));
 }
 function rowLooksLikeFill(r){
@@ -1145,12 +1265,16 @@ function rowLooksLikeCritique(r){
 function rowLooksLikeAme(r){
   return !!(r&&r.article!==undefined&&String(r.article).trim()!=='');
 }
+function rowLooksLikeKibari(r){
+  return !!(r&&r.situation!==undefined&&String(r.situation).trim()!=='');
+}
 function filterPastRowsByMode(mode,rows){
   const list=Array.isArray(rows)?rows:[];
   if(mode==='fill')return list.filter(rowLooksLikeFill);
   if(mode==='summary')return list.filter(rowLooksLikeSummary);
   if(mode==='critique')return list.filter(rowLooksLikeCritique);
   if(mode==='ame')return list.filter(rowLooksLikeAme);
+  if(mode==='kibari')return list.filter(rowLooksLikeKibari);
   return list;
 }
 async function gasGetPast(mode){
@@ -1167,6 +1291,7 @@ function assignPastStore(mode,rows){
   if(mode==='fill')st.fPast=rows;
   else if(mode==='summary')st.sPast=rows;
   else if(mode==='critique')st.cPast=rows;
+  else if(mode==='kibari')st.kbPast=rows;
   else st.aPast=rows;
 }
 function pastSyncCount(mode){
@@ -1190,7 +1315,11 @@ async function ensureGasV3(){
 
 // ── 印刷 ─────────────────────────────────────────────────
 function doPrint(mode,part){
-  if(part==='a'){const fbId=mode==='fill'?'f-fb':mode==='summary'?'s-fb':mode==='critique'?'c-fb':'a-fb';const fb=document.getElementById(fbId);if(!fb||fb.innerHTML.trim()===''){alert(st.lang==='ja'?'先に添削を実行してください。':'Please grade first.');return;}}
+  if(part==='a'){
+    const fbId=mode==='fill'?'f-fb':mode==='summary'?'s-fb':mode==='critique'?'c-fb':mode==='kibari'?'kb-fb':'a-fb';
+    const fb=document.getElementById(fbId);
+    if(!fb||fb.innerHTML.trim()===''){alert(st.lang==='ja'?'先に添削を実行してください。':'Please grade first.');return;}
+  }
   window.print();
 }
 
@@ -1569,8 +1698,7 @@ At the end of each question's explanation, provide the following two items:
 各設問の解説の末尾に以下の2つを示してください。
 ① 正解の接続詞を使った日常的な文脈の例文を1つ（20字以内・平易な内容）
 ② この問題文において、正解の接続詞の代わりに別の接続詞を使った場合に論旨がどう変わるかを1つ示し、なぜ正解の接続詞でなければならないかを説明してください。`;
-  const gradeMaxTokens=prob.diff<=3?1500:2500;
-  return callClaude(prompt,sys,gradeMaxTokens,0.3);
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
 }
 
 function buildFillEntry(prob){
@@ -1593,16 +1721,19 @@ async function syncPastOnGen(mode,prob){
   if(mode==='fill')entry=buildFillEntry(prob);
   else if(mode==='summary')entry=buildSummaryEntry(prob);
   else if(mode==='critique')entry=buildCritiqueEntry(prob);
-  else entry=buildAmeEntry(prob);
+  else if(mode==='ame')entry=buildAmeEntry(prob);
+  else entry=buildKibariEntry(prob);
   prob.id=entry.id;
   setSync(mode,'spin',L[st.lang].genPhaseProcess+'...');
   await gasPostEntry(entry);
-  const store=mode==='fill'?st.fPast:mode==='summary'?st.sPast:mode==='critique'?st.cPast:st.aPast;
+  const store=mode==='fill'?st.fPast:mode==='summary'?st.sPast:mode==='critique'?st.cPast:mode==='ame'?st.aPast:st.kbPast;
   const idx=store.findIndex(p=>String(p.id)===String(entry.id));
   if(idx>=0)store[idx]=entry;else store.unshift(entry);
   renderPL(mode);
   setSync(mode,'ok',pastSyncCount(mode)+L[st.lang].syncItems);
-  if(mode==='fill'||mode==='summary')showToast(mode==='fill'?L[st.lang].savedOk:L[st.lang].sSavedOk);
+  if(mode==='fill')showToast(L[st.lang].savedOk);
+  else if(mode==='summary')showToast(L[st.lang].sSavedOk);
+  else if(mode==='kibari')showToast(L[st.lang].kbSavedOk);
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1865,7 +1996,7 @@ async function submitPhotoGrade(kind,prob,scope){
   const memo=document.getElementById(scope+'-photo-memo')?.value.trim()||'';
   const imageContents=answerPhotos.map(ph=>({type:'image',source:{type:'base64',media_type:ph.mediaType,data:ph.base64}}));
   try{
-    let sys,content,gradeMaxTokens=2500;
+    let sys,content,gradeMaxTokens=GRADE_MAX_TOKENS.default;
     if(kind==='summary'){
       const p=normSummaryProb(prob);
       const totalTargetChars=p.questions.reduce((s,q)=>s+(q.targetChars||0),0);
@@ -1881,7 +2012,7 @@ async function submitPhotoGrade(kind,prob,scope){
       content=[...imageContents,{type:'text',text:textPrompt}];
       const diff=prob.diff||st.sDiff;
       const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
-      gradeMaxTokens=length<=500?1200:length<=2000?3000:6000;
+      gradeMaxTokens=gradeMaxTokensBySummaryLength(length);
     }else if(kind==='ame'){
       const p=normAmeProb(prob);
       const lawSection=p.law?(isEN?`[Law/Principle]\n${p.law}\n\n`:`【法則・前提】\n${p.law}\n\n`):'';
@@ -1898,7 +2029,7 @@ async function submitPhotoGrade(kind,prob,scope){
         ?'You are an expert in business reasoning and Sky-Rain-Umbrella framework education. The goal of feedback is to evaluate: whether the interpretation is logically derived from the business facts without gaps, whether the action logically follows from the interpretation and respects any constraints, and whether the learner is aware that alternative interpretations are possible from the same data. Point out specific gaps, present one alternative interpretation, then provide an improved example. Give structured feedback in English using markdown.'
         :'あなたはビジネス推論と空雨傘フレームワークの教育専門家です。フィードバックの目的は「ビジネスデータから読み取りへの飛躍がないか」「読み取りから行動への論理的なつながりがあるか（制約条件を守っているか）」「同じデータから別の読み取りが導ける可能性に気づいているか」を評価することです。飛躍を具体的に指摘し、別の読み取りを1つ示した上で改善例を提示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
       content=[...imageContents,{type:'text',text:textPrompt}];
-      gradeMaxTokens=(p.diff||3)<=3?1500:2500;
+      gradeMaxTokens=gradeMaxTokensByDiff(p.diff);
     }else{
       const p=normCritiqueProb(prob);
       const passageSection=(p.form==='A'&&p.text)
@@ -1918,7 +2049,7 @@ async function submitPhotoGrade(kind,prob,scope){
         ?'You are an expert in business communication and logical thinking education. The goal of feedback is to evaluate how accurately the learner identified logical gaps, missing conditions, or stakeholder objections in business contexts, and how clearly they expressed their findings in plain business language. Evaluate accuracy of identification, logical validity, and clarity of expression. Provide improved example answers. Give structured feedback in English using markdown.'
         :'あなたはビジネスコミュニケーションと論理的思考の教育専門家です。フィードバックの目的は「ビジネス文書における論理の弱点・前提の欠如・立場による疑問をどれだけ正確に特定し、ビジネスの平易な言葉で応答文として表現できているか」を評価することです。特定の正確さ・論理的妥当性・記述の明確さを具体的に評価し、改善例を示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
       content=[...imageContents,{type:'text',text:textPrompt}];
-      gradeMaxTokens=(p.diff||3)<=3?1500:2500;
+      gradeMaxTokens=gradeMaxTokensByDiff(p.diff);
     }
     const res=await callClaudeMsg(sys,content,gradeMaxTokens,0.3);if(!res)return;
     if(kind==='summary'){
@@ -1989,8 +2120,7 @@ async function submitSummary(){
   try{
     const diff=prob.diff||st.sDiff;
     const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
-    const gradeMaxTokens=length<=500?1200:length<=2000?3000:6000;
-    const res=await callClaude(prompt,sys,gradeMaxTokens,0.3);if(!res)return;
+    const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3);if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res,prob.lang)}</div>`;
     prob.feedback=res;
     prob.answerMode='text';
@@ -2009,6 +2139,7 @@ function pastPrefix(mode){
   if(mode==='fill')return 'fp';
   if(mode==='summary')return 'sp';
   if(mode==='critique')return 'cp';
+  if(mode==='kibari')return 'kbp';
   return 'ap';
 }
 function isAmePastListed(prob){
@@ -2018,6 +2149,7 @@ function pastList(mode){
   if(mode==='fill')return st.fPast;
   if(mode==='summary')return st.sPast;
   if(mode==='critique')return st.cPast.filter(isCritiquePastListed);
+  if(mode==='kibari')return st.kbPast;
   if(mode==='ame')return st.aPast.filter(isAmePastListed);
   return st.aPast;
 }
@@ -2231,8 +2363,7 @@ async function gradeCritique(prob,userAnswers){
     ?`Grade each question on the following axes and provide feedback:\n- Accuracy of gap/condition/flow/stakeholder identification\n- Logical validity of the learner's reasoning in a business context\n- Quality of written response (clarity, conciseness, plain business language)\nProvide an improved example answer within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
     :`各設問を以下の軸で採点し、フィードバックしてください。\n- 論理の弱点・前提の欠如・立場による疑問の特定の正確さ\n- 学習者の推論の論理的妥当性（ビジネス文脈）\n- 記述の質（明確さ・簡潔さ・平易なビジネス表現）\n各設問の末尾に、文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
   const prompt=`${passageSection}${qSection}\n\n${gradeInst}`;
-  const gradeMaxTokens=prob.diff<=3?1500:2500;
-  return callClaude(prompt,sys,gradeMaxTokens,0.3);
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
 }
 function buildCritiqueEntry(prob){
   const p=normCritiqueProb(prob);
@@ -2331,6 +2462,28 @@ function getAmeBadgeLabel(type,lang){
   if(type.includes('自己検証')||type.includes('Self-check')||type.includes('法則')||type.includes('Law limit'))return isEN?'Self-check / Law limit':'自己検証・法則の限界';
   return type;
 }
+function ameSkyUsesSplitFields(prob,q){
+  const diff=prob.diff??st.aDiff??3;
+  const type=q?.type||'';
+  return diff>=3&&(type==='空'||type==='Sky');
+}
+function collectAmeUserAnswer(prob,q,i,pfx){
+  const lang=prob.lang||st.lang;
+  const isEN=lang==='en';
+  const taId=(pfx||'')+'a-ans-'+i;
+  if(ameSkyUsesSplitFields(prob,q)){
+    const fact=document.getElementById(`${taId}-fact`)?.value.trim()||'';
+    const interp=document.getElementById(`${taId}-interp`)?.value.trim()||'';
+    if(!fact&&!interp)return '—';
+    return isEN
+      ?`[Facts]\n${fact||'—'}\n\n[Interpretations/Opinions]\n${interp||'—'}`
+      :`【事実】\n${fact||'—'}\n\n【解釈・意見】\n${interp||'—'}`;
+  }
+  return document.getElementById(taId)?.value.trim()||'—';
+}
+function collectAmeUserAnswers(prob,pfx){
+  return prob.questions.map((q,i)=>collectAmeUserAnswer(prob,q,i,pfx));
+}
 function buildAmeQuestionsHtml(prob,mode){
   const lang=prob.lang||st.lang;
   const l=L[lang]||L.ja;
@@ -2354,6 +2507,30 @@ function buildAmeQuestionsHtml(prob,mode){
     const isUmbrella=type==='傘'||type==='Umbrella';
     const constraintBar=isUmbrella?constraintHtml:'';
     const badgeLabel=getAmeBadgeLabel(type,lang);
+    const isEN=lang==='en';
+    if(ameSkyUsesSplitFields(prob,q)){
+      const factChars=Math.ceil(tc/2);
+      const interpChars=Math.floor(tc/2);
+      const totalNote=isEN
+        ?`(${l.aSoraSplitTotal} ${tc} chars)`
+        :`（${l.aSoraSplitTotal}${tc}${cw}）`;
+      return`<div class="ame-q-block">
+      <div class="ame-section-lbl">${esc(sectionLbl)}<span class="q-type-badge" style="margin-left:6px;">${esc(badgeLabel)}</span></div>
+      <p class="ame-q-lbl">${esc(q.question||'')}<span style="font-size:11px;color:var(--text2);margin-left:6px;">${totalNote}</span></p>
+      <div class="ame-sora-split no-print">
+        <label class="ame-sora-sub-lbl">${esc(l.aSoraFactLbl)}<span style="font-size:11px;color:var(--text2);margin-left:6px;">（${factChars}${cw}）</span></label>
+        <textarea class="sum-ta" id="${taId}-fact"
+          style="min-height:${Math.max(72,factChars*1.6)}px"
+          data-target="${factChars}"
+          placeholder=""></textarea>
+        <label class="ame-sora-sub-lbl">${esc(l.aSoraInterpLbl)}<span style="font-size:11px;color:var(--text2);margin-left:6px;">（${interpChars}${cw}）</span></label>
+        <textarea class="sum-ta" id="${taId}-interp"
+          style="min-height:${Math.max(72,interpChars*1.6)}px"
+          data-target="${interpChars}"
+          placeholder=""></textarea>
+      </div>
+    </div>`;
+    }
     return`<div class="ame-q-block">
       <div class="ame-section-lbl">${esc(sectionLbl)}<span class="q-type-badge" style="margin-left:6px;">${esc(badgeLabel)}</span></div>
       <p class="ame-q-lbl">${esc(q.question||'')}<span style="font-size:11px;color:var(--text2);margin-left:6px;">（${tc}${cw}）</span></p>
@@ -2441,7 +2618,7 @@ async function submitAme(){
   if(isBusy()||!hasApiKey())return;
   const prob=st.ame;if(!prob)return;
   if(st.answerMode==='photo'&&st.answerScope==='a'){await submitPhotoGrade('ame',prob,'a');return;}
-  const userAnswers=prob.questions.map((_,i)=>document.getElementById(`a-ans-${i}`)?.value.trim()||'—');
+  const userAnswers=collectAmeUserAnswers(prob,'');
   const fb=document.getElementById('a-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
   const btn=document.getElementById('a-submit');btn.disabled=true;
@@ -2479,8 +2656,7 @@ async function gradeAme(prob,userAnswers){
     ?`Grade each answer on the following axes:\n- Factual grounding: Is the interpretation/action logically derived from the business data?\n- Logical gap: Is there a jump between data → interpretation or interpretation → action?\n- Constraint compliance: Does the Umbrella action respect any stated constraints?\n- Alternative interpretation: Show one other valid interpretation from the same data.\nProvide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
     :`各設問を以下の軸で採点してください。\n- 事実との整合性：読み取り・行動がビジネスデータから論理的に導けているか\n- 飛躍の指摘：データ→読み取り、読み取り→行動の間に飛躍がないか\n- 制約条件の遵守：傘（行動）が制約条件を守っているか\n- 別解の提示：同じデータから導ける別の読み取りを1つ示す\n各設問の末尾に文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
   const prompt=`${lawSection}${articleSection}${constraintSection}${qSection}\n\n${gradeInst}`;
-  const gradeMaxTokens=prob.diff<=3?1500:2500;
-  return callClaude(prompt,sys,gradeMaxTokens,0.3);
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
 }
 function buildAmeEntry(prob){
   return{
@@ -2495,7 +2671,7 @@ async function ppAme(id){
   const p=normAmeProb(prob);
   const pLang=prob.lang||'ja';const l=L[pLang];
   if(st.answerMode==='photo'&&st.answerScope==='pp'){await submitPhotoGrade('ame',{...p,lang:pLang},'pp');return;}
-  const userAnswers=p.questions.map((_,i)=>document.getElementById(`pp-a-ans-${i}`)?.value.trim()||'—');
+  const userAnswers=collectAmeUserAnswers({...p,lang:pLang},'pp-');
   const btn=document.getElementById('pp-a-submit');if(btn)btn.disabled=true;
   const fb=document.getElementById('pp-fb');
   fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
@@ -2515,7 +2691,11 @@ async function ppAme(id){
 // 過去問共通
 // ══════════════════════════════════════════════════════════
 function filterPast(mode,f){
-  if(mode==='fill')st.fFilter=f;else if(mode==='summary')st.sFilter=f;else if(mode==='critique')st.cFilter=f;else st.aFilter=f;
+  if(mode==='fill')st.fFilter=f;
+  else if(mode==='summary')st.sFilter=f;
+  else if(mode==='critique')st.cFilter=f;
+  else if(mode==='kibari')st.kbFilter=f;
+  else st.aFilter=f;
   document.querySelectorAll('#'+pastPrefix(mode)+'-tabs .pf-tab').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
   renderPL(mode);
 }
@@ -2531,7 +2711,7 @@ async function loadPast(mode){
 }
 function renderPL(mode){
   const all=pastList(mode);
-  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:st.aFilter;
+  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:st.aFilter;
   const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
   const list=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   const c=document.getElementById(pastPrefix(mode)+'-list');
@@ -2540,13 +2720,13 @@ function renderPL(mode){
     <div class="pcard" onclick="openPast('${mode}','${p.id}')">
       <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
         <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span></div></div>
-      <div class="pc-pre">${esc((mode==='fill'?p.text:mode==='summary'?normSummaryProb(p).text:mode==='ame'?String(p.article||''):critiquePreviewText(p)).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
+      <div class="pc-pre">${esc((mode==='fill'?p.text:mode==='summary'?normSummaryProb(p).text:mode==='ame'?String(p.article||''):mode==='kibari'?String(p.situation||''):critiquePreviewText(p)).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
       <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
     </div>`).join('');
 }
 function randomPast(mode){
   const all=pastList(mode);
-  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:st.aFilter;
+  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:st.aFilter;
   const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
   const pool=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   if(!pool.length){alert(L[st.lang].noData);return;}
@@ -2666,6 +2846,23 @@ function openPast(mode,id){
       <div id="pp-fb"></div>`;
     resetAnswerPhotos();
     setAnswerMode('pp','text');
+  } else if(mode==='kibari'){
+    const p=normKibariProb(prob);
+    const firstDraft=p.firstAnswer?`<p class="slabel">${st.lang==='ja'?'初稿':'First draft'}</p><div class="problem-box">${esc(p.firstAnswer)}</div>`:'';
+    const fbHtml=p.feedback?`<div class="feedback-box">${md2h(p.feedback)}</div>`:'';
+    cnt.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;">
+        <strong>${esc(prob.theme)}</strong><span class="badge ${BADGE[prob.diff]||'b3'}">${dlabel(prob.diff)}</span></div>
+      <p class="slabel">${l.kbSituationLbl}</p>
+      <div class="problem-box">${esc(p.situation)}</div>
+      ${firstDraft}
+      ${fbHtml}
+      <div class="action-bar" style="margin-top:8px;">
+        <button class="btn btn-icon btn-sm" onclick="window.print()">
+          <i class="ti ti-printer"></i>
+          <span>${l.pq}</span>
+        </button>
+      </div>`;
   }
 }
 
@@ -2727,8 +2924,7 @@ async function ppSummary(id){
   try{
     const diff=prob.diff||st.sDiff;
     const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
-    const gradeMaxTokens=length<=500?1200:length<=2000?3000:6000;
-    const res=await callClaude(prompt,sys,gradeMaxTokens,0.3);if(!res)return;
+    const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3);if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res,pLang)}</div>`;
     document.getElementById('pp-s2').className='step done';
     document.getElementById('pp-s3').className='step done';
@@ -2823,6 +3019,256 @@ function onGuideKeyDown(e){
   if(e.key==='Escape')closeGuide();
 }
 
+// ── 気配り ─────────────────────────────────────────────
+function setKibariScene(scene,silent=false){
+  if(!silent&&isBusy())return;
+  st.kibariScene=scene;
+  document.querySelectorAll('#kb-scene-row .mode-btn').forEach(b=>
+    b.classList.toggle('sel',b.dataset.scene===scene)
+  );
+}
+function normKibariProb(prob){
+  let readers=prob.readers;
+  if(typeof readers==='string'){try{readers=JSON.parse(readers);}catch{readers=[];}}
+  if(!Array.isArray(readers))readers=[];
+  let points=prob.points;
+  if(typeof points==='string'){try{points=JSON.parse(points);}catch{points=[];}}
+  if(!Array.isArray(points))points=[];
+  return{...prob,readers,points,situation:prob.situation||'',rounds:prob.rounds||[]};
+}
+function getKibariDiffPrompt(diff,scene,sceneLabel,isEN){
+  const maxRounds=KB_MAX_ROUNDS[diff];
+  if(!isEN)return`
+場面タイプ：${sceneLabel}
+難易度${diff}・最大往復回数：${maxRounds}回
+
+以下の条件で状況を生成してください：
+- 読み手の数：${diff<=2?'1人':diff<=4?'2〜3人':'複数人'}
+- 利害関係：${diff===1?'なし':diff===2?'軽微':diff===3?'立場の違いあり':diff===4?'対立する利害関係あり':'複雑・感情への配慮が必要'}
+- 盛り込むべき観点の数：${diff<=2?'2〜3個':diff===3?'3〜4個':'4〜5個'}
+- 制約条件：${diff<=2?'文字数制限（200〜300字）':diff<=4?'文字数制限（250〜350字）':'文字数制限（300〜400字）'}
+- 状況は実際のビジネス現場で起こりうるリアルなものにすること
+- 書き手が「読み手が次に何を知りたいか・何をすべきか」を先回りして書く必要がある状況にすること
+`.trim();
+  return`
+Scene type: ${sceneLabel}
+Difficulty ${diff} · Maximum exchanges: ${maxRounds}
+
+Generate a situation with the following conditions:
+- Number of readers: ${diff<=2?'1 person':diff<=4?'2-3 people':'multiple people'}
+- Conflict level: ${diff===1?'none':diff===2?'minor':diff===3?'different perspectives':diff===4?'conflicting interests':'complex, emotional consideration needed'}
+- Key points to cover: ${diff<=2?'2-3 points':diff===3?'3-4 points':'4-5 points'}
+- Constraint: ${diff<=2?'character limit (200-300 chars)':diff<=4?'character limit (250-350 chars)':'character limit (300-400 chars)'}
+- The situation must be realistic and occur in an actual business context
+- The writer must proactively address what the reader needs to know or do next
+`.trim();
+}
+async function generateKibari(){
+  if(isBusy()||!hasApiKey())return;
+  const diff=st.kibariDiff;
+  const scene=st.kibariScene||'report';
+  const isEN=st.lang==='en';
+  const maxRounds=KB_MAX_ROUNDS[diff]||1;
+  const sceneLabel=(KB_SCENE_LABELS[isEN?'en':'ja']||KB_SCENE_LABELS.ja)[scene];
+  document.getElementById('kibari-result').style.display='none';
+  if(!beginGen('kibari'))return;
+  const sys=isEN
+    ?'You are an expert in business communication education. Generate a realistic business situation for a writing practice problem. The situation should require the writer to think about what the reader needs to know next and communicate proactively. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
+    :'あなたはビジネスコミュニケーション教育の専門家です。文章作成の練習問題として、リアルなビジネス状況を生成してください。書き手が「読み手が次に何を知りたいか・何をすべきか」を先回りして伝えることが求められる状況にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+  const diffPrompt=getKibariDiffPrompt(diff,scene,sceneLabel,isEN);
+  const jsonSchema=isEN
+    ?`Return ONLY this JSON:\n{"theme":"situation title in 15 chars","situation":"situation description 150-200 chars","readers":["reader1 role","reader2 role"],"points":["key point 1 the writer should cover","key point 2","key point 3"],"constraint":"word limit or other constraint (e.g. within 300 chars)"}`
+    :`返答はJSONのみ：\n{"theme":"状況タイトル15文字以内","situation":"状況説明150〜200字","readers":["読み手1の立場","読み手2の立場"],"points":["書き手が盛り込むべき観点1","観点2","観点3"],"constraint":"文字数制限などの制約条件（例：300字以内）"}`;
+  const prompt=`${diffPrompt}\n${jsonSchema}`;
+  try{
+    const raw=await callClaude(prompt,sys,1500,0.9);
+    if(!raw)return;
+    const p=safeJSON(raw);
+    if(!p.situation)throw new Error('Invalid JSON structure');
+    st.kibari={
+      id:Date.now(),
+      theme:p.theme||sceneLabel,
+      diff,
+      scene,
+      date:new Date().toISOString(),
+      situation:p.situation,
+      readers:p.readers||[],
+      points:p.points||[],
+      constraint:p.constraint||'',
+      rounds:[],
+      currentRound:0,
+      maxRounds,
+      feedback:null,
+      lang:st.lang,
+    };
+    renderKibari(st.kibari);
+    try{await syncPastOnGen('kibari',st.kibari);}
+    catch(syncErr){setSync('kibari','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
+  }catch(e){alert(L[st.lang].kbGenFailed+'\n'+e.message);}
+  finally{endGen('kibari');}
+}
+function buildKibariRoundHtml(prob,roundIndex){
+  const l=L[prob.lang||st.lang];
+  const isFirst=roundIndex===0;
+  const labelWrite=isFirst?(l.kbWriteLbl||'メッセージを書いてください'):(l.kbRewriteLbl||'書き直してください');
+  const constraintNote=prob.constraint?`<span style="font-size:11px;color:var(--amber);margin-left:6px;">${esc(prob.constraint)}</span>`:'';
+  const prevRv=roundIndex>0&&prob.rounds[roundIndex-1]?.rv
+    ?`<div class="kibari-rv-box"><p class="slabel no-print">${esc(l.kbRvLbl||'読み手からの反応')}</p><div class="problem-box" style="background:var(--bg2);">${esc(prob.rounds[roundIndex-1].rv)}</div></div>`
+    :'';
+  return`${prevRv}<div class="kibari-write-block">
+    <p class="slabel no-print">${esc(labelWrite)}${constraintNote}</p>
+    <textarea class="sum-ta" id="kb-ans-${roundIndex}" style="min-height:120px;" placeholder=""></textarea>
+    <div class="action-bar no-print" style="margin-top:8px;" id="kb-rv-bar-${roundIndex}">
+      <button class="btn" onclick="requestKibariRv(${roundIndex})">
+        <span>${esc(l.kbRvBtn||'読み手の反応を見る')}</span>
+      </button>
+    </div>
+    <div id="kb-rv-loading-${roundIndex}" style="display:none;" class="gen-loading">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>${esc(l.kbRvLoading||'読み手の反応を生成中...')}</span>
+    </div>
+  </div>`;
+}
+function renderKibari(prob){
+  const l=L[st.lang];
+  document.getElementById('kb-theme-tag').innerHTML=
+    `<span class="theme-tag">${l.theme}${esc(prob.theme||'—')}</span>`;
+  document.getElementById('kb-situation').textContent=prob.situation;
+  document.getElementById('kb-rounds').innerHTML=buildKibariRoundHtml(prob,0);
+  document.getElementById('kb-fb').innerHTML='';
+  document.getElementById('kb-pa-btn').style.display='none';
+  document.getElementById('kb-submit-bar').style.display='none';
+  document.getElementById('kibari-result').style.display='block';
+  document.getElementById('kbs1').className='step done';
+  document.getElementById('kbs2').className='step active';
+  document.getElementById('kbs3').className='step';
+  updateApiKeyUI();
+}
+async function requestKibariRv(roundIndex){
+  if(isBusy()||!hasApiKey())return;
+  const prob=st.kibari;if(!prob)return;
+  const userAnswer=document.getElementById(`kb-ans-${roundIndex}`)?.value.trim()||'';
+  if(!userAnswer){alert(L[st.lang].kbEmptyAnswer);return;}
+  const rvBar=document.getElementById(`kb-rv-bar-${roundIndex}`);
+  const rvLoading=document.getElementById(`kb-rv-loading-${roundIndex}`);
+  if(rvBar)rvBar.style.display='none';
+  if(rvLoading)rvLoading.style.display='flex';
+  const isEN=(prob.lang||st.lang)==='en';
+  const sys=isEN
+    ?'You are playing the role of a business reader responding to a message. React naturally as someone who received this message — ask about unclear points, missing information, or things you need to decide. Keep your response concise (2-3 sentences). Do not provide feedback or coaching. Just respond as a reader would.'
+    :'あなたはビジネスの読み手として、受け取ったメッセージに反応する役割を担います。このメッセージを受け取った人として自然に反応してください。不明な点・足りていない情報・判断に必要なことを質問してください。返答は簡潔に（2〜3文）。フィードバックやアドバイスは不要です。読み手として自然に反応するだけでよいです。';
+  const situationSection=isEN?`[Situation]\n${prob.situation}\n\n`:`【状況】\n${prob.situation}\n\n`;
+  const readersSection=prob.readers?.length
+    ?(isEN?`[Readers] ${prob.readers.join(', ')}\n\n`:`【読み手】${prob.readers.join('、')}\n\n`)
+    :'';
+  const msgSection=isEN?`[Message received]\n${userAnswer}`:`【受け取ったメッセージ】\n${userAnswer}`;
+  const prompt=`${situationSection}${readersSection}${msgSection}`;
+  try{
+    const rv=await callClaude(prompt,sys,400,0.9);
+    if(!rv)return;
+    if(!prob.rounds[roundIndex])prob.rounds[roundIndex]={};
+    prob.rounds[roundIndex].answer=userAnswer;
+    prob.rounds[roundIndex].rv=rv;
+    prob.currentRound=roundIndex+1;
+    const roundsEl=document.getElementById('kb-rounds');
+    if(roundIndex+1<prob.maxRounds){
+      roundsEl.innerHTML+=buildKibariRoundHtml(prob,roundIndex+1);
+    }else{
+      const rvHtml=`<div class="kibari-rv-box"><p class="slabel no-print">${esc(L[st.lang].kbRvLbl||'読み手からの反応')}</p><div class="problem-box" style="background:var(--bg2);">${esc(rv)}</div></div>`;
+      roundsEl.innerHTML+=rvHtml;
+      document.getElementById('kb-submit-bar').style.display='';
+      updateApiKeyUI();
+    }
+  }catch(e){
+    if(rvBar)rvBar.style.display='';
+    alert(L[st.lang].kbGradingErr+': '+e.message);
+  }finally{
+    if(rvLoading)rvLoading.style.display='none';
+  }
+}
+async function submitKibari(){
+  if(isBusy()||!hasApiKey())return;
+  const prob=st.kibari;if(!prob)return;
+  const lastIdx=prob.maxRounds-1;
+  const lastAnswer=document.getElementById(`kb-ans-${lastIdx}`)?.value.trim()||'';
+  if(lastAnswer){
+    if(!prob.rounds[lastIdx])prob.rounds[lastIdx]={};
+    prob.rounds[lastIdx].answer=lastAnswer;
+  }
+  const fb=document.getElementById('kb-fb');
+  fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading||'採点中...'}</span></p>`;
+  const btn=document.getElementById('kb-submit');btn.disabled=true;
+  try{
+    const res=await gradeKibari(prob);if(!res)return;
+    prob.feedback=res;
+    fb.innerHTML=`<div class="feedback-box">${md2h(res)}</div>`;
+    document.getElementById('kbs2').className='step done';
+    document.getElementById('kbs3').className='step done';
+    document.getElementById('kb-pa-btn').style.display='';
+    try{await syncKibariPast(prob);}
+    catch(syncErr){setSync('kibari','err',L[st.lang].syncFailed);showToast('Error: '+syncErr.message,4000);}
+  }catch(e){fb.innerHTML=`<p class="err">${L[st.lang].kbGradingErr}: ${e.message}</p>`;}
+  btn.disabled=false;
+  updateApiKeyUI();
+}
+async function gradeKibari(prob){
+  const isEN=(prob.lang||st.lang)==='en';
+  const sys=isEN
+    ?'You are an expert in business communication education. Evaluate the learner\'s business writing on three axes: (1) How many exchanges were needed to get the message across (fewer = better), (2) Whether the final message is clear and actionable for the reader, (3) Whether the information is well-structured and readable (appropriate use of bullet points, numbering, concise language, no colloquialisms). Provide specific feedback with an improved example. Use markdown for structured feedback.'
+    :'あなたはビジネスコミュニケーション教育の専門家です。学習者のビジネス文章を以下の3軸で評価してください。(1) 何回のやり取りで読み手の疑問をゼロにできたか（少ないほど高評価）、(2) 最終的な文章が読み手にとって迷わず行動・判断できるものになっているか、(3) 情報が整理されて読みやすいか（箇条書き・番号・簡潔な表現・口語の排除など）。改善例を示してください。マークダウンを使って構造的にフィードバックしてください。';
+  const situationSection=isEN?`[Situation]\n${prob.situation}\n\n`:`【状況】\n${prob.situation}\n\n`;
+  const readersSection=prob.readers?.length
+    ?(isEN?`[Readers] ${prob.readers.join(', ')}\n\n`:`【読み手】${prob.readers.join('、')}\n\n`)
+    :'';
+  const pointsSection=prob.points?.length
+    ?(isEN?`[Key points the writer should cover]\n${prob.points.map((p,i)=>`${i+1}. ${p}`).join('\n')}\n\n`:`【盛り込むべき観点】\n${prob.points.map((p,i)=>`${i+1}. ${p}`).join('\n')}\n\n`)
+    :'';
+  const roundsSection=(prob.rounds||[]).map((r,i)=>{
+    const ans=r.answer||'（未回答）';
+    const rv=r.rv?`\n${isEN?'Reader response':'読み手の反応'}:\n${r.rv}`:'';
+    return isEN
+      ?`[Round ${i+1}]\nWriter's message:\n${ans}${rv}`
+      :`【${i+1}回目】\n書き手のメッセージ:\n${ans}${rv}`;
+  }).join('\n\n---\n\n');
+  const gradeInst=isEN
+    ?`Please evaluate based on the three axes above and provide:\n## Per-Axis Evaluation\n## Improved Example\n## Overall Feedback`
+    :`上記3軸で評価し、以下の構成でフィードバックしてください。\n## 軸別評価\n## 改善例\n## 総合講評`;
+  const prompt=`${situationSection}${readersSection}${pointsSection}${roundsSection}\n\n${gradeInst}`;
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
+}
+function buildKibariEntry(prob){
+  return{
+    id:prob.id||Date.now(),
+    sheet:'kibari',
+    theme:prob.theme||'—',
+    diff:prob.diff,
+    scene:prob.scene||'report',
+    date:prob.date,
+    situation:prob.situation||'',
+    readers:JSON.stringify(prob.readers||[]),
+    points:JSON.stringify(prob.points||[]),
+    constraint:prob.constraint||'',
+    firstAnswer:prob.rounds?.[0]?.answer||'',
+    feedback:prob.feedback||null,
+    lang:prob.lang||st.lang,
+  };
+}
+async function syncKibariPast(prob){
+  if(!await ensureGasV3())return;
+  const entry=buildKibariEntry(prob);
+  entry.id=entry.id||Date.now();
+  prob.id=entry.id;
+  setSync('kibari','spin',L[st.lang].genPhaseProcess+'...');
+  try{await gasPost({action:'delete',id:String(entry.id),sheet:'kibari'});}catch{}
+  await gasPostEntry(entry);
+  const idx=st.kbPast.findIndex(p=>String(p.id)===String(entry.id));
+  if(idx>=0)st.kbPast[idx]=entry;
+  else st.kbPast.unshift(entry);
+  renderPL('kibari');
+  setSync('kibari','ok',pastSyncCount('kibari')+L[st.lang].syncItems);
+  showToast(L[st.lang].kbSavedOk);
+}
+
 // ── Init ─────────────────────────────────────────────────
 function init(){
   const savedLang=localStorage.getItem(LANG_KEY);
@@ -2833,8 +3279,10 @@ function init(){
   switchSub('summary','new');
   switchSub('critique','new');
   switchSub('ame','new');
+  switchSub('kibari','new');
   setDiff('c',st.cDiff);
   setDiff('a',st.aDiff);
+  setDiff('kb',st.kibariDiff);
   document.getElementById('apikey').addEventListener('input',updateApiKeyUI);
   setDiff('s',st.sDiff);
   setThemeMode('s',st.sThemeMode||'keyword');
