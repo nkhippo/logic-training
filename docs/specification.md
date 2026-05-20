@@ -266,3 +266,4 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | バージョン | 日付 | 変更内容 |
 |---|---|---|
 | 1.0 | 2026-05-20 | 初版作成（Ver.3.0実装時点の状態を記録） |
+| 1.2 | 2026-05-20 | 穴埋め・要約タブをビジネス向けに改修。getFillPrompts・getSumPrompts・getSumQuestionTypes・SUM_TYPE_LABELS・typeGuide・systemプロンプト（generateFill/gradeFill/generateSummary/ppSummary）・難易度説明文（fDescs/sDescs）をビジネス文書向けに更新。 |
