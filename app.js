@@ -1911,12 +1911,12 @@ async function submitPhotoGrade(kind,prob,scope){
           :`【設問${q.id||i+1}】タイプ: ${q.type}\n${argPart}${q.question}\n目標: ${q.targetChars}字以内`;
       }).join('\n\n---\n\n');
       const gradeInst=isEN
-        ?`The learner submitted handwritten answers in the attached image(s).\n${memo?`Learner's note: ${memo}`:''}\n\nRead the handwriting, then grade each question on:\n- Accuracy of gap/condition/structure identification\n- Logical validity of reasoning\n- Quality of written response\nProvide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
-        :`学習者は添付画像に手書きで回答しています。\n${memo?`学習者のメモ：${memo}`:''}\n\n手書きを読み取り、各設問を以下の軸で採点してください。\n- 飛躍・条件・構造の特定の正確さ\n- 学習者の推論の論理的妥当性\n- 記述の質（明確さ・簡潔さ）\n各設問の末尾に、文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
+        ?`The learner submitted handwritten answers in the attached image(s).\n${memo?`Learner's note: ${memo}`:''}\n\nRead the handwriting, then grade each question on:\n- Accuracy of gap/condition/flow/stakeholder identification\n- Logical validity of reasoning in a business context\n- Quality of written response (clarity, conciseness, plain business language)\nProvide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
+        :`学習者は添付画像に手書きで回答しています。\n${memo?`学習者のメモ：${memo}`:''}\n\n手書きを読み取り、各設問を以下の軸で採点してください。\n- 論理の弱点・前提の欠如・立場による疑問の特定の正確さ\n- 学習者の推論の論理的妥当性（ビジネス文脈）\n- 記述の質（明確さ・簡潔さ・平易なビジネス表現）\n各設問の末尾に、文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
       const textPrompt=`${passageSection}${qBlock}\n\n${gradeInst}`;
       sys=isEN
-        ?'You are an expert in logical thinking education. The goal of feedback is to evaluate how accurately the learner identified logical gaps, missing premises, or counterargument opportunities, and how well they articulated their findings in writing. Evaluate logical validity, accuracy of identification, and clarity of expression. Provide improved example answers. Give structured feedback in English using markdown.'
-        :'あなたは論理的思考教育の専門家です。フィードバックの目的は「飛躍・前提の欠如・反論の余地をどれだけ正確に特定し、論理的な応答文として表現できているか」を評価することです。学習者の回答の論理的妥当性・特定の正確さ・記述の明確さを具体的に評価し、改善例を示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+        ?'You are an expert in business communication and logical thinking education. The goal of feedback is to evaluate how accurately the learner identified logical gaps, missing conditions, or stakeholder objections in business contexts, and how clearly they expressed their findings in plain business language. Evaluate accuracy of identification, logical validity, and clarity of expression. Provide improved example answers. Give structured feedback in English using markdown.'
+        :'あなたはビジネスコミュニケーションと論理的思考の教育専門家です。フィードバックの目的は「ビジネス文書における論理の弱点・前提の欠如・立場による疑問をどれだけ正確に特定し、ビジネスの平易な言葉で応答文として表現できているか」を評価することです。特定の正確さ・論理的妥当性・記述の明確さを具体的に評価し、改善例を示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
       content=[...imageContents,{type:'text',text:textPrompt}];
       gradeMaxTokens=(p.diff||3)<=3?1500:2500;
     }
