@@ -28,7 +28,8 @@ logic-training/
     ├── fill.md
     ├── summary.md
     ├── critique.md
-    └── ame.md
+    ├── ame.md
+    └── kibari.md
 ```
 
 ---
@@ -43,7 +44,7 @@ logic-training/
 | summary | 要約 | Summarize | ✅ 実装済み |
 | critique | 批判読み | Critical Reading | ✅ 実装済み |
 | ame | 空雨傘 | Sky-Rain-Umbrella | ✅ 実装済み |
-| kibari | 気配り | Consideration | ❌ 未実装 |
+| kibari | 気配り | Consideration | ❌ 未実装（フェーズ2） |
 
 ### 2-2. 定数・設定
 
@@ -160,8 +161,9 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | 反論への応答 | 難易度2〜5 | ✅ |
 | 論証構造の整理 | 難易度3〜5 | ✅ |
 | 対偶の検証 | 難易度4〜5 | ❌（受験モードのみ） |
+| 立場が異なる人からの疑問 | 難易度5のみ | ✅（ビジネスのみ） |
 
-> ビジネスフェーズでは「対偶の検証」は出題しない。難易度5には代わりに「立場が異なる人からの疑問」を追加予定。
+> ビジネスフェーズでは「対偶の検証」は出題しない。難易度5には「立場が異なる人からの疑問」を出題する。
 
 #### GASシート：critique
 
