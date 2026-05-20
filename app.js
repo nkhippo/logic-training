@@ -15,18 +15,18 @@ const L={
     sLenLbl:'問題文の文字数（目安）',diffLbl:'難易度',
     dLabels:['入門','基礎','標準','上級','超難問'],
     fDescs:[
-      '中学〜高校レベルの平易な論説文。基本的な接続詞のみ。穴抜き2個。ヒントあり。',
-      '高校〜大学入試標準レベルの論説文。因果・逆接を含む接続詞。穴抜き3個。軽いヒントあり。',
-      '大学入試上位校レベルの評論文。類似する接続詞の精確な使い分けが問われる。穴抜き3個。ヒントなし。',
-      '最難関入試レベル。接続詞の選択が論旨の成否を決める精緻な構造。穴抜き4個。ヒントなし。',
-      '東京大学現代文レベル以上。専門的文体・文語的接続詞・多層的論証構造。穴抜き5個。ヒントなし。'
+      '難易度1（入門）: 社内メール・業務連絡。基本的な接続表現のみ。穴抜き2個。ヒントあり。',
+      '難易度2（基礎）: 議事録・進捗報告。因果・逆接を含む接続表現。穴抜き3個。軽いヒントあり。',
+      '難易度3（標準）: 提案書・企画書の一節。類似する接続表現の正確な使い分けが問われる。穴抜き3個。ヒントなし。',
+      '難易度4（上級）: 分析レポート・調査報告。接続表現の選択が論旨の成否を決める精緻な構造。穴抜き4個。ヒントなし。',
+      '難易度5（超難問）: 経営戦略文書・コンサルレポート。高度な接続表現・多層的な論証構造。穴抜き5個。ヒントなし。'
     ],
     sDescs:[
-      '高校教科書レベルの平易な論説文。設問1問（主張要約）。約60%に圧縮。',
-      '大学入試レベルの論説・評論文。設問2問（主張要約・語句説明）。約50%に圧縮。',
-      '大学入試上位校レベルの評論文。設問3問（語句説明・主張要約・理由説明）。約40%に圧縮。',
-      '平易な語彙だが論理構造が精緻な評論文。設問3問。約30%に圧縮。',
-      '東京大学現代文レベル以上。設問3問。約20%に圧縮。'
+      '難易度1（基礎）: 社内メール・業務連絡。設問1問（主張のまとめ）。約60%に圧縮。',
+      '難易度2（標準）: 議事録・進捗報告。設問2問（主張のまとめ・用語の説明）。約50%に圧縮。',
+      '難易度3（応用）: 提案書・企画書の一節。設問3問（用語の説明・主張のまとめ・理由の説明）。約40%に圧縮。',
+      '難易度4（上級）: 分析レポート・調査報告。設問3問。約30%に圧縮。',
+      '難易度5（超難問）: 経営戦略文書・コンサルレポート。設問3問。約20%に圧縮。'
     ],
     genBtn:'問題を生成する',genBtnBusy:'生成中…',genLoading:'問題を生成中...',gradingLoading:'答え合わせ中...',modeKeyword:'キーワード',modeQuestion:'課題・疑問',
     genPhaseLlm:'AIが問題を作成しています',genPhaseProcess:'問題を整理しています',
@@ -122,18 +122,18 @@ const L={
     sLenLbl:'Problem text length (approx.)',diffLbl:'Difficulty',
     dLabels:['Beginner','Basic','Standard','Advanced','Master'],
     fDescs:[
-      'Simple essay at middle to high school level. Basic conjunctions only. 2 blanks. Hints provided.',
-      'Standard university entrance exam essay. Causal and adversative conjunctions. 3 blanks. Light hints.',
-      'Top-tier entrance exam level. Precise selection among similar conjunctions. 3 blanks. No hints.',
-      'Elite exam level. Plain vocabulary, extremely precise logic. 4 blanks. No hints.',
-      'Beyond top university exam level. Academic prose, formal conjunctions, layered logic. 5 blanks. No hints.'
+      'Difficulty 1 (Beginner): Internal email / business communication. Basic connectors only. 2 blanks. Hints provided.',
+      'Difficulty 2 (Basic): Meeting minutes / progress report. Causal and adversative connectors. 3 blanks. Light hints.',
+      'Difficulty 3 (Standard): Proposal / project plan excerpt. Precise selection among similar connectors. 3 blanks. No hints.',
+      'Difficulty 4 (Advanced): Analysis report / research findings. Plain language, precise logic. 4 blanks. No hints.',
+      'Difficulty 5 (Master): Management strategy / consulting report. High-register connectors, layered logic. 5 blanks. No hints.'
     ],
     sDescs:[
-      'Plain argumentative text. 1 question (Main claim). Target: ~60% of original.',
-      'University entrance exam level. 2 questions (Main claim + Term). Target: ~50% of original.',
-      'Top-tier entrance exam essay. 3 questions (Term + Main claim + Reason). Target: ~40% of original.',
-      'Plain vocabulary, precise logic. 3 questions. Target: ~30% of original.',
-      'Beyond top university exam level. 3 questions. Target: ~20% of original.'
+      'Difficulty 1 (Basic): Internal email / communication. 1 question (Main claim). Target: ~60% of original.',
+      'Difficulty 2 (Standard): Meeting minutes / progress report. 2 questions (Main claim + Term). Target: ~50% of original.',
+      'Difficulty 3 (Advanced): Proposal / project plan. 3 questions (Term + Main claim + Reason). Target: ~40% of original.',
+      'Difficulty 4 (Expert): Analysis report / research findings. 3 questions. Target: ~30% of original.',
+      'Difficulty 5 (Master): Strategy document / consulting report. 3 questions. Target: ~20% of original.'
     ],
     genBtn:'Generate Problem',genBtnBusy:'Generating…',genLoading:'Generating problem...',gradingLoading:'Grading...',modeKeyword:'Keyword',modeQuestion:'Question',
     genPhaseLlm:'AI is generating the problem',genPhaseProcess:'Organizing the problem',
@@ -260,13 +260,13 @@ function calcBlocks(diff){
   return 3;
 }
 function getSumQuestionTypes(diff){
-  if(diff===1)return ['主張要約'];
-  if(diff===2)return ['主張要約','語句説明'];
-  return ['語句説明','主張要約','理由説明'];
+  if(diff===1)return ['主張のまとめ'];
+  if(diff===2)return ['主張のまとめ','用語の説明'];
+  return ['用語の説明','主張のまとめ','理由の説明'];
 }
 const SUM_TYPE_LABELS={
-  ja:{'語句説明':'語句説明','主張要約':'主張要約','理由説明':'理由説明'},
-  en:{'語句説明':'Term','主張要約':'Main claim','理由説明':'Reason'}
+  ja:{'用語の説明':'用語の説明','主張のまとめ':'主張のまとめ','理由の説明':'理由の説明','語句説明':'用語の説明','主張要約':'主張のまとめ','理由説明':'理由の説明'},
+  en:{'用語の説明':'Term explanation','主張のまとめ':'Main claim','理由の説明':'Reason','語句説明':'Term explanation','主張要約':'Main claim','理由説明':'Reason'}
 };
 function normSummaryProb(prob){
   const lang=prob.lang||prob.rang||st.lang;
@@ -286,7 +286,7 @@ function normSummaryProb(prob){
       const label=o.label||'';
       return {
         id:i+1,
-        type:label||'主張要約',
+        type:label||'主張のまとめ',
         question:label?(lang==='en'?`Summarize: ${label}`:`「${label}」を要約しなさい。`):((lang==='en'?'Question ':'設問')+(i+1)),
         targetChars:parseInt(o.targetChars,10)||50
       };
@@ -1252,58 +1252,53 @@ function getFillPrompts(){
   const l=st.lang;
   if(l==='ja') return {
     1:`難易度1（入門）:
-- 文体：中学〜高校教科書レベルの平易な説明文・論説文
+- 文書タイプ：社内メール・業務連絡（ビジネス文書）
 - 文字数：400〜500字
-- 構造：「問題提起→論拠1つ→結論」のシンプルな3段構成。
-  各段落が前段落を受けて展開すること
-- 接続詞：「しかし」「そのため」「また」「一方」「つまり」など
-  中学生でも知っている基本的なもののみ
+- 構造：「状況説明→1つの要点→まとめ・依頼」のシンプルな3段構成。
+  各文が前の文を受けて自然につながること
+- 接続詞：「しかし」「そのため」「また」「一方」「つまり」「なお」など
+  ビジネスメールで日常的に使われる基本的なもののみ
 - 穴抜き：2個
 - ヒント：各空欄に「逆接」「順接」などの関係性を必ず明記すること`,
     2:`難易度2（基礎）:
-- 文体：高校教科書〜大学入試標準レベルの論説文
+- 文書タイプ：議事録・進捗報告（ビジネス文書）
 - 文字数：400〜500字
-- 構造：「問題提起→論拠2つ→結論」の構成。
-  段落間の論理的なつながりが明確であること
-- 接続詞：「ところが」「したがって」「なぜなら」「それゆえ」など
-  因果・逆接・補足を含む標準的なもの
+- 構造：「現状説明→課題・論点2つ→対応方針」の構成。
+  段落間のつながりが明確であること
+- 接続詞：「ただし」「したがって」「なぜなら」「一方で」「これにより」など
+  因果・逆接・補足を含むビジネス文書で標準的なもの
 - 穴抜き：3個
 - ヒント：前後の文脈から推測できる軽いヒントを付けること`,
     3:`難易度3（標準）:
-- 文体：大学入試上位校レベルの評論文
-  語彙は平易だが抽象的な概念を含む
+- 文書タイプ：提案書・企画書の一節（ビジネス文書）
 - 文字数：400〜500字
-- 構造：「問題提起→論拠2〜3つ→反論への言及→結論」の構成。
-  対比・譲歩を含む複雑な論証構造であること。
-  各段落が前段落の論証を受けて展開すること
-- 接続詞：「もっとも」「ただし」「むしろ」「他方」など
+- 構造：「課題提起→根拠2〜3つ→反論への言及→提案・結論」の構成。
+  対比・譲歩を含む構造であること。
+  各段落が前段落の内容を受けて展開すること
+- 接続詞：「もっとも」「ただし」「むしろ」「他方」「それでもなお」など
   似た意味の中から正確なものを選ぶ力が問われるもの
 - 穴抜き：3個
 - ヒント：なし（hintsはすべて空文字列）`,
     4:`難易度4（上級）:
-- 文体：大学入試上位校〜最難関レベルの評論文
-  語彙レベルは難易度3と同等（平易な語彙を維持）だが
-  論理構造が極めて精緻で、接続詞の選択が論旨の成否を決める
+- 文書タイプ：分析レポート・調査報告（ビジネス文書）
 - 文字数：400〜500字
-- 構造：「問題提起→論拠2〜3つ→反論処理→結論」の2層構造。
+- 構造：「課題提起→根拠2〜3つ→反論処理→結論・提言」の2層構造。
   主張と反論処理が明確に区別されていること。
   接続詞を変えると論旨が崩れるよう文章を構成すること
-- 接続詞：「しかるに」「それゆえ」「のみならず」「ひいては」「翻って」など
-  高度に精密な論理的接続を要求するもの。
-  類似する接続詞との差異が明確に問われるよう設計すること
+- 接続詞：「しかしながら」「それゆえに」「のみならず」「ひいては」「翻って」など
+  ビジネス文書の上位文体で使われる精密な接続詞。
+  類似する接続詞との差異が問われるよう設計すること
 - 穴抜き：4個
 - ヒント：なし（hintsはすべて空文字列）`,
     5:`難易度5（超難問）:
-- 文体：東京大学現代文レベル以上の難解な評論文
-  哲学・社会科学・自然科学の専門的文体を使い
-  難解な概念・専門用語を積極的に含める
+- 文書タイプ：経営戦略文書・コンサルレポート（ビジネス文書）
 - 文字数：400〜500字
-- 構造：「問題提起→論拠3つ以上→留保→反論処理→結論」の3層構造。
-  論証の多層構造・逆説・留保を含むこと。
-  各層が前の層の論証を受けて展開すること。
+- 構造：「課題提起→根拠3つ以上→留保・例外→反論処理→結論・提言」の3層構造。
+  多層的な論証・留保・逆説的な展開を含むこと。
+  各層が前の層の内容を受けて展開すること。
   接続詞を変えると論旨が崩れるよう緻密に設計すること
-- 接続詞：「蓋し」「しかるに」「してみれば」「ないしは」「もとより」など
-  高度な文語的・論理的接続詞を使用。
+- 接続詞：「しかしながら」「それゆえ」「のみならず」「してみれば」「もとより」など
+  経営・コンサル文書で使われる高度な接続表現。
   複数の解釈が成立しうる文脈に配置し
   正答が一意に定まるよう緻密に設計すること
 - 穴抜き：5個
@@ -1311,60 +1306,54 @@ function getFillPrompts(){
   };
   return {
     1:`Difficulty 1 (Beginner):
-- Style: Simple explanatory/argumentative text at middle to high school level
+- Document type: Internal email / business communication
 - Length: 400-500 characters
-- Structure: Simple 3-part structure (problem → one piece of evidence → conclusion).
-  Each paragraph should develop from the previous one.
-- Conjunctions: basic only (however, therefore, also, in contrast, in other words,
-  because, so, but) — familiar to any high school student
+- Structure: Simple 3-part structure (situation → one key point → summary/request).
+  Each sentence should flow naturally from the previous one.
+- Conjunctions: basic business email connectors only
+  (however, therefore, also, in addition, in other words, please note that)
 - Blanks: 2
-- Hints: specify the logical relation (e.g. "adversative", "causal") for each blank`,
+- Hints: specify the logical relation (e.g. "contrast", "result") for each blank`,
     2:`Difficulty 2 (Basic):
-- Style: Standard university entrance exam level essay
+- Document type: Meeting minutes / progress report
 - Length: 400-500 characters
-- Structure: Problem → two pieces of evidence → conclusion.
+- Structure: Current situation → 2 issues/points → action plan.
   Logical connections between paragraphs must be clear.
-- Conjunctions: include causal, adversative, supplementary
-  (nevertheless, consequently, because, thus, furthermore, however)
+- Conjunctions: standard business document connectors including causal, adversative, supplementary
+  (however, therefore, because, on the other hand, as a result, that said)
 - Blanks: 3
 - Hints: light contextual hints`,
     3:`Difficulty 3 (Standard):
-- Style: Top-tier university entrance exam essay
-  Plain vocabulary but includes abstract concepts
+- Document type: Proposal / project plan excerpt
 - Length: 400-500 characters
-- Structure: Problem → 2-3 pieces of evidence → reference to counterargument → conclusion.
+- Structure: Issue → 2-3 pieces of evidence → reference to counterargument → proposal/conclusion.
   Must include contrast and concession.
-  Each paragraph must develop from the previous paragraph's argument.
-- Conjunctions: precise selection required among similar options
-  (nonetheless, admittedly, rather, on the other hand, by contrast)
+  Each paragraph must develop from the previous paragraph's content.
+- Conjunctions: precise selection required among similar business document connectors
+  (nonetheless, that said, rather, on the other hand, even so)
 - Blanks: 3
 - Hints: none (all hints must be empty strings)`,
     4:`Difficulty 4 (Advanced):
-- Style: Highly selective university exam level essay
-  Vocabulary level same as Difficulty 3 (plain language maintained)
-  but logical structure is extremely precise
+- Document type: Analysis report / research findings
 - Length: 400-500 characters
-- Structure: Problem → 2-3 pieces of evidence → counterargument handling → conclusion (2-layer).
+- Structure: Issue → 2-3 pieces of evidence → counterargument handling → conclusion/recommendation (2-layer).
   Main argument and counterargument handling must be clearly distinguished.
   Design sentences so that substituting a conjunction collapses the argument.
-- Conjunctions: highly precise logical connectors where substitution collapses the argument
-  (notwithstanding, insofar as, inasmuch as, by extension, conversely, it follows that)
-  Design sentences so that only one conjunction is logically correct
+- Conjunctions: precise upper-register business document connectors
+  (nevertheless, consequently, not only that, by extension, on reflection)
+  where substitution collapses the argument
 - Blanks: 4
 - Hints: none (all hints must be empty strings)`,
     5:`Difficulty 5 (Master):
-- Style: Beyond top university exam level
-  Dense academic prose with specialist terminology in
-  philosophy, social science, or natural science
+- Document type: Management strategy document / consulting report
 - Length: 400-500 characters
-- Structure: Problem → 3+ pieces of evidence → reservation → counterargument handling → conclusion (3-layer).
-  Must include paradox and reservation.
-  Each layer must develop from the previous layer's argument.
+- Structure: Issue → 3+ pieces of evidence → reservation/exception → counterargument handling → conclusion/recommendation (3-layer).
+  Must include multi-layer reasoning and reservations.
+  Each layer must develop from the previous layer's content.
   Design so that substituting a conjunction definitively collapses the argument.
-- Conjunctions: archaic or highly formal connectors
-  (hitherto, whereupon, inasmuch, albeit, notwithstanding, in contradistinction to)
-  placed in contexts with multiple plausible interpretations
-  but designed so only one is definitively correct
+- Conjunctions: high-register strategy/consulting document connectors
+  (nevertheless, consequently, not only that, upon reflection, to be sure)
+  placed in contexts where only one connector is logically correct
 - Blanks: 5
 - Hints: none (all hints must be empty strings)`
   };
@@ -1372,18 +1361,18 @@ function getFillPrompts(){
 function getSumPrompts(){
   const l=st.lang;
   if(l==='ja') return {
-    1:'難易度1（基礎）: 高校教科書レベルの平易な論説文。設問：主張要約1問。約60%に圧縮できる内容。',
-    2:'難易度2（標準）: 大学入試レベルの論説・評論文。設問：主張要約・語句説明の2問。約50%に圧縮できる内容。',
-    3:'難易度3（応用）: 大学入試上位校レベルの評論文。抽象概念を含む。設問：語句説明・主張要約・理由説明の3問。約40%に圧縮できる内容。',
-    4:'難易度4（上級）: 平易な語彙だが論理構造が精緻な評論文。設問：語句説明・主張要約・理由説明の3問。約30%に圧縮できる内容。',
-    5:'難易度5（超難問）: 東京大学現代文レベル以上の難解な評論文。専門用語・複雑な論証を含む。設問：語句説明・主張要約・理由説明の3問。約20%に圧縮できる内容。'
+    1:'難易度1（基礎）: 社内メール・業務連絡（ビジネス文書）。設問：主張のまとめ1問。約60%に圧縮できる内容。主張と根拠が明確で具体例を削ることで圧縮できる構造にすること。',
+    2:'難易度2（標準）: 議事録・進捗報告（ビジネス文書）。設問：主張のまとめ・用語の説明の2問。約50%に圧縮できる内容。ビジネス用語や略語を1〜2個含めること。',
+    3:'難易度3（応用）: 提案書・企画書の一節（ビジネス文書）。課題→根拠→提案の構造を持つこと。設問：用語の説明・主張のまとめ・理由の説明の3問。約40%に圧縮できる内容。',
+    4:'難易度4（上級）: 分析レポート・調査報告（ビジネス文書）。データの解釈と複数の根拠を含む構造にすること。設問：用語の説明・主張のまとめ・理由の説明の3問。約30%に圧縮できる内容。',
+    5:'難易度5（超難問）: 経営戦略文書・コンサルレポート（ビジネス文書）。多層的な論証と専門的なビジネス用語を含むこと。設問：用語の説明・主張のまとめ・理由の説明の3問。約20%に圧縮できる内容。'
   };
   return {
-    1:'Difficulty 1 (Basic): Plain argumentative text at high school level. Question: Main claim only (1 question). Target: ~60% of original.',
-    2:'Difficulty 2 (Standard): University entrance exam level essay. Questions: Main claim + Term (2 questions). Target: ~50% of original.',
-    3:'Difficulty 3 (Advanced): Top-tier entrance exam essay with abstract concepts. Questions: Term + Main claim + Reason (3 questions). Target: ~40% of original.',
-    4:'Difficulty 4 (Expert): Plain vocabulary, precise logic. Questions: Term + Main claim + Reason (3 questions). Target: ~30% of original.',
-    5:'Difficulty 5 (Master): Beyond top university exam level. Dense academic prose. Questions: Term + Main claim + Reason (3 questions). Target: ~20% of original.'
+    1:'Difficulty 1 (Basic): Internal email / business communication. Question: Main claim summary only (1 question). Target: ~60% of original. Design so claims and evidence are clear and specific examples can be removed.',
+    2:'Difficulty 2 (Standard): Meeting minutes / progress report. Questions: Main claim + Term explanation (2 questions). Target: ~50% of original. Include 1-2 business terms or abbreviations.',
+    3:'Difficulty 3 (Advanced): Proposal / project plan excerpt. Must follow issue → evidence → proposal structure. Questions: Term explanation + Main claim + Reason (3 questions). Target: ~40% of original.',
+    4:'Difficulty 4 (Expert): Analysis report / research findings. Include data interpretation and multiple pieces of evidence. Questions: Term explanation + Main claim + Reason (3 questions). Target: ~30% of original.',
+    5:'Difficulty 5 (Master): Management strategy document / consulting report. Include multi-layer reasoning and specialized business terminology. Questions: Term explanation + Main claim + Reason (3 questions). Target: ~20% of original.'
   };
 }
 
@@ -1399,8 +1388,8 @@ async function generateFill(){
   if(!beginGen('fill'))return;
 
   const sys=isEN
-    ?'You are an expert in logical writing and education. The educational goal of this tab is to train learners to precisely read the logical connections between sentences. Design the passage so that the choice of conjunction determines whether the argument holds — substituting the wrong conjunction must break the meaning. Respond ONLY in valid JSON format. No markdown, no explanation before or after the JSON.'
-    :'あなたは論理的文章の作成と教育の専門家です。このタブの教育目的は「文と文の間の論理的接続を精確に読み取る力を鍛えること」です。問題文は接続詞の選択が論旨の成否を左右する構造にし、正解以外の接続詞を入れると文意が崩れるよう設計してください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+    ?'You are an expert in business writing and logical communication. The educational goal of this tab is to train learners to precisely read the logical connections between sentences in business documents. Design the passage so that the choice of conjunction determines whether the argument holds — substituting the wrong conjunction must break the meaning. Respond ONLY in valid JSON format. No markdown, no explanation before or after the JSON.'
+    :'あなたはビジネス文書の作成と論理的コミュニケーションの専門家です。このタブの教育目的は「ビジネス文書における文と文の間の論理的接続を精確に読み取る力を鍛えること」です。問題文はビジネス現場で実際に使われる文書（メール・報告書・提案書など）の文体で作成し、接続詞の選択が論旨の成否を左右する構造にしてください。正解以外の接続詞を入れると文意が崩れるよう設計してください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const themeInst=buildThemeInst(themeIn,'keyword',length,isEN,false);
   const diffPrompt=getFillPrompts()[diff];
   let jsonInst=isEN
@@ -1477,8 +1466,8 @@ async function submitFill(){
 async function gradeFill(prob,ua){
   const isEN=prob.lang==='en'||(prob.lang===undefined&&st.lang==='en');
   const sys=isEN
-    ?'You are an expert educator in logical writing. The goal of feedback is to help learners understand WHY a specific conjunction is logically necessary — not just correct. Explain the logical relationship between adjacent sentences, the difference from alternative conjunctions, and how the conjunction fits the overall argument structure. Give structured feedback in English using markdown (## headings, **bold**, numbered lists).'
-    :'あなたは論理的文章の教育専門家です。フィードバックの目的は「なぜその接続詞でなければならないか」という論理的必然性を学習者に理解させることです。前後の文の論理関係・代替接続詞との差異・問題文全体の論証構造を踏まえて解説してください。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
+    ?'You are an expert educator in business writing. The goal of feedback is to help learners understand WHY a specific conjunction is logically necessary in the context of business documents — not just correct. Explain the logical relationship between adjacent sentences, the difference from alternative conjunctions, and how the conjunction fits the overall argument. Give structured feedback in English using markdown (## headings, **bold**, numbered lists).'
+    :'あなたはビジネス文書の論理的表現に関する教育専門家です。フィードバックの目的は「なぜその接続詞でなければならないか」という論理的必然性を、ビジネス文書の文脈で学習者に理解させることです。前後の文の論理関係・代替接続詞との差異・文書全体の論証構造を踏まえて解説してください。マークダウン（**太字**、## 見出し、番号リスト）を使って構造的に日本語でフィードバックしてください。';
   const ct=prob.answers.reduce((t,a,i)=>t.replace(`【_${i+1}_】`,`[${a}]`),prob.text);
   const prompt=isEN?`${FILL_SCORE100_NOTE_EN}
 
@@ -1729,18 +1718,18 @@ async function generateSummary(){
   if(!beginGen('summary'))return;
 
   const sys=isEN
-    ?'You are an expert in Japanese university entrance exam modern-text (現代文) education. The educational goal of this tab is to train learners to compress text from concrete to abstract, and to answer only based on evidence from the passage. Design the passage so it can be compressed by retaining claims and evidence while cutting specific examples. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
-    :'あなたは大学受験・現代文の読解・記述指導の専門家です。このタブの教育目的は「具体から抽象への変換力」と「本文の根拠のみに基づいて答える規律」を鍛えることです。問題文は主張と根拠を残し具体例を削ることで圧縮できる構造にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+    ?'You are an expert in business writing and communication education. The educational goal of this tab is to train learners to compress business documents by retaining claims and evidence while cutting specific examples, and to answer only based on evidence from the document. Design the passage so it can be compressed by retaining the main argument and supporting evidence. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
+    :'あなたはビジネス文書の読解と論理的コミュニケーションの教育専門家です。このタブの教育目的は「ビジネス文書の主張と根拠を残しながら具体例を削る情報の取捨選択力」と「文書に書かれていることのみを根拠にして答える規律」を鍛えることです。問題文はビジネス現場で実際に使われる文書（議事録・報告書・提案書など）の文体で作成し、主張と根拠を残し具体例を削ることで圧縮できる構造にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const themeInst=buildThemeInst(themeIn,themeMode,length,isEN,true);
   const diffPrompt=getSumPrompts()[diff];
   const types=getSumQuestionTypes(diff);
   const typesList=types.join(isEN ? ', ' : '、');
   const typeGuide=isEN
-    ?`Generate exactly ${numQ} questions about the passage. Choose types from: ${typesList}. Vary types when possible.\ntargetChars guide: 語句説明 ~50, 主張要約 80-150, 理由説明 ~100. Use the Japanese type names in the "type" field.\nDesign the passage so that it can be compressed by retaining claims and evidence while removing specific examples.`
-    :`設問はちょうど${numQ}問。タイプは次から選ぶ: ${typesList}。可能ならタイプを分散させる。\ntargetCharsの目安: 語句説明50字、主張要約80〜150字、理由説明100字。\n文章は「主張と根拠を残し具体例を削ることで圧縮できる」構造にすること。`;
+    ?`Generate exactly ${numQ} questions about the passage. Choose types from: ${typesList}. Vary types when possible.\ntargetChars guide: 用語の説明 ~50, 主張のまとめ 80-150, 理由の説明 ~100. Use the Japanese type names in the "type" field.\nDesign the passage so that it can be compressed by retaining claims and evidence while removing specific examples.`
+    :`設問はちょうど${numQ}問。タイプは次から選ぶ: ${typesList}。可能ならタイプを分散させる。\ntargetCharsの目安: 用語の説明50字、主張のまとめ80〜150字、理由の説明100字。\n文章は「主張と根拠を残し具体例を削ることで圧縮できる」構造にすること。`;
   const jsonInst=isEN
-    ?`Return ONLY this JSON:\n{"theme":"topic in 10 chars or less","text":"full passage ~${length} chars","questions":[{"id":1,"type":"語句説明","question":"...","targetChars":50}]}\nquestions must have exactly ${numQ} items. "text" is one unified passage (modern Japanese exam style).`
-    :`返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"約${length}文字の問題文","questions":[{"id":1,"type":"語句説明","question":"本文中の「〇〇」とは…50字以内で説明しなさい。","targetChars":50}]}\nquestionsは${numQ}要素。textは1つの文章全体（大学受験・現代文型）。`;
+    ?`Return ONLY this JSON:\n{"theme":"topic in 10 chars or less","text":"full passage ~${length} chars","questions":[{"id":1,"type":"用語の説明","question":"...","targetChars":50}]}\nquestions must have exactly ${numQ} items. "text" is one unified business document passage.`
+    :`返答はJSONのみ：\n{"theme":"テーマ10文字以内","text":"約${length}文字の問題文","questions":[{"id":1,"type":"用語の説明","question":"文書中の「〇〇」とは…50字以内で説明しなさい。","targetChars":50}]}\nquestionsは${numQ}要素。textは1つのビジネス文書（議事録・報告書・提案書など）。`;
 
   try{
     const genMaxTokens=length<=500?1200:length<=2000?3000:6000;
@@ -1749,7 +1738,7 @@ async function generateSummary(){
     if(!raw)return;
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
-    const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張要約',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
+    const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張のまとめ',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
     st.summary={id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||'short'):null,feedback:null,lang:st.lang};
     renderSummary(st.summary);
     try{await syncPastOnGen('summary',st.summary);}
@@ -1827,8 +1816,8 @@ async function submitPhotoGrade(kind,prob,scope){
         ?`The following is the summarization problem the learner was given.\n\nProblem text:\n${p.text}\n\nQuestions:\n${qBlock}\n\nThe learner has submitted handwritten answers in the attached image(s).\n${memo?`Learner's note: ${memo}`:''}\n\nPlease:\n1. Read the handwritten text from the image(s).\n2. If the total handwritten answer appears to exceed 1.5× the total target character count (${Math.round(totalTargetChars*1.5)} chars), respond with 【Score: 0/100】 and state the reason clearly.\n3. Otherwise, grade each answer on content accuracy, conciseness, and expression.\n4. Give a total score out of 100 at the very top in the format: 【Score: XX/100】\n5. Provide block-by-block feedback and an overall comment.${SUM_SCORE100_NOTE_EN}`
         :`以下は学習者が取り組んだ要約問題です。\n\n問題文：\n${p.text}\n\n${qBlock}\n\n学習者は添付画像に手書きで回答しています。\n${memo?`学習者のメモ：${memo}`:''}\n\n以下の手順で採点してください。\n1. 画像から手書きのテキストを読み取ってください。\n2. 回答の総文字量が目標合計文字数の1.5倍（${Math.round(totalTargetChars*1.5)}文字）を大幅に超えていると判断される場合は、「文字数が大幅に超過しているため採点できません」として【スコア：0/100】としてください。\n3. それ以外の場合は、内容の正確さ・簡潔さ・表現を評価してください。\n4. 最初の行に必ず【スコア：XX/100】の形式で100点満点の点数を記載してください。\n5. 設問別フィードバックと総合コメントを記載してください。${SUM_SCORE100_NOTE_JA}`;
       sys=isEN
-        ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. The goal of feedback is to evaluate whether the learner bases answers solely on the passage, and whether they retain claims and evidence while cutting specific examples (logical selection). Explicitly point out any interpretation or outside knowledge not grounded in the passage. Give structured feedback in English using markdown.'
-        :'あなたは大学受験・現代文の記述指導の専門家です。フィードバックの目的は「本文に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る論理的取捨選択ができているか」を評価することです。自分の解釈や本文外の知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+        ?'You are an expert writing teacher for business document comprehension. The goal of feedback is to evaluate whether the learner bases answers solely on the document, and whether they retain the main argument and evidence while cutting specific examples. Explicitly point out any interpretation or outside knowledge not grounded in the document. Give structured feedback in English using markdown.'
+        :'あなたはビジネス文書の読解と記述指導の教育専門家です。フィードバックの目的は「文書に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る情報の取捨選択ができているか」を評価することです。文書外の自分の解釈や知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
       content=[...imageContents,{type:'text',text:textPrompt}];
       const diff=prob.diff||st.sDiff;
       const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||'short')].chars);
@@ -1934,8 +1923,8 @@ async function submitSummary(){
   fb.innerHTML=`<p class="loading"><span class="dots">${L[st.lang].loading}</span></p>`;
   const isEN=prob.lang==='en';
   const sys=isEN
-    ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. The goal of feedback is to evaluate whether the learner bases answers solely on the passage, and whether they retain claims and evidence while cutting specific examples (logical selection). Explicitly point out any interpretation or outside knowledge not grounded in the passage. Give structured feedback in English using markdown.'
-    :'あなたは大学受験・現代文の記述指導の専門家です。フィードバックの目的は「本文に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る論理的取捨選択ができているか」を評価することです。自分の解釈や本文外の知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+    ?'You are an expert writing teacher for business document comprehension. The goal of feedback is to evaluate whether the learner bases answers solely on the document, and whether they retain the main argument and evidence while cutting specific examples. Explicitly point out any interpretation or outside knowledge not grounded in the document. Give structured feedback in English using markdown.'
+    :'あなたはビジネス文書の読解と記述指導の教育専門家です。フィードバックの目的は「文書に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る情報の取捨選択ができているか」を評価することです。文書外の自分の解釈や知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
   const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
     const diff=prob.diff||st.sDiff;
@@ -2671,8 +2660,8 @@ async function ppSummary(id){
   fb.innerHTML=`<p class="loading"><span class="dots">${l.loading}</span></p>`;
   const isEN=pLang==='en';
   const sys=isEN
-    ?'You are an expert writing teacher for Japanese university entrance exam modern-text questions. The goal of feedback is to evaluate whether the learner bases answers solely on the passage, and whether they retain claims and evidence while cutting specific examples (logical selection). Explicitly point out any interpretation or outside knowledge not grounded in the passage. Give structured feedback in English using markdown.'
-    :'あなたは大学受験・現代文の記述指導の専門家です。フィードバックの目的は「本文に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る論理的取捨選択ができているか」を評価することです。自分の解釈や本文外の知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+    ?'You are an expert writing teacher for business document comprehension. The goal of feedback is to evaluate whether the learner bases answers solely on the document, and whether they retain the main argument and evidence while cutting specific examples. Explicitly point out any interpretation or outside knowledge not grounded in the document. Give structured feedback in English using markdown.'
+    :'あなたはビジネス文書の読解と記述指導の教育専門家です。フィードバックの目的は「文書に書かれていることのみを根拠にし、主張と根拠を残しながら具体例を削る情報の取捨選択ができているか」を評価することです。文書外の自分の解釈や知識を持ち込んでいる箇所があれば具体的に指摘してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
   const prompt=buildSummaryGradePrompt(prob,userTexts);
   try{
     const diff=prob.diff||st.sDiff;
