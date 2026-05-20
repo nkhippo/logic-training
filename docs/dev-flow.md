@@ -1,7 +1,72 @@
 # 論理トレーニングアプリ 開発フロー
 
-**バージョン**: 1.0  
+**バージョン**: 1.1  
 **作成日**: 2026-05-20  
+**更新日**: 2026-05-20  
+
+---
+
+## ブランチ運用（Git Flow 簡易版）
+
+| ブランチ | 役割 |
+|---|---|
+| `main` | 本番相当。GitHub Pages の公開元。マージは PR 経由 |
+| `develop` | 開発の統合ブランチ。**常に `main` の最新を含む** |
+| `feature/*` | 機能開発。**必ず `develop` から作成**（例: `feature/4`） |
+
+### ブランチの流れ
+
+```
+main ─────●────●────●────────────●  （リリース・本番）
+            ↑              ↑
+            │    merge PR  │
+develop ────┴────●────●────┴────●  （統合・検証）
+                      ↑       ↑
+                      │  PR   │
+feature/4 ────────────┴───●───●      （作業中の機能）
+```
+
+### `develop` を `main` に追従させる（定期・リリース後）
+
+`main` が進んだら、**先に `develop` を更新**してから `feature/*` で作業する。
+
+```bash
+git checkout develop
+git pull origin develop
+git pull origin main          # または: git merge origin/main
+git push origin develop
+```
+
+マージ後、作業中の feature ブランチがある場合:
+
+```bash
+git checkout feature/4
+git rebase develop            # コンフリクト時は解消 → git rebase --continue
+git push --force-with-lease origin feature/4
+```
+
+### 機能開発の手順
+
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feature/5    # 新機能は develop から
+
+# 作業 → commit → push
+git push -u origin feature/5
+
+# GitHub: PR の base は develop（main ではない）
+```
+
+### 本番（main）へ反映するとき
+
+`develop` で十分に動作確認できたら:
+
+```bash
+# GitHub: PR base=main, compare=develop
+# マージ後、再度 develop を main に合わせる（fast-forward で揃う）
+git checkout develop && git pull origin main && git push origin develop
+```
 
 ---
 
