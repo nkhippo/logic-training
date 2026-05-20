@@ -3,12 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>論理トレーニング Ver.3.0 / Logic Training</title>
+<title>論理トレーニング Ver.3.2 / Logic Training</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="app">
+  <div id="app-busy-overlay" class="app-busy-overlay" aria-hidden="true" role="alert" aria-live="assertive">
+    <div class="app-busy-overlay-inner">
+      <div class="app-busy-spinner" aria-hidden="true"></div>
+      <p class="app-busy-overlay-title" id="app-busy-overlay-msg"></p>
+      <p class="app-busy-overlay-hint" id="app-busy-overlay-hint"></p>
+    </div>
+  </div>
   <div class="app-header no-print">
     <div>
       <h1 id="ui-app-title">論理トレーニング</h1>
@@ -25,33 +32,12 @@
     </div>
   </div>
 
-  <div class="api-bar no-print" id="api-bar">
-    <div class="api-bar-header" onclick="toggleApiBar()">
-      <span id="ui-api-lbl">Claude APIキー</span>
-      <span class="api-bar-status" id="api-bar-status"></span>
-      <i class="ti ti-chevron-down api-bar-chevron" id="api-bar-chevron"
-         style="font-size:14px;color:var(--text2);transition:transform .2s;"></i>
-    </div>
-    <div class="api-bar-body" id="api-bar-body">
-      <div class="api-row" style="margin-top:10px;">
-        <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="current-password"/>
-        <button class="api-save-btn" onclick="saveApiKey()">
-          <i class="ti ti-device-floppy"></i>
-          <span id="ui-save-btn">保存</span>
-        </button>
-      </div>
-      <p class="api-note">
-        <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
-        → API Keys
-      </p>
-    </div>
-  </div>
-
   <div class="tabs no-print">
     <button class="tab active" onclick="switchTab('fill')"><i class="ti ti-puzzle"></i> <span id="ui-tab-fill">穴埋め</span></button>
     <button class="tab" onclick="switchTab('summary')"><i class="ti ti-align-left"></i> <span id="ui-tab-sum">要約</span></button>
     <button class="tab" onclick="switchTab('critique')"><i class="ti ti-message-search"></i> <span id="ui-tab-critique">批判読み</span></button>
     <button class="tab" onclick="switchTab('ame')"><i class="ti ti-umbrella"></i> <span id="ui-tab-ame">空雨傘</span></button>
+    <button class="tab" onclick="switchTab('kibari')"><i class="ti ti-heart-handshake"></i> <span id="ui-tab-kibari">気配り</span></button>
   </div>
 
   <!-- 穴埋め -->
@@ -67,16 +53,18 @@
     <div id="fill-new-area">
     <div class="card no-print">
       <div style="margin-bottom:12px;">
-        <label id="ui-f-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-optional">（省略可）</span></label>
-        <textarea id="f-theme" rows="1"
-          style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
-          oninput="autoResize(this)"></textarea>
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-f-theme-lbl">テーマ</label>
+        <div id="f-theme-row" class="preset-row"></div>
+      </div>
+      <div class="industry-block" style="margin-bottom:12px;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+        <div class="industry-preset-row"></div>
       </div>
       <label id="ui-f-diff-lbl">難易度</label>
       <div class="diff-row" id="f-diff-row">
         <button class="diff-btn" data-d="1" onclick="setDiff('f',1)">★☆☆☆☆<br><span class="dlbl" id="fd1"></span></button>
         <button class="diff-btn" data-d="2" onclick="setDiff('f',2)">★★☆☆☆<br><span class="dlbl" id="fd2"></span></button>
-        <button class="diff-btn sel" data-d="3" onclick="setDiff('f',3)">★★★☆☆<br><span class="dlbl" id="fd3"></span></button>
+        <button class="diff-btn" data-d="3" onclick="setDiff('f',3)">★★★☆☆<br><span class="dlbl" id="fd3"></span></button>
         <button class="diff-btn" data-d="4" onclick="setDiff('f',4)">★★★★☆<br><span class="dlbl" id="fd4"></span></button>
         <button class="diff-btn" data-d="5" onclick="setDiff('f',5)">★★★★★<br><span class="dlbl" id="fd5"></span></button>
       </div>
@@ -159,23 +147,26 @@
     <div id="summary-new-area">
     <div class="card no-print">
       <div style="margin-bottom:12px;">
-        <label id="ui-s-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);" id="ui-s-opt">（省略可）</span></label>
-        <div class="theme-mode-toggle" id="s-theme-mode">
-          <button type="button" class="mode-btn active" data-mode="keyword" onclick="setThemeMode('s','keyword')">
-            <span id="ui-s-mode-keyword">キーワード</span>
-          </button>
-          <button type="button" class="mode-btn" data-mode="question" onclick="setThemeMode('s','question')">
-            <span id="ui-s-mode-question">課題・疑問</span>
-          </button>
-        </div>
-        <textarea id="s-theme" rows="1"
-          style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
-          oninput="autoResize(this)"></textarea>
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-s-theme-lbl">テーマ</label>
+        <div id="s-theme-row" class="preset-row"></div>
       </div>
+      <div class="industry-block" style="margin-bottom:12px;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+        <div class="industry-preset-row"></div>
+      </div>
+      <label id="ui-s-diff-lbl">難易度</label>
+      <div class="diff-row" id="s-diff-row">
+        <button class="diff-btn" data-d="1" onclick="setDiff('s',1)">★☆☆☆☆<br><span class="dlbl" id="sd1"></span></button>
+        <button class="diff-btn" data-d="2" onclick="setDiff('s',2)">★★☆☆☆<br><span class="dlbl" id="sd2"></span></button>
+        <button class="diff-btn" data-d="3" onclick="setDiff('s',3)">★★★☆☆<br><span class="dlbl" id="sd3"></span></button>
+        <button class="diff-btn" data-d="4" onclick="setDiff('s',4)">★★★★☆<br><span class="dlbl" id="sd4"></span></button>
+        <button class="diff-btn" data-d="5" onclick="setDiff('s',5)">★★★★★<br><span class="dlbl" id="sd5"></span></button>
+      </div>
+      <div class="diff-desc" id="s-diff-desc"></div>
       <div id="s-volume-selector" style="display:none; margin-bottom:12px;">
         <label id="ui-s-vol-lbl">ボリューム</label>
         <div class="volume-row">
-          <button type="button" class="vol-btn active" data-v="short" onclick="setVolume('short')">
+          <button type="button" class="vol-btn" data-v="short" onclick="setVolume('short')">
             <span id="ui-vol-short">さくっと</span>
             <span class="vol-chars" id="ui-vol-short-chars">500字</span>
           </button>
@@ -189,15 +180,6 @@
           </button>
         </div>
       </div>
-      <label id="ui-s-diff-lbl">難易度</label>
-      <div class="diff-row" id="s-diff-row">
-        <button class="diff-btn" data-d="1" onclick="setDiff('s',1)">★☆☆☆☆<br><span class="dlbl" id="sd1"></span></button>
-        <button class="diff-btn" data-d="2" onclick="setDiff('s',2)">★★☆☆☆<br><span class="dlbl" id="sd2"></span></button>
-        <button class="diff-btn sel" data-d="3" onclick="setDiff('s',3)">★★★☆☆<br><span class="dlbl" id="sd3"></span></button>
-        <button class="diff-btn" data-d="4" onclick="setDiff('s',4)">★★★★☆<br><span class="dlbl" id="sd4"></span></button>
-        <button class="diff-btn" data-d="5" onclick="setDiff('s',5)">★★★★★<br><span class="dlbl" id="sd5"></span></button>
-      </div>
-      <div class="diff-desc" id="s-diff-desc"></div>
       <div class="auto-info" id="s-auto-info"></div>
       <button class="btn" id="s-gen-btn" onclick="generateSummary()"><span id="ui-s-gen">問題を生成する</span></button>
       <div id="s-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
@@ -295,16 +277,18 @@
     <div id="critique-new-area">
       <div class="card no-print">
         <div style="margin-bottom:12px;">
-          <label id="ui-c-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);">（省略可）</span></label>
-          <textarea id="c-theme" rows="1"
-            style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
-            oninput="autoResize(this)"></textarea>
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-c-theme-lbl">テーマ</label>
+          <div id="c-theme-row" class="preset-row"></div>
+        </div>
+        <div class="industry-block" style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+          <div class="industry-preset-row"></div>
         </div>
         <label id="ui-c-diff-lbl">難易度</label>
         <div class="diff-row" id="c-diff-row">
           <button class="diff-btn" data-d="1" onclick="setDiff('c',1)">★☆☆☆☆<br><span class="dlbl" id="cd1"></span></button>
           <button class="diff-btn" data-d="2" onclick="setDiff('c',2)">★★☆☆☆<br><span class="dlbl" id="cd2"></span></button>
-          <button class="diff-btn sel" data-d="3" onclick="setDiff('c',3)">★★★☆☆<br><span class="dlbl" id="cd3"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setDiff('c',3)">★★★☆☆<br><span class="dlbl" id="cd3"></span></button>
           <button class="diff-btn" data-d="4" onclick="setDiff('c',4)">★★★★☆<br><span class="dlbl" id="cd4"></span></button>
           <button class="diff-btn" data-d="5" onclick="setDiff('c',5)">★★★★★<br><span class="dlbl" id="cd5"></span></button>
         </div>
@@ -410,16 +394,18 @@
     <div id="ame-new-area">
       <div class="card no-print">
         <div style="margin-bottom:12px;">
-          <label id="ui-a-theme-lbl">テーマ <span style="font-size:11px;color:var(--text2);">（省略可）</span></label>
-          <textarea id="a-theme" rows="1"
-            style="resize:none;overflow:hidden;min-height:38px;width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;background:var(--bg2);color:var(--text);font-family:inherit;"
-            oninput="autoResize(this)"></textarea>
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-a-theme-lbl">テーマ</label>
+          <div id="a-theme-row" class="preset-row"></div>
+        </div>
+        <div class="industry-block" style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+          <div class="industry-preset-row"></div>
         </div>
         <label id="ui-a-diff-lbl">難易度</label>
         <div class="diff-row" id="a-diff-row">
           <button class="diff-btn" data-d="1" onclick="setDiff('a',1)">★☆☆☆☆<br><span class="dlbl" id="ad1"></span></button>
           <button class="diff-btn" data-d="2" onclick="setDiff('a',2)">★★☆☆☆<br><span class="dlbl" id="ad2"></span></button>
-          <button class="diff-btn sel" data-d="3" onclick="setDiff('a',3)">★★★☆☆<br><span class="dlbl" id="ad3"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setDiff('a',3)">★★★☆☆<br><span class="dlbl" id="ad3"></span></button>
           <button class="diff-btn" data-d="4" onclick="setDiff('a',4)">★★★★☆<br><span class="dlbl" id="ad4"></span></button>
           <button class="diff-btn" data-d="5" onclick="setDiff('a',5)">★★★★★<br><span class="dlbl" id="ad5"></span></button>
         </div>
@@ -515,6 +501,96 @@
     </div>
   </div>
 
+  <!-- 気配り -->
+  <div id="kibari-panel" class="panel">
+    <div class="sub-tabs no-print" id="kibari-sub-tabs">
+      <button class="sub-tab active" id="kibari-sub-new" onclick="switchSub('kibari','new')">
+        <i class="ti ti-plus"></i> <span id="ui-kb-sub-new">新規生成</span>
+      </button>
+      <button class="sub-tab" id="kibari-sub-past" onclick="switchSub('kibari','past')">
+        <i class="ti ti-history"></i> <span id="ui-kb-sub-past">過去問</span>
+      </button>
+    </div>
+    <div id="kibari-new-area">
+      <div class="card no-print">
+        <div style="margin-bottom:12px;">
+          <label id="ui-kb-theme-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">テーマ</label>
+          <div id="kb-theme-row" class="preset-row"></div>
+        </div>
+        <div class="industry-block" style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
+          <div class="industry-preset-row"></div>
+        </div>
+        <label id="ui-kb-diff-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">難易度</label>
+        <div class="diff-row" id="kb-diff-row">
+          <button class="diff-btn" data-d="1" onclick="setDiff('kb',1)">★☆☆☆☆<br><span class="dlbl" id="kbd1"></span></button>
+          <button class="diff-btn" data-d="2" onclick="setDiff('kb',2)">★★☆☆☆<br><span class="dlbl" id="kbd2"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setDiff('kb',3)">★★★☆☆<br><span class="dlbl" id="kbd3"></span></button>
+          <button class="diff-btn" data-d="4" onclick="setDiff('kb',4)">★★★★☆<br><span class="dlbl" id="kbd4"></span></button>
+          <button class="diff-btn" data-d="5" onclick="setDiff('kb',5)">★★★★★<br><span class="dlbl" id="kbd5"></span></button>
+        </div>
+        <div class="diff-desc" id="kb-diff-desc"></div>
+        <button class="btn" id="kb-gen-btn" onclick="generateKibari()">
+          <span id="ui-kb-gen">問題を生成する</span>
+        </button>
+        <div id="kb-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="ui-kb-gen-loading">問題を生成中...</span>
+        </div>
+      </div>
+      <div id="kibari-result" style="display:none;">
+        <div class="step-bar no-print">
+          <div class="step done" id="kbs1"></div>
+          <div class="step active" id="kbs2"></div>
+          <div class="step" id="kbs3"></div>
+        </div>
+        <div id="kb-theme-tag"></div>
+        <p class="slabel no-print" id="ui-kb-situation-lbl">状況</p>
+        <div class="problem-box" id="kb-situation"></div>
+        <div id="kb-rounds"></div>
+        <div class="action-bar no-print" id="kb-submit-bar" style="display:none;">
+          <button class="btn" id="kb-submit" onclick="submitKibari()">
+            <span id="ui-kb-submit">採点してもらう</span>
+          </button>
+        </div>
+        <div class="action-bar no-print" style="margin-top:8px;">
+          <button class="btn btn-icon btn-sm" id="kb-pa-btn" style="display:none;" onclick="doPrint('kibari','a')">
+            <i class="ti ti-printer"></i> <span id="ui-kb-pa">解説を印刷</span>
+          </button>
+        </div>
+        <div id="kb-fb"></div>
+      </div>
+    </div>
+    <div id="kibari-past-area" class="no-print" style="display:none;">
+      <div id="kbp-list-view">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <div class="pf-tabs" id="kbp-tabs" style="margin-bottom:0;flex:1;">
+            <button class="pf-tab active" data-f="all" onclick="filterPast('kibari','all')" id="ui-kbp-all">すべて</button>
+            <button class="pf-tab" data-f="1" onclick="filterPast('kibari','1')">★1</button>
+            <button class="pf-tab" data-f="2" onclick="filterPast('kibari','2')">★2</button>
+            <button class="pf-tab" data-f="3" onclick="filterPast('kibari','3')">★3</button>
+            <button class="pf-tab" data-f="4" onclick="filterPast('kibari','4')">★4</button>
+            <button class="pf-tab" data-f="5" onclick="filterPast('kibari','5')">★5</button>
+          </div>
+          <button class="btn btn-icon btn-sm" onclick="randomPast('kibari')" style="flex-shrink:0;margin-left:8px;">
+            <i class="ti ti-arrows-shuffle"></i>
+            <span id="ui-kb-rand">ランダム出題</span>
+          </button>
+        </div>
+        <div class="ssync" style="margin-bottom:.75rem;">
+          <div class="sdot" id="kbp-dot"></div>
+          <span id="kbp-lbl">—</span>
+        </div>
+        <div class="plist" id="kbp-list"></div>
+      </div>
+      <div id="kbp-play" style="display:none;">
+        <button class="back-btn" onclick="closePP('kibari')">
+          <i class="ti ti-arrow-left"></i> <span id="ui-kb-back">一覧に戻る</span>
+        </button>
+        <div id="kbp-play-content"></div>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -541,10 +617,25 @@
       <button class="guide-tab" data-guide="ame" onclick="switchGuideTab('ame')">
         <span id="ui-gtab-ame">空雨傘</span>
       </button>
+      <button class="guide-tab" data-guide="kibari" onclick="switchGuideTab('kibari')">
+        <span id="ui-gtab-kibari">気配り</span>
+      </button>
     </div>
     <div class="guide-body" id="guide-body">
       <p class="guide-loading" id="guide-loading">読み込み中...</p>
     </div>
+  </div>
+</div>
+
+<!-- 気配りプレビューモーダル -->
+<div class="guide-overlay no-print" id="kb-preview-overlay"
+  onclick="if(event.target===this)closeKibariPreview()">
+  <div class="guide-modal" role="dialog" aria-modal="true" style="max-width:560px;">
+    <div class="guide-modal-header">
+      <span class="guide-modal-title" id="kb-preview-title">メッセージのプレビュー</span>
+      <button class="guide-close-btn" onclick="closeKibariPreview()" aria-label="閉じる">×</button>
+    </div>
+    <div class="guide-body" id="kb-preview-body" style="min-height:120px;"></div>
   </div>
 </div>
 
