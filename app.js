@@ -72,18 +72,18 @@ const L={
     aGenFailed:'問題の生成に失敗しました。',
     aGradingErr:'添削に失敗しました',
     aSora:'☁ 空（事実の仕分け）',
-    aAme:'🌧 雨（解釈）',
-    aKasa:'☂ 傘（行動）',
-    aDeduction:'📐 導出の説明',
-    aSelfCheck:'🔍 自己検証',
-    aLawLimit:'⚖ 法則の限界',
+    aAme:'🌧 雨（読み取り）',
+    aKasa:'☂ 傘（次の行動）',
+    aDeduction:'📐 考えの根拠の説明',
+    aSelfCheck:'🔍 自分の考えの検証',
+    aLawLimit:'⚖ 法則が当てはまらない場合',
     aConstraintLbl:'制約条件：',
     aDescs:[
-      '帰納型。事実のみの短い記事。雨（解釈）と傘（行動）を書く練習。',
-      '帰納型。事実の仕分けに慣れる。雨・傘に加え仕分け設問あり。',
-      '帰納型。事実と解釈が混在した記事から仕分け・解釈・行動を導く。傘に制約条件あり。',
-      '帰納型約50%・演繹型約50%。5設問構成。',
-      '帰納型約30%・演繹型約70%。5設問構成。自己検証または法則の限界を問う。',
+      '帰納型。ビジネスデータ（営業・売上）の記事。読み取りと次の行動を書く練習。',
+      '帰納型。ビジネスデータ（人事・プロジェクト）の記事。事実の仕分けを含む3問構成。',
+      '帰納型。ビジネスデータ（IT・マーケティング）の記事。事実と解釈が混在。傘に制約条件あり。',
+      'ビジネスデータ（経営・営業）。帰納型約50%・演繹型約50%。5設問構成。',
+      'ビジネスデータ（経営・IT）。帰納型約30%・演繹型約70%。5設問構成。',
     ],
     cTooltips:{
       '本当にそう言える？の指摘':{
@@ -211,16 +211,16 @@ const L={
     aSora:'☁ Sky (Fact sorting)',
     aAme:'🌧 Rain (Interpretation)',
     aKasa:'☂ Umbrella (Action)',
-    aDeduction:'📐 Deduction explanation',
+    aDeduction:'📐 Reasoning explanation',
     aSelfCheck:'🔍 Self-verification',
-    aLawLimit:'⚖ Law limitation',
+    aLawLimit:'⚖ When the law doesn\'t apply',
     aConstraintLbl:'Constraint: ',
     aDescs:[
-      'Inductive. Facts-only article. Practice writing Rain (interpretation) and Umbrella (action).',
-      'Inductive. Practice fact sorting plus Rain and Umbrella.',
-      'Inductive. Mixed article with facts and interpretations. Umbrella has a constraint.',
-      '~50% inductive / ~50% deductive. 5 questions.',
-      '~30% inductive / ~70% deductive. 5 questions. Includes self-verification or law limitation.',
+      'Inductive. Business data article (Sales/Marketing). Practice writing interpretation and action.',
+      'Inductive. Business data article (HR/Project Mgmt). 3-question format including fact sorting.',
+      'Inductive. Business data article (IT/Marketing). Mixed facts and interpretations. Umbrella has a constraint.',
+      'Business data (Strategy/Sales). ~50% inductive / ~50% deductive. 5-question format.',
+      'Business data (Strategy/IT). ~30% inductive / ~70% deductive. 5-question format.',
     ],
     cTooltips:{
       '本当にそう言える？の指摘':{
@@ -1891,12 +1891,12 @@ async function submitPhotoGrade(kind,prob,scope){
         ?`[Q${q.id||i+1}] ${q.type}\n${q.question}\nTarget: within ${q.targetChars} chars`
         :`【設問${q.id||i+1}】${q.type}\n${q.question}\n目標: ${q.targetChars}字以内`).join('\n\n---\n\n');
       const gradeInst=isEN
-        ?`The learner submitted handwritten answers in the attached image(s).\n${memo?`Learner's note: ${memo}`:''}\n\nRead the handwriting, then grade each question on factual grounding, logical gaps, and alternative interpretations. Provide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
-        :`学習者は添付画像に手書きで回答しています。\n${memo?`学習者のメモ：${memo}`:''}\n\n手書きを読み取り、各設問を事実との整合性・飛躍の有無・別解の可能性の観点で採点し、改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
+        ?`The learner submitted handwritten answers in the attached image(s).\n${memo?`Learner's note: ${memo}`:''}\n\nRead the handwriting, then grade each question on factual grounding from business data, logical gaps, constraint compliance for Umbrella, and alternative interpretations. Provide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
+        :`学習者は添付画像に手書きで回答しています。\n${memo?`学習者のメモ：${memo}`:''}\n\n手書きを読み取り、各設問をビジネスデータとの整合性・飛躍の有無・制約条件の遵守・別の読み取りの可能性の観点で採点し、改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
       const textPrompt=`${lawSection}${articleSection}${constraintSection}${qBlock}\n\n${gradeInst}`;
       sys=isEN
-        ?'You are an expert in logical thinking and Sky-Rain-Umbrella reasoning education. The goal of feedback is to evaluate whether the interpretation is logically derived from facts, whether the action follows from the interpretation, and whether the learner recognizes alternative interpretations. Point out specific gaps and present one alternative interpretation, then provide an improved example. Give structured feedback in English using markdown.'
-        :'あなたは論理的思考と空雨傘フレームワークの教育専門家です。フィードバックの目的は「事実から解釈への飛躍がないか」「解釈から行動への論理的なつながりがあるか」「同じ事実から別の解釈が導ける可能性に気づいているか」を評価することです。飛躍を具体的に指摘し、別解を1つ示した上で改善例を提示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+        ?'You are an expert in business reasoning and Sky-Rain-Umbrella framework education. The goal of feedback is to evaluate: whether the interpretation is logically derived from the business facts without gaps, whether the action logically follows from the interpretation and respects any constraints, and whether the learner is aware that alternative interpretations are possible from the same data. Point out specific gaps, present one alternative interpretation, then provide an improved example. Give structured feedback in English using markdown.'
+        :'あなたはビジネス推論と空雨傘フレームワークの教育専門家です。フィードバックの目的は「ビジネスデータから読み取りへの飛躍がないか」「読み取りから行動への論理的なつながりがあるか（制約条件を守っているか）」「同じデータから別の読み取りが導ける可能性に気づいているか」を評価することです。飛躍を具体的に指摘し、別の読み取りを1つ示した上で改善例を提示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
       content=[...imageContents,{type:'text',text:textPrompt}];
       gradeMaxTokens=(p.diff||3)<=3?1500:2500;
     }else{
@@ -2291,18 +2291,18 @@ function normAmeProb(prob){
 function getAmePrompts(){
   const isEN=st.lang==='en';
   if(!isEN)return{
-    1:`難易度1（入門）・帰納型:\n- 事実のみで構成された300〜400字のニュース記事風文章を生成する\n- 事実は3〜4件含める（数値・調査結果・客観的情報のみ）\n- 解釈や意見・評価は一切含めないこと\n- 設問構成：雨（解釈）・傘（行動）の2問のみ\n- targetChars: 雨150字、傘150字`,
-    2:`難易度2（基礎）・帰納型:\n- 事実のみで構成された300〜400字のニュース記事風文章を生成する\n- 事実は4〜5件含める（数値・調査結果・客観的情報のみ）\n- 設問構成：仕分け（事実確認）・雨・傘の3問\n- 仕分け設問は「この記事に書かれていることをすべて事実として整理してください」という形式\n- targetChars: 仕分け200字、雨150字、傘150字`,
-    3:`難易度3（標準）・帰納型:\n- 事実と解釈が混在した300〜400字のニュース記事風文章を生成する\n- 事実は5〜6件、解釈・意見は2〜3件を自然に混在させる\n- 傘（行動）には制約条件を1つ設ける（例：「3ヶ月以内に実施可能なもの」「コスト増加なしで」など）\n- 設問構成：仕分け・雨・傘の3問\n- 仕分け設問は「事実として書かれている部分」と「解釈・意見として書かれている部分」を仕分けする形式\n- targetChars: 仕分け250字、雨160字、傘160字`,
-    4:`難易度4（上級）:\n- 演繹型（約50%）または帰納型（約50%）をランダムに選択する\n【演繹型の場合】\n- 一般法則・原則を1つ生成する（1〜2文）\n- 事実と解釈が混在した300〜400字のニュース記事風文章を生成する\n- 事実は5〜6件、解釈は2〜3件\n- 因果の距離を伸ばす（複数の事実を組み合わせて初めて解釈が導ける構造）\n- 解釈の競合を含める（同じ事実から2つの解釈が成立しうる）\n- 傘に制約条件を1つ設ける\n- 設問構成：仕分け・雨・傘・導出の説明・5問目（自己検証または法則の限界をランダム選択）\n【帰納型の場合】\n- 事実と解釈が混在した300〜400字のニュース記事風文章を生成する\n- 事実は5〜6件、解釈は2〜3件\n- 解釈の競合を含める\n- 傘に制約条件を1つ設ける\n- 設問構成：仕分け・雨・傘・導出の説明・5問目（自己検証に固定）\n- targetChars: 仕分け250字、雨200字、傘200字、導出200字、5問目200字`,
-    5:`難易度5（超難問）:\n- 演繹型（約70%）または帰納型（約30%）をランダムに選択する\n【演繹型の場合】\n- 一般法則・原則を1つ生成する（複合的な条件を含む2〜3文）\n- 事実と解釈が混在した300〜400字のニュース記事風文章を生成する\n- 事実は6〜7件、解釈は3〜4件\n- 因果の距離を3ステップ以上に設定する\n- 解釈の競合を含める\n- 傘に複数の制約条件を設ける\n- 設問構成：仕分け・雨・傘・導出の説明・5問目（自己検証または法則の限界をランダム選択）\n【帰納型の場合】\n- 難易度4帰納型より複雑な構造（事実7件以上・因果の距離3ステップ以上）\n- 設問構成：仕分け・雨・傘・導出の説明・5問目（自己検証に固定）\n- targetChars: 仕分け300字、雨220字、傘220字、導出220字、5問目220字`,
+    1:`難易度1（入門）・帰納型:\n- ビジネスデータを題材にした300〜400字の短い記事を生成する\n- テーマ：営業・売上／マーケティングの領域（例：月次売上データ・顧客獲得数・キャンペーン結果など）\n- 事実のみで構成する（数値・調査結果・客観的なビジネスデータのみ）\n- 解釈や意見・評価は一切含めないこと\n- 設問構成：読み取り（雨）・次の行動（傘）の2問のみ\n- targetChars: 雨150字、傘150字`,
+    2:`難易度2（基礎）・帰納型:\n- ビジネスデータを題材にした300〜400字の短い記事を生成する\n- テーマ：人事・組織／プロジェクト管理の領域（例：離職率・稼働率・進捗状況など）\n- 事実のみで構成する（数値・客観的なビジネスデータのみ）\n- 設問構成：事実の仕分け（空）・読み取り（雨）・次の行動（傘）の3問\n- 仕分け設問は「この記事に書かれていることをすべてビジネスデータ・客観的事実として整理してください」という形式\n- targetChars: 仕分け200字、雨150字、傘150字`,
+    3:`難易度3（標準）・帰納型:\n- ビジネスデータを題材にした300〜400字の記事を生成する\n- テーマ：IT・システム／マーケティングの領域（例：システム導入結果・広告効果・ユーザー行動データなど）\n- 事実は5〜6件、解釈・意見は2〜3件を自然に混在させる（解釈が事実として書かれているように見える文を含めること）\n- 傘（次の行動）には制約条件を1つ設ける（例：「3ヶ月以内に実施可能なもの」「追加コストなしで」など）\n- 設問構成：事実の仕分け（空）・読み取り（雨）・次の行動（傘）の3問\n- 仕分け設問は「事実（数字や客観的情報）として書かれている部分」と「見方・解釈として書かれている部分」を仕分けする形式\n- targetChars: 仕分け250字、雨160字、傘160字`,
+    4:`難易度4（上級）:\n- 演繹型（約50%）または帰納型（約50%）をランダムに選択する\n- テーマ：経営・戦略／営業の領域（例：市場シェア変動・競合分析・営業戦略の結果など）\n【演繹型の場合】\n- ビジネス原則・法則を1つ生成する（1〜2文。実際のビジネス現場で使われる判断基準にすること）\n  例：「主要顧客のLTVが低下している場合、価格戦略の見直しかサービス強化のいずれかを優先する必要がある」\n- 事実と解釈が混在した300〜400字のビジネス記事を生成する\n- 事実は5〜6件、解釈は2〜3件\n- 因果の距離を伸ばす（複数の事実を組み合わせて初めて読み取りが導ける構造）\n- 解釈の競合を含める（同じ事実から2つの読み取りが成立しうる）\n- 傘に制約条件を1つ設ける\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証または法則が当てはまらない場合をランダム選択）\n【帰納型の場合】\n- 事実と解釈が混在した300〜400字のビジネス記事を生成する\n- 事実は5〜6件、解釈は2〜3件\n- 解釈の競合を含める\n- 傘に制約条件を1つ設ける\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証に固定）\n- targetChars: 仕分け250字、雨200字、傘200字、導出200字、5問目200字`,
+    5:`難易度5（超難問）:\n- 演繹型（約70%）または帰納型（約30%）をランダムに選択する\n- テーマ：経営・戦略／IT・システムの領域（例：DX推進・組織変革・事業撤退判断など）\n【演繹型の場合】\n- ビジネス原則・法則を1つ生成する（複合的な条件を含む2〜3文。経営判断レベルの基準にすること）\n- 事実と解釈が混在した300〜400字のビジネス記事を生成する\n- 事実は6〜7件、解釈は3〜4件\n- 因果の距離を3ステップ以上に設定する\n- 解釈の競合を含める\n- 傘に複数の制約条件を設ける\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証または法則が当てはまらない場合をランダム選択）\n【帰納型の場合】\n- 難易度4帰納型より複雑な構造（事実7件以上・因果の距離3ステップ以上）\n- 設問構成：事実の仕分け・読み取り・次の行動・考えの根拠の説明・5問目（自己検証に固定）\n- targetChars: 仕分け300字、雨220字、傘220字、導出220字、5問目220字`,
   };
   return{
-    1:`Difficulty 1 (Beginner) · Inductive:\n- Generate a 300-400 character news article consisting of facts only\n- Include 3-4 facts (numbers, survey results, objective information only)\n- No interpretations, opinions, or evaluations\n- Questions: Rain (interpretation) and Umbrella (action) only\n- targetChars: Rain 150, Umbrella 150`,
-    2:`Difficulty 2 (Basic) · Inductive:\n- Generate a 300-400 character news article consisting of facts only\n- Include 4-5 facts\n- Questions: Fact sorting, Rain, Umbrella (3 questions)\n- Sorting question: "List all facts stated in this article"\n- targetChars: Sorting 200, Rain 150, Umbrella 150`,
-    3:`Difficulty 3 (Standard) · Inductive:\n- Generate a 300-400 character news article mixing facts and interpretations\n- Include 5-6 facts and 2-3 interpretations/opinions naturally mixed in\n- Add one constraint to the Umbrella question (e.g. "implementable within 3 months")\n- Questions: Sorting, Rain, Umbrella (3 questions)\n- Sorting: separate facts from interpretations/opinions\n- targetChars: Sorting 250, Rain 160, Umbrella 160`,
-    4:`Difficulty 4 (Advanced):\n- Randomly select deductive (~50%) or inductive (~50%) type\n[Deductive]\n- Generate one general law/principle (1-2 sentences)\n- Generate a 300-400 character article mixing facts (5-6) and interpretations (2-3)\n- Extend causal distance (interpretation requires combining multiple facts)\n- Include competing interpretations (two valid interpretations from same facts)\n- Add one constraint to Umbrella\n- Questions: Sorting, Rain, Umbrella, Deduction explanation, Q5 (self-verification or law limitation randomly)\n[Inductive]\n- Generate a 300-400 character article with competing interpretations\n- Add one constraint to Umbrella\n- Questions: Sorting, Rain, Umbrella, Deduction explanation, Q5 (self-verification fixed)\n- targetChars: Sorting 250, Rain 200, Umbrella 200, Deduction 200, Q5 200`,
-    5:`Difficulty 5 (Master):\n- Randomly select deductive (~70%) or inductive (~30%) type\n[Deductive]\n- Generate one complex law/principle (2-3 sentences with compound conditions)\n- Generate a 300-400 character article with 6-7 facts and 3-4 interpretations\n- Extend causal distance to 3+ steps\n- Include competing interpretations\n- Add multiple constraints to Umbrella\n- Questions: Sorting, Rain, Umbrella, Deduction explanation, Q5 (randomly self-verification or law limitation)\n[Inductive]\n- More complex than Difficulty 4 inductive (7+ facts, 3+ causal steps)\n- Questions: Sorting, Rain, Umbrella, Deduction explanation, Q5 (self-verification fixed)\n- targetChars: Sorting 300, Rain 220, Umbrella 220, Deduction 220, Q5 220`,
+    1:`Difficulty 1 (Beginner) · Inductive:\n- Generate a 300-400 character business article using facts only\n- Theme: Sales / Marketing (e.g. monthly sales data, customer acquisition numbers, campaign results)\n- Facts only: numbers, survey results, objective business data\n- No interpretations, opinions, or evaluations\n- Questions: Interpretation (Rain) and Action (Umbrella) only\n- targetChars: Rain 150, Umbrella 150`,
+    2:`Difficulty 2 (Basic) · Inductive:\n- Generate a 300-400 character business article using facts only\n- Theme: HR / Project Management (e.g. turnover rate, utilization rate, progress status)\n- Facts only: numbers, objective business data\n- Questions: Fact sorting, Interpretation, Action (3 questions)\n- Sorting question: "List all the business facts and objective data stated in this article"\n- targetChars: Sorting 200, Rain 150, Umbrella 150`,
+    3:`Difficulty 3 (Standard) · Inductive:\n- Generate a 300-400 character business article mixing facts and interpretations\n- Theme: IT/Systems / Marketing (e.g. system implementation results, ad performance, user behavior data)\n- Include 5-6 facts and 2-3 interpretations/opinions naturally mixed in\n  (include sentences that appear to be facts but are actually interpretations)\n- Add one constraint to the Action question (e.g. "implementable within 3 months", "without additional cost")\n- Questions: Fact sorting, Interpretation, Action (3 questions)\n- Sorting: separate "facts (numbers/objective data)" from "interpretations/opinions"\n- targetChars: Sorting 250, Rain 160, Umbrella 160`,
+    4:`Difficulty 4 (Advanced):\n- Randomly select deductive (~50%) or inductive (~50%) type\n- Theme: Strategy / Sales (e.g. market share changes, competitive analysis, sales strategy results)\n[Deductive]\n- Generate one business principle/law (1-2 sentences. Use real business judgment criteria)\n  e.g. "When key customer LTV is declining, prioritize either pricing strategy revision or service enhancement"\n- Generate a 300-400 character business article mixing facts (5-6) and interpretations (2-3)\n- Extend causal distance (interpretation requires combining multiple facts)\n- Include competing interpretations (two valid interpretations from same facts)\n- Add one constraint to Umbrella\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (self-verification or law limitation randomly)\n[Inductive]\n- Generate a 300-400 character business article with competing interpretations\n- Add one constraint to Umbrella\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (self-verification fixed)\n- targetChars: Sorting 250, Rain 200, Umbrella 200, Deduction 200, Q5 200`,
+    5:`Difficulty 5 (Master):\n- Randomly select deductive (~70%) or inductive (~30%) type\n- Theme: Strategy / IT (e.g. DX initiatives, organizational change, business exit decisions)\n[Deductive]\n- Generate one business principle/law (2-3 sentences with compound conditions. Use executive decision-level criteria)\n- Generate a 300-400 character business article with 6-7 facts and 3-4 interpretations\n- Extend causal distance to 3+ steps\n- Include competing interpretations\n- Add multiple constraints to Umbrella\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (randomly self-verification or law limitation)\n[Inductive]\n- More complex than Difficulty 4 inductive (7+ facts, 3+ causal steps)\n- Questions: Sorting, Interpretation, Action, Deduction explanation, Q5 (self-verification fixed)\n- targetChars: Sorting 300, Rain 220, Umbrella 220, Deduction 220, Q5 220`,
   };
 }
 function getAmeQuestionTypes(diff,isDeductive){
@@ -2396,8 +2396,8 @@ async function generateAme(){
   document.getElementById('ame-result').style.display='none';
   if(!beginGen('ame'))return;
   const sys=isEN
-    ?'You are an expert in logical thinking and Sky-Rain-Umbrella reasoning education. The educational goal of this tab is to train learners to distinguish facts from interpretations, derive logically valid interpretations from facts, and propose actions grounded in those interpretations. For difficulty 3 and above, intentionally mix facts and interpretations in the article so learners must sort them before deriving their own interpretation and action. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
-    :'あなたは論理的思考と空雨傘フレームワークの教育専門家です。このタブの教育目的は「事実と解釈を混同せずに書き分け、事実から論理的に妥当な解釈を導き、解釈に基づく行動を提案する力を鍛えること」です。記事には事実と解釈を意図的に混在させ（難易度3以上）、学習者が仕分けを行った上で自分の解釈・行動を導出できる構造にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
+    ?'You are an expert in business reasoning and Sky-Rain-Umbrella framework education. The educational goal of this tab is to train learners to distinguish business facts from interpretations, derive logically valid interpretations from business data, and propose actions grounded in those interpretations. Use real business contexts (sales, HR, strategy, IT) as topics. For difficulty 3 and above, intentionally mix facts and interpretations so learners must sort them before deriving their own interpretation and action. Respond ONLY in valid JSON. No markdown fences, no explanation before or after.'
+    :'あなたはビジネス推論と空雨傘フレームワークの教育専門家です。このタブの教育目的は「ビジネスデータにおける事実と解釈を混同せずに書き分け、事実から論理的に妥当な読み取りを導き、読み取りに基づく行動を提案する力を鍛えること」です。営業・人事・経営・IT などのビジネス領域を題材にしてください。難易度3以上では記事に事実と解釈を意図的に混在させ、学習者が仕分けを行った上で自分の読み取り・行動を導出できる構造にしてください。必ず指定されたJSON形式のみで返答してください。JSONの前後に説明文や```などを一切含めないでください。';
   const themeInst=buildThemeInst(themeIn,'keyword',A_ARTICLE_LENGTH,isEN,false);
   const diffPrompt=getAmePrompts()[diff];
   const typeNote=isEN
@@ -2460,8 +2460,8 @@ async function submitAme(){
 async function gradeAme(prob,userAnswers){
   const isEN=(prob.lang||st.lang)==='en';
   const sys=isEN
-    ?'You are an expert in logical thinking and Sky-Rain-Umbrella reasoning education. The goal of feedback is to evaluate: whether the interpretation is logically derived from the facts without gaps, whether the action logically follows from the interpretation, and whether the learner is aware that alternative interpretations are possible from the same facts. Point out specific gaps and present one alternative interpretation, then provide an improved example. Give structured feedback in English using markdown.'
-    :'あなたは論理的思考と空雨傘フレームワークの教育専門家です。フィードバックの目的は「事実から解釈への飛躍がないか」「解釈から行動への論理的なつながりがあるか」「同じ事実から別の解釈が導ける可能性に気づいているか」を評価することです。飛躍を具体的に指摘し、別解を1つ示した上で改善例を提示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
+    ?'You are an expert in business reasoning and Sky-Rain-Umbrella framework education. The goal of feedback is to evaluate: whether the interpretation is logically derived from the business facts without gaps, whether the action logically follows from the interpretation and respects any constraints, and whether the learner is aware that alternative interpretations are possible from the same data. Point out specific gaps, present one alternative interpretation, then provide an improved example. Give structured feedback in English using markdown.'
+    :'あなたはビジネス推論と空雨傘フレームワークの教育専門家です。フィードバックの目的は「ビジネスデータから読み取りへの飛躍がないか」「読み取りから行動への論理的なつながりがあるか（制約条件を守っているか）」「同じデータから別の読み取りが導ける可能性に気づいているか」を評価することです。飛躍を具体的に指摘し、別の読み取りを1つ示した上で改善例を提示してください。マークダウンを使って構造的に日本語でフィードバックしてください。';
   const lawSection=prob.law
     ?(isEN?`[Law/Principle]\n${prob.law}\n\n`:`【法則・前提】\n${prob.law}\n\n`)
     :'';
@@ -2476,8 +2476,8 @@ async function gradeAme(prob,userAnswers){
       :`【設問${q.id||i+1}】${q.type}\n${q.question}\n目標: ${q.targetChars}字以内\n学習者の回答:\n${ua}`;
   }).join('\n\n---\n\n');
   const gradeInst=isEN
-    ?`Grade each answer on the following axes:\n- Factual grounding: Is the interpretation/action logically derived from the facts?\n- Logical gap: Is there a jump between facts → interpretation or interpretation → action?\n- Alternative interpretation: Show one other valid interpretation from the same facts.\nProvide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
-    :`各設問を以下の軸で採点してください。\n- 事実との整合性：解釈・行動が事実から論理的に導けているか\n- 飛躍の指摘：事実→解釈、解釈→行動の間に飛躍がないか\n- 別解の提示：同じ事実から導ける別の解釈を1つ示す\n各設問の末尾に文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
+    ?`Grade each answer on the following axes:\n- Factual grounding: Is the interpretation/action logically derived from the business data?\n- Logical gap: Is there a jump between data → interpretation or interpretation → action?\n- Constraint compliance: Does the Umbrella action respect any stated constraints?\n- Alternative interpretation: Show one other valid interpretation from the same data.\nProvide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
+    :`各設問を以下の軸で採点してください。\n- 事実との整合性：読み取り・行動がビジネスデータから論理的に導けているか\n- 飛躍の指摘：データ→読み取り、読み取り→行動の間に飛躍がないか\n- 制約条件の遵守：傘（行動）が制約条件を守っているか\n- 別解の提示：同じデータから導ける別の読み取りを1つ示す\n各設問の末尾に文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
   const prompt=`${lawSection}${articleSection}${constraintSection}${qSection}\n\n${gradeInst}`;
   const gradeMaxTokens=prob.diff<=3?1500:2500;
   return callClaude(prompt,sys,gradeMaxTokens,0.3);
