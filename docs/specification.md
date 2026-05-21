@@ -65,7 +65,7 @@ logic-training/
 ```javascript
 // js/01-config.js
 const GAS_URL = '...';              // GASデプロイURL
-const CLAUDE_API_KEY = '';          // GitHub Pages 公開前にデプロイ担当者が設定（設定UIなし）
+let CLAUDE_API_KEY = '';            // 本番: Actions の Secrets 注入。ローカル: js/01-config.local.js
 const LANG_KEY = 'logic_v10_lang';  // localStorageキー（言語設定）
 ```
 
@@ -390,7 +390,7 @@ const LANG_KEY = 'logic_v10_lang';  // localStorageキー（言語設定）
 | モデル | claude-sonnet-4-6 |
 | 問題生成 temperature | 0.9 |
 | 採点 temperature | 0.3 |
-| APIキー | `js/01-config.js` の `CLAUDE_API_KEY` に組み込み（設定UIなし・localStorage 非使用） |
+| APIキー | `js/01-config.js` の `CLAUDE_API_KEY`（設定UIなし）。本番は GitHub Actions が `secrets.CLAUDE_API_KEY` を注入。ローカルは `js/01-config.local.js`（gitignore） |
 | systemプロンプトの方針 | 教育目的であることを明示。ビジネス文書向けに統一（進行中） |
 
 ### 5-1. 採点時の `max_tokens`（答え合わせ）

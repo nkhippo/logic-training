@@ -68,6 +68,13 @@ git push -u origin feature/5
 git checkout develop && git pull origin main && git push origin develop
 ```
 
+### API キー（Cursor ローカル / GitHub Pages）
+
+| 環境 | 手順 |
+|---|---|
+| **Cursor でローカル確認** | `cp js/01-config.local.js.example js/01-config.local.js` → キーを記入（`.gitignore` 対象・コミットしない） |
+| **GitHub Pages 本番** | リポジトリ Secrets に `CLAUDE_API_KEY` を登録。Pages の Source を **GitHub Actions** にする。`main` マージで `.github/workflows/deploy-pages.yml` がキーを注入してデプロイ |
+
 ---
 
 ## 推奨開発フロー
