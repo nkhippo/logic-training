@@ -128,12 +128,26 @@ function applyLang(){
 }
 
 function genPrefix(mode){if(mode==='fill')return 'f';if(mode==='summary')return 's';if(mode==='critique')return 'c';if(mode==='ame')return 'a';if(mode==='kibari')return 'kb';if(mode==='tsumiaage')return 'ta';return mode;}
+function genBtnLabel(mode){
+  const l=L[st.lang];
+  if(mode==='fill')return l.genBtn;
+  if(mode==='summary')return l.sGenBtn;
+  if(mode==='critique')return l.cGenBtn;
+  if(mode==='ame')return l.aGenBtn;
+  if(mode==='kibari')return l.kbGenBtn;
+  if(mode==='tsumiaage')return l.taGenBtn;
+  return l.cGenBtn;
+}
 function updateGenStatusUI(mode){
   const l=L[st.lang],p=genPrefix(mode);
   ui(p+'-gen-lbl-llm',l.genPhaseLlm);
   ui(p+'-gen-lbl-process',l.genPhaseProcess);
   const btn=document.getElementById(p+'-gen-btn');
-  if(btn&&st.genBusy===mode)btn.querySelector('span').textContent=l.genBtnBusy;
+  const span=btn?.querySelector('span');
+  if(span){
+    if(st.genBusy===mode&&st.genPhase)span.textContent=l.genBtnBusy;
+    else if(st.genBusy!==mode)span.textContent=genBtnLabel(mode);
+  }
   if(st.genPhase){
     const title=document.getElementById(p+'-gen-status-title');
     if(title)title.textContent=st.genPhase==='llm'?l.genPhaseLlm:l.genPhaseProcess;
@@ -229,7 +243,11 @@ function beginGen(mode){
   const loadLbl=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:mode==='kibari'?l.kbGenLoading:mode==='tsumiaage'?l.taGenLoading:l.genLoading;
   ui(p+'-gen-loading',loadLbl);
   const btn=document.getElementById(p+'-gen-btn');
-  if(btn)btn.classList.add('is-loading');
+  if(btn){
+    btn.classList.add('is-loading');
+    const span=btn.querySelector('span');
+    if(span)span.textContent=l.genBtnBusy;
+  }
   return true;
 }
 function endGen(mode){
@@ -237,15 +255,14 @@ function endGen(mode){
   const p=genPrefix(mode);
   const loadEl=document.getElementById(p+'-gen-loading');
   if(loadEl)loadEl.style.display='none';
+  setGenPhase(mode,null);
+  endAppBusy('gen',mode);
   const btn=document.getElementById(p+'-gen-btn');
   if(btn){
     btn.classList.remove('is-loading');
-    const genLbl=mode==='fill'?L[st.lang].genBtn:mode==='summary'?L[st.lang].sGenBtn:mode==='critique'?L[st.lang].cGenBtn:mode==='ame'?L[st.lang].aGenBtn:mode==='kibari'?L[st.lang].kbGenBtn:mode==='tsumiaage'?L[st.lang].taGenBtn:L[st.lang].cGenBtn;
     const span=btn.querySelector('span');
-    if(span)span.textContent=genLbl;
+    if(span)span.textContent=genBtnLabel(mode);
   }
-  setGenPhase(mode,null);
-  endAppBusy('gen',mode);
 }
 
 function updateGradeStatusUI(){
