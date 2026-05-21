@@ -13,5 +13,6 @@ function init(){
   updateIndustryUI();
   ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
   updateApiKeyUI();
+  loadPersona();
 }
 init();

@@ -21,6 +21,11 @@
       <h1 id="ui-app-title">論理トレーニング</h1>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
+      <button class="guide-btn no-print" id="persona-setting-btn" onclick="openPersonaModal()">
+        <i class="ti ti-user-circle" aria-hidden="true"></i>
+        <span id="ui-setting-btn">設定</span>
+        <span id="persona-active-badge" style="display:none;font-size:10px;background:var(--purple);color:#fff;border-radius:99px;padding:1px 6px;margin-left:2px;">設定中</span>
+      </button>
       <button class="guide-btn no-print" onclick="openGuide()">
         <i class="ti ti-help-circle" aria-hidden="true"></i>
         <span id="ui-guide-btn">ガイド</span>
@@ -636,6 +641,48 @@
       <button class="guide-close-btn" onclick="closeKibariPreview()" aria-label="閉じる">×</button>
     </div>
     <div class="guide-body" id="kb-preview-body" style="min-height:120px;"></div>
+  </div>
+</div>
+
+<!-- ペルソナ設定モーダル -->
+<div class="guide-overlay no-print" id="persona-overlay"
+  onclick="if(event.target===this)closePersonaModal()">
+  <div class="guide-modal" role="dialog" aria-modal="true" style="max-width:520px;">
+    <div class="guide-modal-header">
+      <span class="guide-modal-title">👤 <span id="ui-persona-title">ペルソナ設定</span></span>
+      <button class="guide-close-btn" onclick="closePersonaModal()" aria-label="閉じる">×</button>
+    </div>
+    <div class="guide-body" style="padding:1.25rem;">
+      <p id="ui-persona-desc" style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.7;"></p>
+
+      <div style="margin-bottom:1.25rem;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-persona-industry-lbl">業界 × 職種（最大3つ）</label>
+        <div id="persona-rows"></div>
+        <button type="button" class="btn btn-sm" id="persona-add-btn" onclick="addPersonaRow()"
+          style="margin-top:8px;font-size:12px;padding:4px 12px;">
+          <span id="ui-persona-add-btn">＋ 追加</span>
+        </button>
+      </div>
+
+      <div style="margin-bottom:1.25rem;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" id="ui-persona-tenure-lbl">勤続年数（最も長い職歴）</label>
+        <select id="persona-tenure"
+          style="width:100%;padding:8px 10px;border:.5px solid var(--border2);border-radius:var(--r-md);font-size:13px;background:var(--bg2);color:var(--text);"
+          onchange="updateTenureDesc()">
+        </select>
+        <p id="persona-tenure-desc" style="font-size:12px;color:var(--text2);margin-top:6px;"></p>
+      </div>
+
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button type="button" class="btn btn-sm" onclick="clearPersona()"
+          style="background:var(--bg2);color:var(--text2);border:.5px solid var(--border2);">
+          <span id="ui-persona-clear-btn">クリア</span>
+        </button>
+        <button type="button" class="btn" onclick="savePersona()">
+          <span id="ui-persona-save-btn">保存</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
