@@ -171,10 +171,10 @@ function renderAme(prob){
 }
 async function generateAme(){
   if(isBusy())return;
+  const isEN=st.lang==='en';
   if(!validateBeforeGen('a'))return;
   const themeIn=buildThemeInFromDocType('a',isEN);
   const diff=st.aDiff;
-  const isEN=st.lang==='en';
   const isDeductive=Math.random()<A_DEDUCTIVE_RATE[diff];
   document.getElementById('ame-result').style.display='none';
   if(!beginGen('ame'))return;
