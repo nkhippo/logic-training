@@ -42,7 +42,6 @@
     <button class="tab" onclick="switchTab('summary')"><i class="ti ti-align-left"></i> <span id="ui-tab-sum">要約</span></button>
     <button class="tab" onclick="switchTab('critique')"><i class="ti ti-message-search"></i> <span id="ui-tab-critique">批判読み</span></button>
     <button class="tab" onclick="switchTab('ame')"><i class="ti ti-umbrella"></i> <span id="ui-tab-ame">空雨傘</span></button>
-    <button class="tab" onclick="switchTab('kibari')"><i class="ti ti-heart-handshake"></i> <span id="ui-tab-kibari">気配り</span></button>
     <button class="tab" onclick="switchTab('tsumiaage')"><i class="ti ti-stack-2"></i> <span id="ui-tab-tsumiaage">積み上げ</span></button>
   </div>
 
@@ -507,97 +506,6 @@
     </div>
   </div>
 
-  <!-- 気配り -->
-  <div id="kibari-panel" class="panel">
-    <div class="sub-tabs no-print" id="kibari-sub-tabs">
-      <button class="sub-tab active" id="kibari-sub-new" onclick="switchSub('kibari','new')">
-        <i class="ti ti-plus"></i> <span id="ui-kb-sub-new">新規生成</span>
-      </button>
-      <button class="sub-tab" id="kibari-sub-past" onclick="switchSub('kibari','past')">
-        <i class="ti ti-history"></i> <span id="ui-kb-sub-past">過去問</span>
-      </button>
-    </div>
-    <div id="kibari-new-area">
-      <div class="card no-print">
-        <div style="margin-bottom:12px;">
-          <label id="ui-kb-theme-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">テーマ</label>
-          <div id="kb-theme-row" class="preset-row"></div>
-        </div>
-        <div class="industry-block" style="margin-bottom:12px;">
-          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
-          <div class="industry-preset-row"></div>
-        </div>
-        <label id="ui-kb-diff-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">難易度</label>
-        <div class="diff-row" id="kb-diff-row">
-          <button class="diff-btn" data-d="1" onclick="setDiff('kb',1)">★☆☆☆☆<br><span class="dlbl" id="kbd1"></span></button>
-          <button class="diff-btn" data-d="2" onclick="setDiff('kb',2)">★★☆☆☆<br><span class="dlbl" id="kbd2"></span></button>
-          <button class="diff-btn" data-d="3" onclick="setDiff('kb',3)">★★★☆☆<br><span class="dlbl" id="kbd3"></span></button>
-          <button class="diff-btn" data-d="4" onclick="setDiff('kb',4)">★★★★☆<br><span class="dlbl" id="kbd4"></span></button>
-          <button class="diff-btn" data-d="5" onclick="setDiff('kb',5)">★★★★★<br><span class="dlbl" id="kbd5"></span></button>
-        </div>
-        <div class="diff-desc" id="kb-diff-desc"></div>
-        <button class="btn" id="kb-gen-btn" onclick="generateKibari()">
-          <span id="ui-kb-gen">問題を生成する</span>
-        </button>
-        <div id="kb-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
-          <span class="spinner" aria-hidden="true"></span>
-          <span id="ui-kb-gen-loading">問題を生成中...</span>
-        </div>
-      </div>
-      <div id="kibari-result" style="display:none;">
-        <div class="step-bar no-print">
-          <div class="step done" id="kbs1"></div>
-          <div class="step active" id="kbs2"></div>
-          <div class="step" id="kbs3"></div>
-        </div>
-        <div id="kb-theme-tag"></div>
-        <p class="slabel no-print" id="ui-kb-situation-lbl">状況</p>
-        <div class="problem-box" id="kb-situation"></div>
-        <div id="kb-rounds"></div>
-        <div class="action-bar no-print" id="kb-submit-bar" style="display:none;">
-          <button class="btn" id="kb-submit" onclick="submitKibari()">
-            <span id="ui-kb-submit">採点してもらう</span>
-          </button>
-        </div>
-        <div class="action-bar no-print" style="margin-top:8px;">
-          <button class="btn btn-icon btn-sm" id="kb-pa-btn" style="display:none;" onclick="doPrint('kibari','a')">
-            <i class="ti ti-printer"></i> <span id="ui-kb-pa">解説を印刷</span>
-          </button>
-        </div>
-        <div id="kb-fb"></div>
-      </div>
-    </div>
-    <div id="kibari-past-area" class="no-print" style="display:none;">
-      <div id="kbp-list-view">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
-          <div class="pf-tabs" id="kbp-tabs" style="margin-bottom:0;flex:1;">
-            <button class="pf-tab active" data-f="all" onclick="filterPast('kibari','all')" id="ui-kbp-all">すべて</button>
-            <button class="pf-tab" data-f="1" onclick="filterPast('kibari','1')">★1</button>
-            <button class="pf-tab" data-f="2" onclick="filterPast('kibari','2')">★2</button>
-            <button class="pf-tab" data-f="3" onclick="filterPast('kibari','3')">★3</button>
-            <button class="pf-tab" data-f="4" onclick="filterPast('kibari','4')">★4</button>
-            <button class="pf-tab" data-f="5" onclick="filterPast('kibari','5')">★5</button>
-          </div>
-          <button class="btn btn-icon btn-sm" onclick="randomPast('kibari')" style="flex-shrink:0;margin-left:8px;">
-            <i class="ti ti-arrows-shuffle"></i>
-            <span id="ui-kb-rand">ランダム出題</span>
-          </button>
-        </div>
-        <div class="ssync" style="margin-bottom:.75rem;">
-          <div class="sdot" id="kbp-dot"></div>
-          <span id="kbp-lbl">—</span>
-        </div>
-        <div class="plist" id="kbp-list"></div>
-      </div>
-      <div id="kbp-play" style="display:none;">
-        <button class="back-btn" onclick="closePP('kibari')">
-          <i class="ti ti-arrow-left"></i> <span id="ui-kb-back">一覧に戻る</span>
-        </button>
-        <div id="kbp-play-content"></div>
-      </div>
-    </div>
-  </div>
-
   <!-- 積み上げ -->
   <div id="tsumiaage-panel" class="panel">
     <div class="sub-tabs no-print" id="tsumiaage-sub-tabs">
@@ -724,9 +632,6 @@
       </button>
       <button class="guide-tab" data-guide="ame" onclick="switchGuideTab('ame')">
         <span id="ui-gtab-ame">空雨傘</span>
-      </button>
-      <button class="guide-tab" data-guide="kibari" onclick="switchGuideTab('kibari')">
-        <span id="ui-gtab-kibari">気配り</span>
       </button>
       <button class="guide-tab" data-guide="tsumiaage" onclick="switchGuideTab('tsumiaage')">
         <span id="ui-gtab-tsumiaage">積み上げ</span>

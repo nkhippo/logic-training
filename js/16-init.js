@@ -8,7 +8,6 @@ function init(){
   switchSub('summary','new');
   switchSub('critique','new');
   switchSub('ame','new');
-  switchSub('kibari','new');
   switchSub('tsumiaage','new');
   ['f','s','c','a','kb','ta'].forEach(m=>updateThemeUI(m));
   updateIndustryUI();

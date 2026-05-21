@@ -40,8 +40,8 @@ function applyLang(){
   ui('ui-s-sub-new',l.subNew);ui('ui-s-sub-past',l.subPast);
   ui('ui-guide-btn',l.guideBtn);ui('ui-guide-title',l.guideTitle);
   ui('ui-gtab-overview',l.gTabOverview);ui('ui-gtab-fill',l.gTabFill);ui('ui-gtab-summary',l.gTabSummary);
-  ui('ui-gtab-critique',l.gTabCritique);ui('ui-gtab-ame',l.gTabAme);  ui('ui-gtab-kibari',l.gTabKibari);ui('ui-gtab-tsumiaage',l.gTabTsumiaage||'積み上げ');
-  ui('ui-tab-fill',l.tabFill);ui('ui-tab-critique',l.tabCritique);ui('ui-tab-sum',l.tabSum);ui('ui-tab-ame',l.tabAme);ui('ui-tab-kibari',l.tabKibari);ui('ui-tab-tsumiaage',l.tabTsumiaage||'積み上げ');
+  ui('ui-gtab-critique',l.gTabCritique);ui('ui-gtab-ame',l.gTabAme);ui('ui-gtab-tsumiaage',l.gTabTsumiaage||'積み上げ');
+  ui('ui-tab-fill',l.tabFill);ui('ui-tab-critique',l.tabCritique);ui('ui-tab-sum',l.tabSum);ui('ui-tab-ame',l.tabAme);ui('ui-tab-tsumiaage',l.tabTsumiaage||'積み上げ');
   setThemeLabel('ui-f-theme-lbl',l);
   ui('ui-f-gen',l.genBtn);ui('ui-f-inst',l.fInst);ui('ui-f-submit',l.submitBtn);
   ui('ui-f-pq',l.pq);ui('ui-f-pa',l.pa);
@@ -75,10 +75,9 @@ function applyLang(){
   ui('ui-c-inst',l.cInst);ui('ui-c-submit',l.cSubmit);ui('ui-c-pa',l.pa);
   ui('ui-a-sub-new',l.subNew);ui('ui-a-sub-past',l.subPast);
   setThemeLabel('ui-a-theme-lbl',l);
-  setThemeLabel('ui-kb-theme-lbl',l);
   setThemeLabel('ui-ta-theme-lbl',l);
   document.querySelectorAll('.ui-industry-lbl').forEach(el=>{el.textContent=l.industryLbl||'業界（任意）';});
-  ['ui-f-diff-lbl','ui-s-diff-lbl','ui-c-diff-lbl','ui-a-diff-lbl','ui-kb-diff-lbl','ui-ta-diff-lbl'].forEach(id=>{
+  ['ui-f-diff-lbl','ui-s-diff-lbl','ui-c-diff-lbl','ui-a-diff-lbl','ui-ta-diff-lbl'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML=esc(l.diffLbl)+' <span class="label-req">*</span>';
   });
@@ -86,10 +85,6 @@ function applyLang(){
   ui('ui-a-law-lbl',l.aLawLbl);ui('ui-a-article-lbl',l.aArticleLbl);ui('ui-a-submit',l.aSubmit);ui('ui-a-pa',l.pa);
   ui('ui-a-rand',l.rand);ui('ui-a-back',l.back);ui('ui-ap-all',l.all);
   ui('ui-c-rand',l.rand);ui('ui-c-back',l.back);ui('ui-cp-all',l.all);
-  ui('ui-kb-sub-new',l.subNew);ui('ui-kb-sub-past',l.subPast);
-  ui('ui-kb-gen',l.kbGenBtn);ui('ui-kb-gen-loading',l.kbGenLoading);
-  ui('ui-kb-situation-lbl',l.kbSituationLbl);ui('ui-kb-submit',l.kbSubmit);
-  ui('ui-kb-pa',l.pa);ui('ui-kb-rand',l.rand);ui('ui-kb-back',l.back);ui('ui-kbp-all',l.all);
   ui('ui-ta-sub-new',l.subNew);ui('ui-ta-sub-past',l.subPast);
   ui('ui-ta-gen',l.taGenBtn);ui('ui-ta-gen-loading',l.taGenLoading);
   ui('ui-ta-situation-lbl',l.taSituationLbl);
@@ -837,7 +832,7 @@ function switchSub(mode,sub){
 }
 function switchTab(name){
   if(isBusy())return;
-  ['fill','summary','critique','ame','kibari','tsumiaage'].forEach((n,i)=>{
+  ['fill','summary','critique','ame','tsumiaage'].forEach((n,i)=>{
     document.querySelectorAll('.tab')[i].classList.toggle('active',n===name);
     document.getElementById(n+'-panel').classList.toggle('active',n===name);
   });
@@ -845,7 +840,6 @@ function switchTab(name){
   if(name==='summary')switchSub('summary','new');
   if(name==='critique')switchSub('critique','new');
   if(name==='ame')switchSub('ame','new');
-  if(name==='kibari')switchSub('kibari','new');
   if(name==='tsumiaage')switchSub('tsumiaage','new');
 }
 
