@@ -115,10 +115,10 @@ function renderCritique(prob){
 }
 async function generateCritique(){
   if(isBusy())return;
+  const isEN=st.lang==='en';
   if(!validateBeforeGen('c'))return;
   const themeIn=buildThemeInFromDocType('c',isEN);
   const diff=st.cDiff;
-  const isEN=st.lang==='en';
   const numQ=C_QUESTION_COUNTS[diff];
   const isAForm=diff>=3;
   document.getElementById('critique-result').style.display='none';
