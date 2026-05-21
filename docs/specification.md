@@ -36,12 +36,14 @@ logic-training/
 ├── scripts/split-app-js.py # app.monolith.js → js/ 再生成
 ├── gas-script-v3.js        # Google Apps Script（GASにデプロイするファイル）
 └── guide/
-    ├── overview.md
-    ├── fill.md
-    ├── summary.md
-    ├── critique.md
-    ├── ame.md
-    └── kibari.md
+    ├── overview.md … kibari.md   # 日本語（従来パス・ja フォールバック）
+    └── en/
+        ├── overview.md
+        ├── fill.md
+        ├── summary.md
+        ├── critique.md
+        ├── ame.md
+        └── kibari.md
 ```
 
 ---
@@ -61,10 +63,10 @@ logic-training/
 ### 2-2. 定数・設定
 
 ```javascript
-// app.js 冒頭に定義
-const GAS_URL = '...';                   // GASデプロイURL
-const CLAUDE_API_KEY = '';       // js/01-config.js（空）。実運用は localStorage `logic_claude_api_key`
-const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
+// js/01-config.js
+const GAS_URL = '...';              // GASデプロイURL
+const CLAUDE_API_KEY = '';          // GitHub Pages 公開前にデプロイ担当者が設定（設定UIなし）
+const LANG_KEY = 'logic_v10_lang';  // localStorageキー（言語設定）
 ```
 
 ### 2-3. 新規生成画面のテーマ選択UI（全タブ共通）
@@ -88,8 +90,29 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 // callClaudeMsg(messages, systemPrompt, temperature)
 // temperature: 生成=0.9 / 採点=0.3
 // model: claude-sonnet-4-6
-// APIキー: localStorage から取得
+// APIキー: CLAUDE_API_KEY（js/01-config.js）のみ。localStorage や設定UIは使わない
 ```
+
+### 2-5. ガイド Markdown
+
+| 言語 | パス | 備考 |
+|---|---|---|
+| 日本語 | `guide/{tab}.md` または `guide/ja/{tab}.md` | 現状はルート直下の `.md` を ja のフォールバックとして読み込む |
+| 英語 | `guide/en/{tab}.md` | 英語 UI 時はこちらを優先。未配置タブはエラー表示 |
+
+`fetchGuide` のキャッシュキーは `{lang}:{tab}`。言語切替時に別言語の本文が混ざらないこと。
+
+### 2-6. 写真による回答・過去問（pp）スコープ
+
+| タブ | 新規生成 | 過去問（pp） | 理由 |
+|---|---|---|---|
+| 穴埋め | テキストのみ | テキストのみ | 情報量が写真添削に足りない |
+| 要約 | テキスト or 写真 | テキスト or 写真 | 長文回答の添削想定 |
+| 批判読み | テキスト or 写真 | テキスト or 写真 | 同上 |
+| 空雨傘 | テキスト or 写真 | テキスト or 写真 | 同上 |
+| 気配り | テキスト（Markdown 等） | テキスト（`kbp-*` UI） | リッチ仕様のため要約系 pp と共通化しない |
+
+過去問 UI（`pp-*`）は要約・批判読み・空雨傘で `st.answerMode` / 写真配列を共有する。**意図的**（同一タブ横断の回答方式）。
 
 ---
 
@@ -367,7 +390,7 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | モデル | claude-sonnet-4-6 |
 | 問題生成 temperature | 0.9 |
 | 採点 temperature | 0.3 |
-| APIキー | `app.js` の `CLAUDE_API_KEY` に組み込み（設定UIなし） |
+| APIキー | `js/01-config.js` の `CLAUDE_API_KEY` に組み込み（設定UIなし・localStorage 非使用） |
 | systemプロンプトの方針 | 教育目的であることを明示。ビジネス文書向けに統一（進行中） |
 
 ### 5-1. 採点時の `max_tokens`（答え合わせ）
@@ -409,3 +432,4 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | 1.16 | 2026-05-19 | 気配り過去問に作業指示付き回答欄・読み手反応・採点UIを追加（新規生成と同等）。旧データ向け作業指示フォールバックを実装。 |
 | 1.17 | 2026-05-19 | 全タブの問題セクションにテーマ・業界・難易度メタ行を表示。気配りに冒頭・結び定型文（参考・文字数外）と本文入力欄を分離。 |
 | 1.18 | 2026-05-20 | `app.js` を `js/` モジュール群に分割（グローバル関数・script 順依存）。`app.monolith.js` に旧版を退避。 |
+| 1.19 | 2026-05-19 | APIキーを `js/01-config.js` の組み込みのみに統一（localStorage 廃止）。`guide/en/*.md` 追加。ガイドキャッシュを言語別に分離。写真回答・過去問 pp のスコープを仕様化。 |
