@@ -19,9 +19,21 @@ logic-training/
 │   ├── requirements.md     # 要件定義書
 │   ├── specification.md    # 仕様書（本ドキュメント）
 │   └── dev-flow.md         # 開発フロー
-├── index.html              # HTMLのみ（ロジック・スタイルは含まない）
+├── index.html              # HTML（onclick はグローバル関数を参照）
 ├── style.css               # 全タブ共通のスタイル
-├── app.js                  # 全タブのロジック（メインファイル）
+├── app.monolith.js         # 旧単一ファイル（参照・再分割用。実行時は未使用）
+├── js/                     # フロントエンドロジック（読み込み順に依存）
+│   ├── 01-config.js        # URL・キー
+│   ├── 02-i18n.js          # 文言 L
+│   ├── 03-state.js         # st
+│   ├── 04-domain.js        # 難易度定数・要約/穴埋めヘルパ
+│   ├── 05-core-ui.js       # 言語・テーマ・busy・ナビ
+│   ├── 06-utils-md.js      # Markdown・採点表示ヘルパ
+│   ├── 07-api.js           # Claude / GAS / 印刷
+│   ├── 10-past-shared.js   # 過去問 ID プレフィックス
+│   ├── 08-fill.js … 15-kibari.js  # タブ別
+│   └── 16-init.js          # 起動
+├── scripts/split-app-js.py # app.monolith.js → js/ 再生成
 ├── gas-script-v3.js        # Google Apps Script（GASにデプロイするファイル）
 └── guide/
     ├── overview.md
@@ -51,7 +63,7 @@ logic-training/
 ```javascript
 // app.js 冒頭に定義
 const GAS_URL = '...';                   // GASデプロイURL
-const CLAUDE_API_KEY = '...';  // app.js に組み込み（UIからの入力・保存は廃止）
+const CLAUDE_API_KEY = '';       // js/01-config.js（空）。実運用は localStorage `logic_claude_api_key`
 const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 ```
 
@@ -396,3 +408,4 @@ const LANG_KEY = 'logic_v10_lang';      // localStorageキー（言語設定）
 | 1.15 | 2026-05-21 | UIラベルを全タブ「テーマ」に統一。気配りに業界選択・5列プリセット行を追加。`setTheme` / `updateThemeUI` で全タブ共通管理。 |
 | 1.16 | 2026-05-19 | 気配り過去問に作業指示付き回答欄・読み手反応・採点UIを追加（新規生成と同等）。旧データ向け作業指示フォールバックを実装。 |
 | 1.17 | 2026-05-19 | 全タブの問題セクションにテーマ・業界・難易度メタ行を表示。気配りに冒頭・結び定型文（参考・文字数外）と本文入力欄を分離。 |
+| 1.18 | 2026-05-20 | `app.js` を `js/` モジュール群に分割（グローバル関数・script 順依存）。`app.monolith.js` に旧版を退避。 |
