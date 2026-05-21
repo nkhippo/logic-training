@@ -9,18 +9,19 @@ function getGuideBasePath(){
 }
 
 async function fetchGuide(tabKey){
-  if(_guideCache[tabKey])return _guideCache[tabKey];
   const lang=st.lang==='en'?'en':'ja';
+  const cacheKey=`${lang}:${tabKey}`;
+  if(_guideCache[cacheKey])return _guideCache[cacheKey];
   const urls=[
     `${getGuideBasePath()}/${lang}/${tabKey}.md`,
-    `${getGuideBasePath()}/${tabKey}.md`,
+    ...(lang==='ja'?[`${getGuideBasePath()}/${tabKey}.md`]:[]),
   ];
   for(const url of urls){
     try{
       const res=await fetch(url);
       if(res.ok){
         const text=await res.text();
-        _guideCache[tabKey]=text;
+        _guideCache[cacheKey]=text;
         return text;
       }
     }catch{}

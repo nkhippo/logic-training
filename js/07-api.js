@@ -1,7 +1,7 @@
 /* API */
 // ── APIキー（組み込み） ─────────────────────────────────────
 function hasApiKey(){return !!getKey();}
-function getKey(){return localStorage.getItem(API_KEY_STORAGE)||CLAUDE_API_KEY||'';}
+function getKey(){return CLAUDE_API_KEY||'';}
 function updateApiKeyUI(){
   const l=L[st.lang],busy=isBusy();
   const needProb=st.lang==='ja'?'先に問題を生成してください':'Generate a problem first';
