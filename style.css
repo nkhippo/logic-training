@@ -78,6 +78,8 @@ textarea{resize:vertical;}
 .label-req{color:var(--red,#c0453a);margin-left:2px;}
 #kb-scene-row .mode-btn{border:.5px solid var(--border2);border-radius:var(--r-md);}
 #kb-scene-row .mode-btn.sel{background:var(--bg2);color:var(--text);border-color:var(--border);}
+#ta-mode-row .mode-btn{border:.5px solid var(--border2);border-radius:var(--r-md);}
+#ta-mode-row .mode-btn.sel{background:var(--bg2);color:var(--text);border-color:var(--border);}
 #kb-preview-body{font-size:14px;line-height:1.85;}
 #kb-preview-body h1,#kb-preview-body h2,#kb-preview-body h3{font-weight:500;margin:.75rem 0 .4rem;}
 #kb-preview-body ul,#kb-preview-body ol{padding-left:1.4rem;margin-bottom:.6rem;}
@@ -327,4 +329,36 @@ label.upload-zone{cursor:pointer;display:block;}
 .persona-row select:disabled{
   opacity:0.4;
   cursor:not-allowed;
+}
+/* 積み上げタブ */
+.ta-step-block{
+  background:var(--bg);
+  border:.5px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:1.25rem;
+  margin-bottom:1rem;
+}
+.ta-step-lbl{
+  font-size:12px;
+  font-weight:600;
+  color:var(--text2);
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  margin-bottom:.75rem;
+}
+.ta-qa-block{margin-bottom:1rem;}
+.ta-q-lbl{
+  font-size:13px;
+  color:var(--text);
+  margin-bottom:6px;
+  line-height:1.7;
+}
+.ta-boss-reply-block{margin-top:1rem;}
+.ta-extra-info-block{margin-bottom:1rem;}
+.ta-section-block{
+  background:var(--bg);
+  border:.5px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:1.25rem;
+  margin-bottom:1rem;
 }
