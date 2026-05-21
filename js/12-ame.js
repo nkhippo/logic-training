@@ -200,7 +200,8 @@ async function generateAme(){
       ?'\nPut umbrella constraints ONLY in the "constraint" field. Do not repeat constraint wording inside the Umbrella question text.'
       :'\n傘の制約条件は "constraint" フィールドのみに書き、傘の設問文には【制約条件：…】などの文言を繰り返さないこと。')
     :'';
-  const prompt=`${themeInst}\n${diffPrompt}${typeNote}${qTypesNote}${constraintNote}\n${jsonSchema}`;
+  const personaNote=buildPersonaPromptNote(isEN);
+  const prompt=`${themeInst}\n${diffPrompt}${typeNote}${qTypesNote}${constraintNote}\n${jsonSchema}${personaNote}`;
   try{
     const genMaxTokens=diff<=3?2200:2500;
     const raw=await callClaude(prompt,sys,genMaxTokens,0.9);

@@ -323,3 +323,8 @@ label.upload-zone{cursor:pointer;display:block;}
 /* 気配りタブ */
 .kibari-rv-box{margin-bottom:1rem;}
 .kibari-write-block{margin-bottom:1rem;}
+/* ペルソナ設定モーダル */
+.persona-row select:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+}

@@ -141,7 +141,8 @@ async function generateCritique(){
   }
   try{
     const genMaxTokens=isAForm?2000:1200;
-    const raw=await callClaude(prompt,sys,genMaxTokens,0.9);
+    const personaNote=buildPersonaPromptNote(isEN);
+    const raw=await callClaude(prompt+personaNote,sys,genMaxTokens,0.9);
     if(!raw)return;
     const p=safeJSON(raw);
     if(!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
