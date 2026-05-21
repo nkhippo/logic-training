@@ -229,7 +229,8 @@ async function generateSummary(){
   try{
     const genMaxTokens=length<=500?1200:length<=2000?3000:6000;
     const formatNote=isEN?SUM_FORMAT_NOTE_EN:SUM_FORMAT_NOTE_JA;
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}\n${formatNote}`,sys,genMaxTokens,0.9);
+    const personaNote=buildPersonaPromptNote(isEN);
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}\n${formatNote}${personaNote}`,sys,genMaxTokens,0.9);
     if(!raw)return;
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');

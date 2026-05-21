@@ -251,7 +251,8 @@ async function generateFill(){
   try{
     const genMaxTokens=1200;
     const formatNote=isEN?FILL_FORMAT_NOTE_EN:FILL_FORMAT_NOTE_JA;
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}\n${formatNote}`,sys,genMaxTokens,0.9);
+    const personaNote=buildPersonaPromptNote(isEN);
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}\n${formatNote}${personaNote}`,sys,genMaxTokens,0.9);
     if(!raw)return;
     const p=normalizeFillFromModel(parseModelJSON(raw));
     if(!p.text||!Array.isArray(p.answers)||p.answers.length===0)throw new Error('Invalid JSON structure: missing text or answers');
