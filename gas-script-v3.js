@@ -14,6 +14,7 @@
  *   critique — id, theme, diff, date, text, questions, feedback, form, lang
  *   ame      — id, theme, diff, date, law, article, constraint, questions, feedback, form, lang
  *   kibari   — id, theme, diff, scene, date, industry, situation, readers, points, constraint, writeInstruction, rewriteInstruction, openingPhrase, closingPhrase, firstAnswer, feedback, lang
+ *   tsumiaage — id, theme, diff, date, industry, situation, steps, finalMode, finalAnswer, feedback, lang
  *
  * ※「要約」「穴埋め」タブは v3 では作りません。残っている場合は削除してください。
  */
@@ -24,6 +25,7 @@ const SUMMARY_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'questi
 const CRITIQUE_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'questions', 'feedback', 'form', 'lang'];
 const AME_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'law', 'article', 'constraint', 'questions', 'feedback', 'form', 'lang'];
 const KIBARI_COLS = ['id', 'theme', 'diff', 'scene', 'date', 'industry', 'situation', 'readers', 'points', 'constraint', 'writeInstruction', 'rewriteInstruction', 'openingPhrase', 'closingPhrase', 'firstAnswer', 'feedback', 'lang'];
+const TSUMIAAGE_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'situation', 'steps', 'finalMode', 'finalAnswer', 'feedback', 'lang'];
 /** 旧シート名（読み書きは fill / summary / critique / ame） */
 const LEGACY_SHEET_NAMES = {
   fill: ['穴埋め'],
@@ -76,6 +78,7 @@ function colsForLogical_(logical) {
   if (logical === 'critique') return CRITIQUE_COLS;
   if (logical === 'ame') return AME_COLS;
   if (logical === 'kibari') return KIBARI_COLS;
+  if (logical === 'tsumiaage') return TSUMIAAGE_COLS;
   return FILL_COLS;
 }
 
@@ -84,6 +87,7 @@ function sheetNameForLogical_(logical) {
   if (logical === 'critique') return 'critique';
   if (logical === 'ame') return 'ame';
   if (logical === 'kibari') return 'kibari';
+  if (logical === 'tsumiaage') return 'tsumiaage';
   return 'fill';
 }
 
@@ -183,7 +187,8 @@ function doGet(e) {
       summaryCols: SUMMARY_COLS,
       critiqueCols: CRITIQUE_COLS,
       ameCols: AME_COLS,
-      kibariCols: KIBARI_COLS
+      kibariCols: KIBARI_COLS,
+      tsumiaageCols: TSUMIAAGE_COLS
     });
   }
   const sheetName = String(e.parameter.sheet || 'fill').toLowerCase();
@@ -191,6 +196,7 @@ function doGet(e) {
   if (sheetName === 'critique') return jsonOut_(readAllRows_('critique'));
   if (sheetName === 'ame') return jsonOut_(readAllRows_('ame'));
   if (sheetName === 'kibari') return jsonOut_(readAllRows_('kibari'));
+  if (sheetName === 'tsumiaage') return jsonOut_(readAllRows_('tsumiaage'));
   return jsonOut_(readAllRows_('fill'));
 }
 
@@ -209,6 +215,8 @@ function doPost(e) {
     writeAme_(data);
   } else if (sheet === 'kibari') {
     writeKibari_(data);
+  } else if (sheet === 'tsumiaage') {
+    writeTsumiaage_(data);
   } else {
     writeFill_(data);
   }
@@ -305,6 +313,17 @@ function writeKibari_(data) {
   sh.appendRow(row);
 }
 
+function writeTsumiaage_(data) {
+  const sh = getSh_('tsumiaage', TSUMIAAGE_COLS);
+  const row = TSUMIAAGE_COLS.map(c => {
+    const v = data[c];
+    if (v === undefined || v === null) return '';
+    if (typeof v === 'object') return JSON.stringify(v);
+    return v;
+  });
+  sh.appendRow(row);
+}
+
 function deleteById_(sheetName, id) {
   const s = String(sheetName).toLowerCase();
   let logical = 'fill';
@@ -312,6 +331,7 @@ function deleteById_(sheetName, id) {
   else if (s === 'critique') logical = 'critique';
   else if (s === 'ame') logical = 'ame';
   else if (s === 'kibari') logical = 'kibari';
+  else if (s === 'tsumiaage') logical = 'tsumiaage';
   const names = [sheetNameForLogical_(logical)].concat(LEGACY_SHEET_NAMES[logical] || []);
   const ss = getSs_();
   names.forEach((name) => {
