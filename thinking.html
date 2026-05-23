@@ -5,8 +5,155 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>思考トレーニング | thinkgrindai</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 <body>
-  <p style="padding:2rem;color:var(--text2);">思考トレーニングは準備中です。</p>
+  <div class="app" id="thinking-app">
+
+    <!-- ヘッダー -->
+    <div class="app-header no-print">
+      <div>
+        <span style="font-size:10px;color:var(--text2);letter-spacing:.05em;display:block;margin-bottom:1px;">thinkgrindai</span>
+        <h1 id="ui-thinking-title">思考トレーニング</h1>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <a href="logic.html" id="link-to-logic"
+           style="font-size:12px;color:var(--text2);text-decoration:none;
+                  padding:6px 10px;border:.5px solid var(--border2);
+                  border-radius:var(--r-md);white-space:nowrap;">
+          ← 論理トレーニング
+        </a>
+        <button class="guide-btn no-print" onclick="openThinkingGuide()">
+          <i class="ti ti-help-circle" aria-hidden="true"></i>
+          <span id="ui-thinking-guide-btn">ガイド</span>
+        </button>
+        <div class="lang-sw">
+          <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+          <button class="lang-btn" onclick="setLang('en')">English</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- サブタブ -->
+    <div class="sub-tabs no-print" style="margin:0;border-bottom:.5px solid var(--border);">
+      <button class="sub-tab active" id="thinking-sub-new" onclick="switchThinkingSub('new')">
+        <i class="ti ti-plus"></i> <span id="ui-thinking-new">新規生成</span>
+      </button>
+      <button class="sub-tab" id="thinking-sub-past" onclick="switchThinkingSub('past')">
+        <i class="ti ti-history"></i> <span id="ui-thinking-past">過去問</span>
+      </button>
+    </div>
+
+    <!-- 新規生成エリア -->
+    <div id="thinking-new-area">
+      <div class="card no-print">
+
+        <!-- 問いの核心（任意） -->
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;"
+                 id="ui-thinking-core-lbl">問いの核心（任意）</label>
+          <div id="thinking-core-row" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+
+        <!-- 業界（任意） -->
+        <div style="margin-bottom:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;"
+                 id="ui-thinking-industry-lbl">業界（任意）</label>
+          <div id="thinking-industry-row" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+        </div>
+
+        <!-- 難易度 -->
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;"
+               id="ui-thinking-diff-lbl">難易度</label>
+        <div class="diff-row" id="thinking-diff-row">
+          <button class="diff-btn" data-d="1" onclick="setThinkingDiff(1)">★☆☆☆☆<br><span class="dlbl" id="thd1"></span></button>
+          <button class="diff-btn" data-d="2" onclick="setThinkingDiff(2)">★★☆☆☆<br><span class="dlbl" id="thd2"></span></button>
+          <button class="diff-btn" data-d="3" onclick="setThinkingDiff(3)">★★★☆☆<br><span class="dlbl" id="thd3"></span></button>
+          <button class="diff-btn" data-d="4" onclick="setThinkingDiff(4)">★★★★☆<br><span class="dlbl" id="thd4"></span></button>
+          <button class="diff-btn" data-d="5" onclick="setThinkingDiff(5)">★★★★★<br><span class="dlbl" id="thd5"></span></button>
+        </div>
+        <div class="diff-desc" id="thinking-diff-desc"></div>
+
+        <!-- レベル（難易度3以上のみ表示） -->
+        <div id="thinking-level-block" style="display:none;margin-top:12px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;"
+                 id="ui-thinking-level-lbl">レベル</label>
+          <div id="thinking-level-row" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+          <div class="diff-desc" id="thinking-level-desc" style="margin-top:6px;"></div>
+        </div>
+
+        <!-- 生成ボタン -->
+        <button class="btn" id="thinking-gen-btn" onclick="generateThinking()" style="margin-top:12px;">
+          <span id="ui-thinking-gen-btn">問題を生成する</span>
+        </button>
+        <div id="thinking-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
+          <span class="spinner" aria-hidden="true"></span>
+          <span id="ui-thinking-gen-loading">問題を生成中...</span>
+        </div>
+      </div>
+
+      <!-- 問題表示エリア -->
+      <div id="thinking-result" style="display:none;">
+        <div id="thinking-meta-row" class="problem-meta-row"></div>
+
+        <!-- 状況 -->
+        <p class="slabel no-print" id="ui-thinking-situation-lbl">状況</p>
+        <div class="problem-box" id="thinking-situation"></div>
+
+        <!-- 回答エリア（レベルに応じてJSで動的生成） -->
+        <div id="thinking-steps"></div>
+
+        <!-- フィードバックエリア -->
+        <div id="thinking-feedback"></div>
+
+        <!-- 振り返りエリア -->
+        <div id="thinking-reflection" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- 過去問エリア -->
+    <div id="thinking-past-area" class="no-print" style="display:none;">
+      <div id="thinking-past-list-view">
+        <div class="ssync" style="margin-bottom:.75rem;">
+          <div class="sdot" id="thinking-past-dot"></div>
+          <span id="thinking-past-lbl">—</span>
+        </div>
+        <div class="plist" id="thinking-past-list"></div>
+      </div>
+      <div id="thinking-past-play" style="display:none;">
+        <button class="back-btn" onclick="closeThinkingPast()">
+          <i class="ti ti-arrow-left"></i>
+          <span id="ui-thinking-back">一覧に戻る</span>
+        </button>
+        <div id="thinking-past-content"></div>
+      </div>
+    </div>
+
+    <!-- ガイドモーダル -->
+    <div class="guide-overlay no-print" id="thinking-guide-overlay"
+         onclick="if(event.target===this)closeThinkingGuide()">
+      <div class="guide-modal" role="dialog" aria-modal="true">
+        <div class="guide-modal-header">
+          <span class="guide-modal-title" id="thinking-guide-title">ガイド</span>
+          <button class="guide-close-btn" onclick="closeThinkingGuide()" aria-label="閉じる">×</button>
+        </div>
+        <div class="guide-body" id="thinking-guide-body"></div>
+      </div>
+    </div>
+
+    <!-- トースト -->
+    <div class="toast" id="thinking-toast" role="status" aria-live="polite"></div>
+
+  </div><!-- /.app -->
+
+  <!-- JS読み込み（共通→思考トレーニング専用） -->
+  <script src="js/01-config.js"></script>
+  <script src="js/02-i18n.js"></script>
+  <script src="js/03-state.js"></script>
+  <script src="js/04-domain.js"></script>
+  <script src="js/06-utils-md.js"></script>
+  <script src="js/07-api.js"></script>
+  <script src="js/18-thinking-domain.js"></script>
+  <script src="js/17-thinking.js"></script>
 </body>
 </html>
