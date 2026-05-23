@@ -79,6 +79,18 @@ id	theme	diff	date	industry	situation	steps	finalMode	finalAnswer	feedback	lang
 
 ---
 
+## thinking
+
+**A1に貼り付け**
+
+```
+id	core	diff	level	date	industry	situation	questions	lang
+```
+
+列のみ: `id`, `core`, `diff`, `level`, `date`, `industry`, `situation`, `questions`, `lang`
+
+---
+
 ## 手順メモ
 
 1. シートの列数が足りなければ、右に列を追加する。

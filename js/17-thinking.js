@@ -131,10 +131,10 @@ function renderThinkingCoreRow() {
   if (!row) return;
   const randomLabel = l.thinkingCoreRandom || 'ランダム';
   const btns = [
-    `<button class="mode-btn${thinkingSt.core === '' ? ' sel' : ''}"
+    `<button type="button" class="preset-btn${thinkingSt.core === '' ? ' sel' : ''}"
        data-core="" onclick="setThinkingCore('')">${esc(randomLabel)}</button>`,
     ...cores.map(c =>
-      `<button class="mode-btn${thinkingSt.core === c.value ? ' sel' : ''}"
+      `<button type="button" class="preset-btn${thinkingSt.core === c.value ? ' sel' : ''}"
          data-core="${c.value}" onclick="setThinkingCore('${c.value}')"
          title="${esc(c.desc)}">${esc(c.label)}</button>`
     )
@@ -144,8 +144,8 @@ function renderThinkingCoreRow() {
 
 function setThinkingCore(value) {
   thinkingSt.core = value;
-  document.querySelectorAll('#thinking-core-row .mode-btn')
-    .forEach(b => b.classList.toggle('sel', b.dataset.core === value));
+  document.querySelectorAll('#thinking-core-row .preset-btn')
+    .forEach(b => b.classList.toggle('sel', (b.getAttribute('data-core') ?? '') === value));
 }
 
 // ── 業界 UI ──────────────────────────────────────────
@@ -156,15 +156,15 @@ function renderThinkingIndustryRow() {
   const row = document.getElementById('thinking-industry-row');
   if (!row) return;
   row.innerHTML = presets.map(p =>
-    `<button class="mode-btn${p.value === thinkingSt.industry ? ' sel' : ''}"
+    `<button type="button" class="preset-btn${p.value === thinkingSt.industry ? ' sel' : ''}"
        data-industry="${p.value}" onclick="setThinkingIndustry('${p.value}')">${esc(p.label)}</button>`
   ).join('');
 }
 
 function setThinkingIndustry(value) {
   thinkingSt.industry = value;
-  document.querySelectorAll('#thinking-industry-row .mode-btn')
-    .forEach(b => b.classList.toggle('sel', b.dataset.industry === value));
+  document.querySelectorAll('#thinking-industry-row .preset-btn')
+    .forEach(b => b.classList.toggle('sel', (b.getAttribute('data-industry') ?? '') === value));
 }
 
 // ── 難易度 UI ─────────────────────────────────────────
@@ -173,10 +173,10 @@ function setThinkingDiff(d) {
   document.querySelectorAll('#thinking-diff-row .diff-btn')
     .forEach(b => b.classList.toggle('sel', parseInt(b.dataset.d) === d));
   updateThinkingDiffDesc();
-  // 難易度1〜2はレベル1固定
   const levelBlock = document.getElementById('thinking-level-block');
   if (levelBlock) levelBlock.style.display = d >= 3 ? '' : 'none';
   if (d < 3) thinkingSt.level = 1;
+  else renderThinkingLevelRow();
 }
 
 function updateThinkingDiffDesc() {
@@ -194,14 +194,14 @@ function renderThinkingLevelRow() {
   const row = document.getElementById('thinking-level-row');
   if (!row) return;
   row.innerHTML = levels.map(lv =>
-    `<button class="mode-btn${thinkingSt.level === lv.id ? ' sel' : ''}"
+    `<button type="button" class="preset-btn${thinkingSt.level === lv.id ? ' sel' : ''}"
        data-level="${lv.id}" onclick="setThinkingLevel(${lv.id})">${esc(lv.label)}</button>`
   ).join('');
 }
 
 function setThinkingLevel(id) {
   thinkingSt.level = id;
-  document.querySelectorAll('#thinking-level-row .mode-btn')
+  document.querySelectorAll('#thinking-level-row .preset-btn')
     .forEach(b => b.classList.toggle('sel', parseInt(b.dataset.level) === id));
   const lang = thinkingSt.lang === 'en' ? 'en' : 'ja';
   const desc = THINKING_LEVELS[lang].find(lv => lv.id === id)?.desc || '';
