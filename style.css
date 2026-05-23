@@ -74,6 +74,9 @@ textarea{resize:vertical;}
 .preset-row .preset-spacer{flex:1;}
 .industry-preset-row{display:flex;gap:5px;margin-bottom:0;}
 .industry-preset-row .preset-btn{flex:1;padding:7px 4px;border:.5px solid var(--border2);border-radius:var(--r-md);background:transparent;cursor:pointer;font-size:11px;font-weight:500;color:var(--text2);text-align:center;line-height:1.5;transition:all .15s;}
+#thinking-industry-row.industry-preset-row .preset-btn,
+.preset-row#thinking-core-row .preset-btn,
+.preset-row#thinking-level-row .preset-btn{flex:0 1 auto;}
 .industry-preset-row .preset-btn.sel{background:var(--bg2);color:var(--text);border-color:var(--border);}
 .label-req{color:var(--red,#c0453a);margin-left:2px;}
 #kb-scene-row .mode-btn{border:.5px solid var(--border2);border-radius:var(--r-md);}
