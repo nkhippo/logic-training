@@ -14,12 +14,14 @@
 ## 1. ファイル構成
 
 ```
-logic-training/
+thinkgrindai/
 ├── docs/
 │   ├── requirements.md     # 要件定義書
 │   ├── specification.md    # 仕様書（本ドキュメント）
 │   └── dev-flow.md         # 開発フロー
-├── index.html              # HTML（onclick はグローバル関数を参照）
+├── index.html              # ルートリダイレクト（logic.html へ）
+├── logic.html              # 論理トレーニング（メインアプリ）
+├── thinking.html           # 思考トレーニング（準備中）
 ├── style.css               # 全タブ共通のスタイル
 ├── app.monolith.js         # 旧単一ファイル（参照・再分割用。実行時は未使用）
 ├── js/                     # フロントエンドロジック（読み込み順に依存）
@@ -436,3 +438,4 @@ const LANG_KEY = 'logic_v10_lang';  // localStorageキー（言語設定）
 | 2.0 | 2026-05-21 | 要件定義書をVer.3.0に改訂。積み上げタブの設計を追加。気配りタブを積み上げの伝達モードとして統合。ペルソナ設定機能の設計を追加。ロードマップをフェーズ8まで更新。guide/overview.mdのマトリクス表を5タブ版に更新。 |
 | 2.1 | 2026-05-21 | ペルソナ設定モーダルを実装。業界×職種（MAX3つ）・勤続年数のプリセット選択。localStorageに保存。全タブの問題生成プロンプトにペルソナ情報を付加。 |
 | 2.2 | 2026-05-21 | 積み上げタブを新設（js/17-tsumiaage.js）。GASにtsumiaageシートを追加。ガイドファイル追加。 |
+| 2.3 | 2026-05-21 | リポジトリをthinkgrindaiに移行。index.htmlをlogic.htmlに改名。thinking.html（空）を新規作成。ヘッダーに思考トレーニングへのリンクを追加。 |
