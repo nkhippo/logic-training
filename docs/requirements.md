@@ -1,6 +1,7 @@
 # 論理トレーニングアプリ 要件定義書
 
 **バージョン**: 3.0
+**ページURL**: nkhippo.github.io/thinkgrindai/logic.html
 **作成日**: 2026-05-20
 **改訂日**: 2026-05-21
 **作成者**: Naoya
