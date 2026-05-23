@@ -164,6 +164,7 @@ function isGasV3Payload(p){
     ||(Array.isArray(p.ameCols)&&p.ameCols.includes('article'))
     ||(Array.isArray(p.kibariCols)&&p.kibariCols.includes('situation'))
     ||(Array.isArray(p.tsumiaageCols)&&p.tsumiaageCols.includes('steps'))
+    ||(Array.isArray(p.thinkingCols)&&p.thinkingCols.includes('core'))
     ||(Array.isArray(p.summaryCols)&&p.summaryCols.includes('text'))));
 }
 function rowLooksLikeFill(r){

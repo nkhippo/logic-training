@@ -1,0 +1,2 @@
+/* Copy to js/shared/01-config.local.js (gitignored) and set your Anthropic API key for local use in Cursor. */
+CLAUDE_API_KEY='';

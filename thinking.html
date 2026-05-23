@@ -146,14 +146,21 @@
 
   </div><!-- /.app -->
 
-  <!-- JS読み込み（共通→思考トレーニング専用） -->
-  <script src="js/01-config.js"></script>
-  <script src="js/02-i18n.js"></script>
-  <script src="js/03-state.js"></script>
-  <script src="js/04-domain.js"></script>
-  <script src="js/06-utils-md.js"></script>
-  <script src="js/07-api.js"></script>
-  <script src="js/18-thinking-domain.js"></script>
-  <script src="js/17-thinking.js"></script>
+  <!-- shared -->
+  <script src="js/shared/01-config.js" defer></script>
+  <script src="js/shared/01-config.local.js" defer onerror="void 0"></script>
+  <script src="js/shared/02-i18n.js" defer></script>
+  <script src="js/shared/03-state.js" defer></script>
+  <script src="js/shared/04-industry-persona.js" defer></script>
+  <script src="js/shared/06-utils-md.js" defer></script>
+  <script src="js/shared/07-api.js" defer></script>
+  <script src="js/shared/08-migrate.js" defer></script>
+  <script src="js/shared/09-persona.js" defer></script>
+  <script src="js/shared/10-preset-ui.js" defer></script>
+  <script src="js/shared/11-gas-past.js" defer></script>
+  <script src="js/shared/12-lang.js" defer></script>
+  <!-- thinking -->
+  <script src="js/thinking/domain.js" defer></script>
+  <script src="js/thinking/app.js" defer></script>
 </body>
 </html>

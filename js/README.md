@@ -1,33 +1,54 @@
 # js/ モジュール構成
 
-GitHub Pages 向けの素の JS（ビルドなし）。`index.html` の `<script>` 順序が依存関係です。
+ビルドなし。各 HTML の `<script>` 順序が依存関係。**詳細は [docs/architecture.md](../docs/architecture.md)。**
+
+## logic.html が読み込むもの
+
+1. `shared/*`（01-config 〜 12-lang）
+2. `logic/*`（04-domain 〜 16-init）
+
+## thinking.html が読み込むもの
+
+1. `shared/*`（01-config 〜 12-lang）
+2. `thinking/domain.js` → `thinking/app.js`
+
+## shared/
 
 | ファイル | 責務 |
 |---|---|
-| 01-config.js | GAS_URL, API キー, LANG_KEY |
-| 01-config.local.js | （任意・gitignore）ローカル用 API キー上書き |
-| 02-i18n.js | 文言オブジェクト `L` |
-| 03-state.js | `st`, busy 判定 |
-| 04-domain.js | 難易度定数・プリセット・要約/穴埋めドメイン関数 |
-| 05-core-ui.js | 言語・テーマ・業界・busy・タブ/sub 切替 |
-| 06-utils-md.js | esc, md2h, 採点表示 |
-| 07-api.js | Claude, GAS, doPrint |
-| 10-past-shared.js | pastPrefix, pastList |
-| 08–15 | タブ別 + 過去問 + ガイド |
+| 01-config.js | GAS_URL, API キー, LANG_KEY, ENABLE_REFLECTION |
+| 02-i18n.js | 文言 `L` |
+| 03-state.js | 論理用 `st` |
+| 04-industry-persona.js | 業界プリセット・ペルソナ定数 |
+| 06-utils-md.js | esc, md2h, toast（#toast） |
+| 07-api.js | Claude, GAS |
+| 08-migrate.js | localStorage キー移行 |
+| 09-persona.js | ペルソナ読込・プロンプト追記 |
+| 10-preset-ui.js | preset ボタン行（thinking 等） |
+| 11-gas-past.js | シート別過去問取得・同期表示 |
+| 12-lang.js | 言語の保存・ボタン UI |
+
+## logic/
+
+| ファイル | 責務 |
+|---|---|
+| 04-domain.js | 論理タブの定数・ドメイン関数 |
+| 05-core-ui.js | タブ UI・ペルソナモーダル・applyLang |
+| 08–15, 17-tsumiaage | タブ別 |
+| 13-past.js, 10-past-shared.js | 過去問 |
 | 16-init.js | 起動 |
 
-再分割: `python3 scripts/split-app-js.py`（`app.monolith.js` が必要）
+## thinking/
 
-## API キー（Cursor / ローカル）
+| ファイル | 責務 |
+|---|---|
+| domain.js | THINKING_CORES, THINKING_TYPES, 採点基準など |
+| app.js | 思考トレーニングの全 UI フロー |
 
-1. `cp js/01-config.local.js.example js/01-config.local.js`
-2. `js/01-config.local.js` に Anthropic API キーを記入（Cursor で編集可。**コミットしない**）
-3. `index.html` 経由で開く（Live Server 等）
+## ローカル API キー
 
-## API キー（GitHub Pages 本番）
+```bash
+cp js/shared/01-config.local.js.example js/shared/01-config.local.js
+```
 
-1. GitHub リポジトリ → **Settings → Secrets and variables → Actions** → `CLAUDE_API_KEY` を登録
-2. **Settings → Pages** の Source を **GitHub Actions** に変更
-3. `main` へマージすると workflow がキーを注入してデプロイ（リポジトリの `01-config.js` は空のまま）
-
-> ブラウザから Claude API を直接呼ぶ構成のため、配信された JS にはキーが含まれます。限定公開・少人数利用を前提にしてください。
+`logic.html` / `thinking.html` のどちらでも読み込まれます（gitignore）。

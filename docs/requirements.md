@@ -337,7 +337,7 @@ AIは「最終アウトプットの品質向上に向けて部下を導く上司
 | 項目 | 内容 |
 |---|---|
 | パフォーマンス | 問題生成：通常30秒以内（API依存） |
-| セキュリティ | Claude APIキーはリポジトリにコミットしない。ローカルは `js/01-config.local.js`、本番は GitHub Actions の `CLAUDE_API_KEY` Secret で注入（設定UI・localStorage は使わない） |
+| セキュリティ | Claude APIキーはリポジトリにコミットしない。ローカルは `js/shared/01-config.local.js`、本番は GitHub Actions の `CLAUDE_API_KEY` Secret で注入（設定UI・localStorage は使わない） |
 | 可用性 | GitHub Pages・GAS・Claude APIの稼働率に依存 |
 | データ保持 | Google Spreadsheetに蓄積。削除操作で消去 |
 | アクセス制限 | なし（URLを知っている人が利用可能） |

@@ -72,7 +72,7 @@ git checkout develop && git pull origin main && git push origin develop
 
 | 環境 | 手順 |
 |---|---|
-| **Cursor でローカル確認** | `cp js/01-config.local.js.example js/01-config.local.js` → キーを記入（`.gitignore` 対象・コミットしない） |
+| **Cursor でローカル確認** | `cp js/shared/01-config.local.js.example js/shared/01-config.local.js` → キーを記入。`logic.html` または `thinking.html` を開く |
 | **GitHub Pages 本番** | リポジトリ Secrets に `CLAUDE_API_KEY` を登録。Pages の Source を **GitHub Actions** にする。`main` マージで `.github/workflows/deploy-pages.yml` がキーを注入してデプロイ |
 
 ---

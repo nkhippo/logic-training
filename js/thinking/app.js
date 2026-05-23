@@ -7,7 +7,7 @@
 
 // ── 状態 ─────────────────────────────────────────────
 const thinkingSt = {
-  lang: localStorage.getItem('thinkgrindai_lang') || 'ja',
+  lang: getSavedLang(),
   diff: 0,
   level: 1,
   core: '',         // 選択された問いの核心（value）
@@ -35,38 +35,11 @@ const thinkingSt = {
 // }
 
 
-function loadThinkingPersona(){
-  try{
-    const raw=localStorage.getItem(PERSONA_KEY);
-    if(!raw)return;
-    const data=JSON.parse(raw);
-    st.personas=data.personas||[];
-    st.tenure=data.tenure||'';
-  }catch(e){}
-}
-function buildThinkingPersonaNote(isEN){
-  if(!st.personas.length&&!st.tenure)return '';
-  const lang=isEN?'en':'ja';
-  const tenureOptions=PERSONA_TENURE_OPTIONS[lang];
-  const tenureLabel=tenureOptions.find(o=>o.value===st.tenure)?.label||'';
-  const personaLines=st.personas.map(p=>`${p.industry}・${p.role}`).join('、');
-  if(isEN){
-    const lines=[];
-    if(personaLines)lines.push(`Industry/Role: ${personaLines}`);
-    if(tenureLabel)lines.push(`Years of experience: ${tenureLabel}`);
-    if(!lines.length)return '';
-    return `\n\n[Respondent background]\n${lines.join('\n')}\nGenerate the problem using topics and examples that fit this background. Do NOT change the difficulty level or scoring criteria based on this background.`;
-  }
-  const lines=[];
-  if(personaLines)lines.push(`業界・職種：${personaLines}`);
-  if(tenureLabel)lines.push(`勤続年数：${tenureLabel}`);
-  if(!lines.length)return '';
-  return `\n\n【回答者のバックグラウンド】\n${lines.join('\n')}\nこのバックグラウンドに沿った題材・事例・表現レベルで問題を生成すること。難易度・採点基準はバックグラウンドによって変えないこと。`;
-}
 
 // ── 初期化 ────────────────────────────────────────────
 function initThinking() {
-  loadThinkingPersona();
+  migrateLocalStorageKeys();
+  loadPersonaIntoState();
   applyThinkingLang(thinkingSt.lang);
   renderThinkingCoreRow();
   renderThinkingIndustryRow();
@@ -77,7 +50,7 @@ function initThinking() {
 // ── 言語設定 ──────────────────────────────────────────
 function applyThinkingLang(lang) {
   thinkingSt.lang = lang;
-  localStorage.setItem('thinkgrindai_lang', lang);
+  setSavedLang(lang);
   document.documentElement.lang = lang;
   const l = L[lang];
 
@@ -116,55 +89,41 @@ function applyThinkingLang(lang) {
   renderThinkingLevelRow();
   updateThinkingDiffDesc();
 
-  // 言語ボタンの状態
-  document.querySelectorAll('.lang-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent.trim() === (lang === 'ja' ? '日本語' : 'English'));
-  });
+  updateLangButtonActive(lang);
 }
 
 // ── 問いの核心 UI ─────────────────────────────────────
 function renderThinkingCoreRow() {
   const lang = thinkingSt.lang === 'en' ? 'en' : 'ja';
   const l = L[thinkingSt.lang];
-  const cores = THINKING_CORES[lang];
   const row = document.getElementById('thinking-core-row');
   if (!row) return;
-  const randomLabel = l.thinkingCoreRandom || 'ランダム';
-  const btns = [
-    `<button type="button" class="preset-btn${thinkingSt.core === '' ? ' sel' : ''}"
-       data-core="" onclick="setThinkingCore('')">${esc(randomLabel)}</button>`,
-    ...cores.map(c =>
-      `<button type="button" class="preset-btn${thinkingSt.core === c.value ? ' sel' : ''}"
-         data-core="${c.value}" onclick="setThinkingCore('${c.value}')"
-         title="${esc(c.desc)}">${esc(c.label)}</button>`
-    )
-  ];
-  row.innerHTML = btns.join('');
+  const items=[{value:'',label:l.thinkingCoreRandom||'ランダム'},...THINKING_CORES[lang]];
+  mountPresetRow(row,items,{
+    attrName:'core',selectedValue:thinkingSt.core,
+    onSelect:v=>{thinkingSt.core=v;highlightPresetRow(row,'core',v);},
+  });
 }
 
 function setThinkingCore(value) {
   thinkingSt.core = value;
-  document.querySelectorAll('#thinking-core-row .preset-btn')
-    .forEach(b => b.classList.toggle('sel', (b.getAttribute('data-core') ?? '') === value));
+  highlightPresetRow(document.getElementById('thinking-core-row'),'core',value);
 }
 
 // ── 業界 UI ──────────────────────────────────────────
 function renderThinkingIndustryRow() {
   const lang = thinkingSt.lang === 'en' ? 'en' : 'ja';
-  const l = L[thinkingSt.lang];
-  const presets = INDUSTRY_PRESETS[lang];
   const row = document.getElementById('thinking-industry-row');
   if (!row) return;
-  row.innerHTML = presets.map(p =>
-    `<button type="button" class="preset-btn${p.value === thinkingSt.industry ? ' sel' : ''}"
-       data-industry="${p.value}" onclick="setThinkingIndustry('${p.value}')">${esc(p.label)}</button>`
-  ).join('');
+  mountPresetRow(row,INDUSTRY_PRESETS[lang],{
+    attrName:'industry',selectedValue:thinkingSt.industry,
+    onSelect:v=>{thinkingSt.industry=v;highlightPresetRow(row,'industry',v);},
+  });
 }
 
 function setThinkingIndustry(value) {
   thinkingSt.industry = value;
-  document.querySelectorAll('#thinking-industry-row .preset-btn')
-    .forEach(b => b.classList.toggle('sel', (b.getAttribute('data-industry') ?? '') === value));
+  highlightPresetRow(document.getElementById('thinking-industry-row'),'industry',value);
 }
 
 // ── 難易度 UI ─────────────────────────────────────────
@@ -190,30 +149,30 @@ function updateThinkingDiffDesc() {
 // ── レベル UI ─────────────────────────────────────────
 function renderThinkingLevelRow() {
   const lang = thinkingSt.lang === 'en' ? 'en' : 'ja';
-  const levels = THINKING_LEVELS[lang];
   const row = document.getElementById('thinking-level-row');
   if (!row) return;
-  row.innerHTML = levels.map(lv =>
-    `<button type="button" class="preset-btn${thinkingSt.level === lv.id ? ' sel' : ''}"
-       data-level="${lv.id}" onclick="setThinkingLevel(${lv.id})">${esc(lv.label)}</button>`
-  ).join('');
+  const items=THINKING_LEVELS[lang].map(lv=>({value:String(lv.id),label:lv.label,desc:lv.desc}));
+  mountPresetRow(row,items,{
+    attrName:'level',selectedValue:String(thinkingSt.level),
+    onSelect:v=>setThinkingLevel(parseInt(v,10)||1),
+  });
 }
 
 function setThinkingLevel(id) {
   thinkingSt.level = id;
-  document.querySelectorAll('#thinking-level-row .preset-btn')
-    .forEach(b => b.classList.toggle('sel', parseInt(b.dataset.level) === id));
+  highlightPresetRow(document.getElementById('thinking-level-row'),'level',String(id));
   const lang = thinkingSt.lang === 'en' ? 'en' : 'ja';
   const desc = THINKING_LEVELS[lang].find(lv => lv.id === id)?.desc || '';
   const el = document.getElementById('thinking-level-desc');
   if (el) el.textContent = desc;
+  updateThinkingDiffDesc();
 }
 
 // ── 問題生成 ─────────────────────────────────────────
 async function generateThinking() {
   if (thinkingSt.busy) return;
   if (!thinkingSt.diff) {
-    showThinkingToast(L[thinkingSt.lang].diffRequired || '難易度を選択してください');
+    showAppToast('thinking-toast',L[thinkingSt.lang].diffRequired || '難易度を選択してください');
     return;
   }
   const key = getKey();
@@ -231,7 +190,7 @@ async function generateThinking() {
   const coreValue = thinkingSt.core || THINKING_CORES[lang][Math.floor(Math.random() * THINKING_CORES[lang].length)].value;
   const coreObj = THINKING_CORES[lang].find(c => c.value === coreValue);
   const params = THINKING_SITUATION_PARAMS[diff];
-  const personaNote = buildThinkingPersonaNote(isEN);
+  const personaNote = buildPersonaPromptNote(isEN);
   const industryNote = thinkingSt.industry
     ? (isEN ? ` Industry context: ${INDUSTRY_PRESETS.en.find(p=>p.value===thinkingSt.industry)?.label}.`
              : ` 業界：${INDUSTRY_PRESETS.ja.find(p=>p.value===thinkingSt.industry)?.label}。`)
@@ -335,7 +294,7 @@ ${level >= 2 ? 'レベル2以上では、各タイプへのシンプルな問い
     renderThinkingProblem(thinkingSt.problem);
     await syncThinkingPast(thinkingSt.problem);
   } catch (e) {
-    showThinkingToast((L[thinkingSt.lang].thinkingGenFailed || '生成に失敗しました。') + ' ' + e.message);
+    showAppToast('thinking-toast',(L[thinkingSt.lang].thinkingGenFailed || '生成に失敗しました。') + ' ' + e.message);
   } finally {
     thinkingSt.busy = false;
     document.getElementById('thinking-gen-btn').disabled = false;
@@ -501,7 +460,7 @@ async function submitThinkingStep(stepIdx, mode) {
 
   if (!answer || answer === '{}') {
     if (btn) btn.style.display = '';
-    showThinkingToast(L[prob.lang].overWarn || '回答を入力してください');
+    showAppToast('thinking-toast',L[prob.lang].overWarn || '回答を入力してください');
     return;
   }
 
@@ -835,7 +794,7 @@ async function submitThinkingFinalAnswer() {
 
   const finalAns = document.getElementById('th-final-ans')?.value.trim() || '';
   if (!finalAns) {
-    showThinkingToast(L[prob.lang].overWarn || '回答を入力してください');
+    showAppToast('thinking-toast',L[prob.lang].overWarn || '回答を入力してください');
     return;
   }
 
@@ -880,7 +839,7 @@ async function submitThinkingFinalAnswer() {
     }
   } catch (e) {
     loadEl.remove();
-    showThinkingToast(e.message);
+    showAppToast('thinking-toast',e.message);
   } finally {
     thinkingSt.busy = false;
   }
@@ -1138,12 +1097,6 @@ function buildLogicCheckPrompt(coreValue, typeIds, isEN) {
 }
 
 
-function updateThinkingPastSync(cls, msg) {
-  const dot = document.getElementById('thinking-past-dot');
-  const lbl = document.getElementById('thinking-past-lbl');
-  if (dot) dot.className = 'sdot' + (cls ? ' ' + cls : '');
-  if (lbl) lbl.textContent = msg;
-}
 
 function showThinkingReviseArea(stepIdx, mode) {
   const btn = document.getElementById(`th-step-btn-${stepIdx}`);
@@ -1183,22 +1136,15 @@ function switchThinkingSub(tab) {
 
 // ── 過去問 ────────────────────────────────────────────
 async function loadThinkingPast() {
-  if (!await ensureGasV3()) return;
-  try {
-    const res = await fetch(`${GAS_URL}?sheet=thinking`);
-    const data = await res.json();
-    if (Array.isArray(data)) {
-      thinkingSt.past = data.map(row => {
-        if (row && typeof row === 'object' && !Array.isArray(row)) return row;
-        const obj = {};
-        THINKING_COLS.forEach((col, i) => { obj[col] = row[i]; });
-        return obj;
-      });
-    }
-    updateThinkingPastSync('ok', `${thinkingSt.past.length}件`);
-  } catch (e) {
-    updateThinkingPastSync('err', 'sync failed');
+  const rows=await gasLoadSheetRows('thinking');
+  if(rows===null){
+    setPastSyncUI('thinking-past-dot','thinking-past-lbl','err',L[thinkingSt.lang].syncFailed||'失敗');
+    return;
   }
+  thinkingSt.past=rows;
+  const n=thinkingSt.past.length;
+  const msg=(L[thinkingSt.lang].syncItems?n+L[thinkingSt.lang].syncItems:`${n}件`);
+  setPastSyncUI('thinking-past-dot','thinking-past-lbl','ok',msg);
 }
 
 function renderThinkingPastList() {
@@ -1276,15 +1222,6 @@ async function syncThinkingPast(prob) {
   } catch (e) {
     console.error('sync failed', e);
   }
-}
-
-// ── トースト ─────────────────────────────────────────
-function showThinkingToast(msg) {
-  const el = document.getElementById('thinking-toast');
-  if (!el) return;
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
 }
 
 // ── 言語切り替え（thinking.html用） ─────────────────
