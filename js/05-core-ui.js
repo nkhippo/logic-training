@@ -39,6 +39,7 @@ function applyLang(){
   ui('ui-f-sub-new',l.subNew);ui('ui-f-sub-past',l.subPast);
   ui('ui-s-sub-new',l.subNew);ui('ui-s-sub-past',l.subPast);
   ui('ui-guide-btn',l.guideBtn);ui('ui-guide-title',l.guideTitle);
+  ui('link-to-thinking',l.linkToThinking);
   ui('ui-gtab-overview',l.gTabOverview);ui('ui-gtab-fill',l.gTabFill);ui('ui-gtab-summary',l.gTabSummary);
   ui('ui-gtab-critique',l.gTabCritique);ui('ui-gtab-ame',l.gTabAme);ui('ui-gtab-tsumiaage',l.gTabTsumiaage||'積み上げ');
   ui('ui-tab-fill',l.tabFill);ui('ui-tab-critique',l.tabCritique);ui('ui-tab-sum',l.tabSum);ui('ui-tab-ame',l.tabAme);ui('ui-tab-tsumiaage',l.tabTsumiaage||'積み上げ');
