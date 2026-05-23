@@ -145,7 +145,7 @@ const PERSONA_INDUSTRY_ROLES={
     {industry:'Advertising / Marketing',roles:['Marketer','Digital Marketer','Ad Planner','PR Planner','Content Marketer','Data Analyst','Account / Sales']},
   ],
 };
-const PERSONA_KEY='logic_persona_v1';
+const PERSONA_KEY='thinkgrindai_persona_v1';
 const TA_MAX_ROUNDS={1:1,2:2,3:2,4:3,5:3};
 const TA_EXTRA_INFO={1:'none',2:'none',3:'after_first',4:'after_second',5:'multiple'};
 const TSUMIAAGE_COLS=[

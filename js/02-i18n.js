@@ -3,6 +3,8 @@
 const L={
   ja:{
     appTitle:'論理トレーニング',
+    serviceName:'thinkgrindai',
+    serviceTagline:'思考を、地道に積み上げる。',
     subNew:'新規生成',subPast:'過去問',
     guideBtn:'ガイド',guideTitle:'トレーニングガイド',guideLoading:'読み込み中...',guideError:'ガイドの読み込みに失敗しました。',
     linkToThinking:'思考トレーニング →',
@@ -245,6 +247,8 @@ const L={
   },
   en:{
     appTitle:'Logic Training | thinkgrindai',
+    serviceName:'thinkgrindai',
+    serviceTagline:'Grind your thinking, every day.',
     subNew:'New Problem',subPast:'Past Problems',
     guideBtn:'Guide',guideTitle:'Training Guide',guideLoading:'Loading...',guideError:'Failed to load guide.',
     linkToThinking:'Thinking Training →',
