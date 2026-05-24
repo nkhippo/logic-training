@@ -216,4 +216,14 @@ git commit -m "feat: implement MECE tab (Fixes #T005)"
 
 1. `git push` を実行したら、変更ファイルに応じてパターン 1 または 2 のメッセージを **ユーザーへの返答に含める**
 2. post-push フックの出力があれば、その内容を共有する
-3. Wiki のみの変更（`.github/wiki/`）ではリマインドしない
+3. Wiki のみの変更（`.github/wiki/`）では Obsidian リマインドは不要
+
+---
+
+# Wiki 修正チェックリスト（Claude → Cursor）
+
+Naoya さんが Claude の **「📖 Wiki 修正チェックリスト」** を貼り付けて Wiki 更新を依頼した場合：
+
+→ **`.cursor/rules/wiki-modification.mdc`** の手順に従い、`.github/wiki/*.md` を編集して commit・push する。
+
+チェックリストに「修正なし」のみある場合は Wiki 作業を行わない。

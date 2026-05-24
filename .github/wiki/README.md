@@ -4,6 +4,16 @@
 
 ## 運用
 
+### 方法 A: Claude のチェックリストから（推奨）
+
+1. Claude が仕様確定後、`📖 Wiki 修正チェックリスト` を出力
+2. チェックリストを Cursor に貼り付け、「以下の Wiki 修正をしてください」と指示
+3. Cursor が `.github/wiki/` を編集して push → Wiki 自動更新
+
+詳細: `.cursor/rules/wiki-modification.mdc`
+
+### 方法 B: 直接編集
+
 ```bash
 # 1. ページを編集
 vim .github/wiki/Specifications.md

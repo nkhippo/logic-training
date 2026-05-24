@@ -1,0 +1,152 @@
+---
+description: Claude の Wiki 修正チェックリストに従い .github/wiki を自動更新する
+globs: [".github/wiki/**"]
+alwaysApply: true
+---
+
+# Wiki 修正自動化 — Cursor ルール
+
+Naoya さんから **「Wiki 修正チェックリスト」**（Claude の返答末尾 `📖 Wiki 修正チェックリスト`）が渡されたら、**確認を待たず** 以下の手順で Wiki を修正・push してください。
+
+## トリガー
+
+次のいずれかで本ルールを適用：
+
+- ユーザーが「以下の Wiki 修正をしてください」とチェックリストを貼り付けた
+- `📖 Wiki 修正チェックリスト` を含む指示
+- `.github/wiki/*.md` の更新依頼とチェックリストがセット
+
+「修正なし（議論段階のため）」のみの場合は作業不要。ユーザーにその旨を伝える。
+
+---
+
+## Step 1: チェックリストを解析
+
+指示から抽出する：
+
+| 項目 | 例 |
+|------|-----|
+| 修正対象ファイル | `.github/wiki/Specifications.md` |
+| 操作 | セクション新規追加 / 既存セクションへ追記 / 複数ファイル |
+| 追加・修正テキスト | Markdown ブロック内の本文 |
+| commit message | チェックリスト内の指定（なければ生成） |
+
+複数ファイルがある場合はすべて修正してから **1 回の commit** で push。
+
+---
+
+## Step 2: 対象ファイルを確認
+
+```bash
+# 例
+cat .github/wiki/Specifications.md
+```
+
+- **新規セクション** → 通常はファイル末尾に追加（関連セクションの直後でも可）
+- **既存セクションへの追記** → 該当 `##` 見出しの配下に追加
+- **見出し行は変更しない**（`## 穴埋め（Fill）タブ` のリネームは禁止）
+
+パスは `.github/wiki/<Name>.md` のみ。`wiki/wiki/` のような二重パスにしない。
+
+---
+
+## Step 3: ファイルを編集
+
+- 既存の文体・見出しレベル・表記に合わせる
+- コードブロック・表の Markdown 構文を壊さない
+- `README.md`（運用ガイド）はチェックリストで指定がない限り変更しない
+
+---
+
+## Step 4: 差分を確認
+
+```bash
+git diff .github/wiki/
+```
+
+意図どおりか確認してから commit。
+
+---
+
+## Step 5: commit・push
+
+チェックリストにコマンドがあればそれに従う。なければ：
+
+```bash
+git add .github/wiki/<ファイル名>.md
+git commit -m "docs: <変更内容を簡潔に>"
+git push origin main
+```
+
+複数ファイル例：
+
+```bash
+git add .github/wiki/Specifications.md .github/wiki/Development-Flow.md
+git commit -m "docs: update wiki pages for MECE tab"
+git push origin main
+```
+
+push 後、`.github/workflows/sync-wiki.yml` が GitHub Wiki へ同期する。
+
+---
+
+## Step 6: 完了報告（Naoya へ必須）
+
+```
+✅ Wiki 修正完了しました
+
+修正内容:
+- .github/wiki/Specifications.md に「MECE（分類型）タブ」セクションを追加
+
+確認URL:
+https://github.com/nkhippo/thinkgrindai/wiki/Specifications
+
+（sync-wiki 反映まで数十秒かかる場合があります）
+```
+
+---
+
+## よくあるパターン
+
+### パターン 1: 既存セクションに追記
+
+「穴埋め（Fill）タブ」配下に「決定の経緯」を追加 → 該当 `##` セクション内に追記。
+
+### パターン 2: 新規セクション
+
+「MECE（分類型）タブ」を新規追加 → ファイル末尾（または仕様一覧の適切な位置）に `##` ブロックを追加。
+
+### パターン 3: 複数ファイル
+
+両方編集 → `git add` をまとめて 1 commit → push。
+
+---
+
+## エラー時
+
+| 状況 | 対応 |
+|------|------|
+| push 失敗 | `git pull origin main` → 競合解消 → 再 push |
+| ファイルなし | `ls .github/wiki/` で正しいファイル名を確認 |
+| 内容が曖昧 | 実装を止め、Naoya にチェックリストの clarification を依頼 |
+
+---
+
+## ファイル名と Wiki 表示名
+
+| ファイル名 | Wiki 表示 | URL |
+|-----------|----------|-----|
+| `Home.md` | Home | `/wiki/Home` |
+| `Specifications.md` | Specifications | `/wiki/Specifications` |
+| `Development-Flow.md` | Development Flow | `/wiki/Development-Flow` |
+
+ハイフン `-` は Wiki 上でスペースになる。ファイル名は **ASCII ハイフン** を使用。
+
+---
+
+## 関連
+
+- Wiki 正本: `.github/wiki/`
+- 運用 README: `.github/wiki/README.md`
+- 手動同期: `bash scripts/sync-github-wiki.sh`
+- Claude 出力形式: `CLAUDE.md` の「Wiki 修正チェックリスト」
