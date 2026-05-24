@@ -19,7 +19,7 @@ Knowledge 更新手順: [PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md](PROJECTS_KNOWLEDGE_
 | [setup/2025-01-24_setup-summary.md](setup/2025-01-24_setup-summary.md) | セットアップ完了サマリー |
 | [setup/GITHUB_PROJECTS_SETUP.md](setup/GITHUB_PROJECTS_SETUP.md) | GitHub Projects 設定 |
 | [setup/GOOGLE_SHEETS_SETUP.md](setup/GOOGLE_SHEETS_SETUP.md) | Google Sheets 設定 |
-| [setup/OBSIDIAN_SETUP.md](setup/OBSIDIAN_SETUP.md) | Obsidian Vault 設定 |
+| [setup/OBSIDIAN_SETUP.md](setup/OBSIDIAN_SETUP.md) | Obsidian Vault 設定（`~/Documents/Obsidian/ThinkGrindAi`） |
 
 ## 技術・仕様
 

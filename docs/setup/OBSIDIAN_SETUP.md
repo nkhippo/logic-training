@@ -1,12 +1,28 @@
 # Obsidian Vault セットアップガイド
 
-**最終更新**: 2025-01-24
+**最終更新**: 2026-05-25
+
+---
+
+## Vault の配置（確定）
+
+| 項目 | 値 |
+|------|-----|
+| Vault 名 | `ThinkGrindAi` |
+| Vault ルート（絶対パス） | `/Users/naoya.k/Documents/Obsidian/ThinkGrindAi` |
+| ショートパス | `~/Documents/Obsidian/ThinkGrindAi` |
+| ストレージ | ローカル（`~/Documents`） |
+
+**旧配置（廃止）**: iCloud  
+`/Users/naoya.k/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/ThinkGrindAi`
+
+> Obsidian の Vault 切り替え画面で親フォルダ `~/Documents/Obsidian` と表示される場合があります。ノート・`ideas/` 等は **`ThinkGrindAi` フォルダ内** に作成してください。
 
 ---
 
 ## 概要
 
-Naoya の MacBook の Obsidian vault を以下の構成で整備します。
+Naoya の MacBook の Obsidian vault（`ThinkGrindAi`）を以下の構成で整備します。
 
 ```
 vault/
@@ -344,12 +360,16 @@ const results = callClaudeMsg(batch.join("\n"));  // 1 回の API 呼び出し
 
 ## セットアップ手順
 
-### Step 1: Obsidian 新規 Vault を作成
+### Step 1: Obsidian Vault を開く（または新規作成）
+
+**既に移行済みの場合**: Vault 一覧から `ThinkGrindAi` を選択（ルート: `~/Documents/Obsidian/ThinkGrindAi`）。
+
+**新規作成する場合**:
 
 1. Obsidian を開く
-2. **新規 Vault を作成**
-3. 名前: `thinkgrindai-dev`
-4. 場所: MacBook の同期フォルダ（iCloud Drive など）
+2. **新規 Vault を作成**（またはフォルダを Vault として開く）
+3. 名前: `ThinkGrindAi`
+4. 場所: `~/Documents/Obsidian/ThinkGrindAi`（ローカル `Documents` 推奨。iCloud は使用しない）
 
 ### Step 2: フォルダを作成
 
@@ -414,7 +434,7 @@ Settings → Community plugins → Obsidian Git
 毎週、以下を実行:
 
 ```bash
-cd ~/path/to/obsidian-vault
+cd ~/Documents/Obsidian/ThinkGrindAi
 git add -A
 git commit -m "Weekly update: Week of 2025-01-24"
 git push origin main

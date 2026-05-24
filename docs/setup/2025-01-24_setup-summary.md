@@ -4,8 +4,9 @@
 **最終更新**: 2025-05-25  
 **バージョン**: 1.1
 
-**Obsidian Vault**: `ThinkGrindAi`（iCloud）  
-**パス**: `/Users/naoya.k/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/ThinkGrindAi`
+**Obsidian Vault**: `ThinkGrindAi`（ローカル）  
+**パス**: `/Users/naoya.k/Documents/Obsidian/ThinkGrindAi`  
+**旧パス（iCloud・廃止）**: `/Users/naoya.k/Library/Mobile Documents/com~apple~CloudDocs/Obsidian/ThinkGrindAi`
 
 ---
 
@@ -307,7 +308,7 @@ Naoya がテスト・Merge
 - [Claude.ai Projects](https://claude.ai) → 「Think Grind Ai」プロジェクト
 - [Google Sheets Task Tracker](https://docs.google.com/spreadsheets/d/1b4bod69wE_KjM-qL4hOIa2n_MPRw8XDb6dM3RYVCTto/)
 
-**Obsidian（ThinkGrindAi Vault）**:
+**Obsidian（ThinkGrindAi Vault）** — `~/Documents/Obsidian/ThinkGrindAi`:
 - `ideas/`
 - `discussions/`
 - `confirmed-decision/`

@@ -179,9 +179,9 @@ Google Sheets (アーカイブ)
    - https://obsidian.md/ からダウンロード
    - MacBook にインストール
 
-2. **Vault を作成**:
-   - 新規 Vault: `thinkgrindai-dev`
-   - 場所: `~/Documents/Obsidian/thinkgrindai-dev` など
+2. **Vault を開く / 作成**:
+   - Vault 名: `ThinkGrindAi`
+   - ルート: `~/Documents/Obsidian/ThinkGrindAi`（詳細は [OBSIDIAN_SETUP.md](./OBSIDIAN_SETUP.md)）
 
 3. **フォルダ構造を作成**:
    - `ideas/`, `claude-conversations/`, `project-status/`, 他
@@ -515,7 +515,7 @@ ls -la .github/workflows/
 
 **解決**:
 ```bash
-cd ~/Obsidian/thinkgrindai-dev
+cd ~/Documents/Obsidian/ThinkGrindAi
 git init
 git add -A
 git commit -m "Initial commit"
@@ -573,7 +573,7 @@ git push origin main
 
 | ツール | 位置 | 作成者 | 対象 |
 |--------|------|--------|------|
-| **Obsidian Vault** | ~/Obsidian/thinkgrindai-dev | Naoya | アイデア・議論 |
+| **Obsidian Vault** | ~/Documents/Obsidian/ThinkGrindAi | Naoya | アイデア・議論 |
 | **Google Sheets** | https://sheets.google.com/... | Naoya・Claude | 要件確定・進捗管理 |
 | **GitHub Projects** | https://github.com/nkhippo/thinkgrindai/projects | 自動 | タスク進捗 |
 
