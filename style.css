@@ -20,7 +20,7 @@
   --purple:#6b5fc7;--amber:#c8813a;--r-md:8px;--r-lg:12px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg3);color:var(--text);display:flex;justify-content:center;padding:2rem 1rem 5rem;min-height:100vh;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;background:var(--bg3);color:var(--text);display:flex;flex-direction:column;align-items:center;padding:2rem 1rem 5rem;min-height:100vh;}
 .app{width:100%;max-width:700px;}
 .app-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:1.25rem;}
 .app-header-main{flex:1;min-width:0;}
