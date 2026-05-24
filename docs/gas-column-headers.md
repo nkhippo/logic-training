@@ -67,18 +67,6 @@ id	theme	diff	scene	date	industry	situation	readers	points	constraint	writeInstr
 
 ---
 
-## tsumiaage
-
-**A1に貼り付け**
-
-```
-id	theme	diff	date	industry	situation	steps	finalMode	finalAnswer	feedback	lang
-```
-
-列のみ: `id`, `theme`, `diff`, `date`, `industry`, `situation`, `steps`, `finalMode`, `finalAnswer`, `feedback`, `lang`
-
----
-
 ## thinking
 
 **A1に貼り付け**

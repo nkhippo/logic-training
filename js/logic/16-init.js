@@ -8,10 +8,9 @@ function init(){
   switchSub('summary','new');
   switchSub('critique','new');
   switchSub('ame','new');
-  switchSub('tsumiaage','new');
-  ['f','s','c','a','kb','ta'].forEach(m=>updateThemeUI(m));
+  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
   updateIndustryUI();
-  ['f','s','c','a','kb','ta'].forEach(m=>updateDiffUI(m));
+  ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
   updateApiKeyUI();
   loadPersona();
 }

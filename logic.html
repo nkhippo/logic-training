@@ -43,7 +43,6 @@
     <button class="tab" onclick="switchTab('summary')"><i class="ti ti-align-left"></i> <span id="ui-tab-sum">要約</span></button>
     <button class="tab" onclick="switchTab('critique')"><i class="ti ti-message-search"></i> <span id="ui-tab-critique">批判読み</span></button>
     <button class="tab" onclick="switchTab('ame')"><i class="ti ti-umbrella"></i> <span id="ui-tab-ame">空雨傘</span></button>
-    <button class="tab" onclick="switchTab('tsumiaage')"><i class="ti ti-stack-2"></i> <span id="ui-tab-tsumiaage">積み上げ</span></button>
   </div>
 
   <!-- 穴埋め -->
@@ -507,107 +506,6 @@
     </div>
   </div>
 
-  <!-- 積み上げ -->
-  <div id="tsumiaage-panel" class="panel">
-    <div class="sub-tabs no-print" id="tsumiaage-sub-tabs">
-      <button class="sub-tab active" id="tsumiaage-sub-new" onclick="switchSub('tsumiaage','new')">
-        <i class="ti ti-plus"></i> <span id="ui-ta-sub-new">新規生成</span>
-      </button>
-      <button class="sub-tab" id="tsumiaage-sub-past" onclick="switchSub('tsumiaage','past')">
-        <i class="ti ti-history"></i> <span id="ui-ta-sub-past">過去問</span>
-      </button>
-    </div>
-    <div id="tsumiaage-new-area">
-      <div class="card no-print">
-        <div style="margin-bottom:12px;">
-          <label id="ui-ta-theme-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">テーマ</label>
-          <div id="ta-theme-row" class="preset-row"></div>
-        </div>
-        <div class="industry-block" style="margin-bottom:12px;">
-          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;" class="ui-industry-lbl">業界（任意）</label>
-          <div class="industry-preset-row"></div>
-        </div>
-        <label id="ui-ta-diff-lbl" style="font-size:13px;font-weight:500;display:block;margin-bottom:8px;">難易度</label>
-        <div class="diff-row" id="ta-diff-row">
-          <button class="diff-btn" data-d="1" onclick="setDiff('ta',1)">★☆☆☆☆<br><span class="dlbl" id="tad1"></span></button>
-          <button class="diff-btn" data-d="2" onclick="setDiff('ta',2)">★★☆☆☆<br><span class="dlbl" id="tad2"></span></button>
-          <button class="diff-btn" data-d="3" onclick="setDiff('ta',3)">★★★☆☆<br><span class="dlbl" id="tad3"></span></button>
-          <button class="diff-btn" data-d="4" onclick="setDiff('ta',4)">★★★★☆<br><span class="dlbl" id="tad4"></span></button>
-          <button class="diff-btn" data-d="5" onclick="setDiff('ta',5)">★★★★★<br><span class="dlbl" id="tad5"></span></button>
-        </div>
-        <div class="diff-desc" id="ta-diff-desc"></div>
-        <button class="btn" id="ta-gen-btn" onclick="generateTsumiaage()">
-          <span id="ui-ta-gen">問題を生成する</span>
-        </button>
-        <div id="ta-gen-loading" style="display:none;" class="gen-loading" aria-live="polite">
-          <span class="spinner" aria-hidden="true"></span>
-          <span id="ui-ta-gen-loading">問題を生成中...</span>
-        </div>
-      </div>
-      <div id="tsumiaage-result" style="display:none;">
-        <div id="ta-meta-row" class="problem-meta-row"></div>
-        <p class="slabel no-print" id="ui-ta-situation-lbl">状況</p>
-        <div class="problem-box" id="ta-situation"></div>
-        <div id="ta-steps"></div>
-        <div id="ta-final-area" style="display:none;">
-          <div class="ta-section-block">
-            <p class="slabel no-print" id="ui-ta-final-mode-lbl">最終判断の回答モードを選んでください</p>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;" id="ta-mode-row">
-              <button type="button" class="mode-btn sel" data-mode="logic" onclick="setTaFinalMode('logic')" id="ui-ta-mode-logic">論理モード</button>
-              <button type="button" class="mode-btn" data-mode="delivery" onclick="setTaFinalMode('delivery')" id="ui-ta-mode-delivery">伝達モード</button>
-            </div>
-            <div id="ta-summary-block" style="display:none;">
-              <p class="slabel no-print" id="ui-ta-summary-lbl">この判断を20〜30字で表現してください</p>
-              <textarea class="sum-ta" id="ta-summary-ans" style="min-height:60px;" data-target="30" placeholder=""></textarea>
-            </div>
-            <p class="slabel no-print" id="ui-ta-final-lbl">最終判断</p>
-            <p style="font-size:13px;color:var(--text2);margin-bottom:8px;" id="ui-ta-final-inst"></p>
-            <textarea class="sum-ta" id="ta-final-ans" style="min-height:140px;" data-target="300" placeholder=""></textarea>
-          </div>
-          <div class="action-bar no-print" style="margin-top:1rem;">
-            <button class="btn" id="ta-submit-btn" onclick="submitTsumiaage()">
-              <span id="ui-ta-submit">採点してもらう</span>
-            </button>
-          </div>
-          <div class="action-bar no-print" style="margin-top:8px;">
-            <button class="btn btn-icon btn-sm" id="ta-pa-btn" style="display:none;" onclick="doPrint('tsumiaage','a')">
-              <i class="ti ti-printer"></i> <span id="ui-ta-pa">解説を印刷</span>
-            </button>
-          </div>
-        </div>
-        <div id="ta-fb"></div>
-      </div>
-    </div>
-    <div id="tsumiaage-past-area" class="no-print" style="display:none;">
-      <div id="tap-list-view">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
-          <div class="pf-tabs" id="tap-tabs" style="margin-bottom:0;flex:1;">
-            <button class="pf-tab active" data-f="all" onclick="filterPast('tsumiaage','all')" id="ui-tap-all">すべて</button>
-            <button class="pf-tab" data-f="1" onclick="filterPast('tsumiaage','1')">★1</button>
-            <button class="pf-tab" data-f="2" onclick="filterPast('tsumiaage','2')">★2</button>
-            <button class="pf-tab" data-f="3" onclick="filterPast('tsumiaage','3')">★3</button>
-            <button class="pf-tab" data-f="4" onclick="filterPast('tsumiaage','4')">★4</button>
-            <button class="pf-tab" data-f="5" onclick="filterPast('tsumiaage','5')">★5</button>
-          </div>
-          <button class="btn btn-icon btn-sm" onclick="randomPast('tsumiaage')" style="flex-shrink:0;margin-left:8px;">
-            <i class="ti ti-arrows-shuffle"></i>
-            <span id="ui-ta-rand">ランダム出題</span>
-          </button>
-        </div>
-        <div class="ssync" style="margin-bottom:.75rem;">
-          <div class="sdot" id="tap-dot"></div>
-          <span id="tap-lbl">—</span>
-        </div>
-        <div class="plist" id="tap-list"></div>
-      </div>
-      <div id="tap-play" style="display:none;">
-        <button class="back-btn" onclick="closePP('tsumiaage')">
-          <i class="ti ti-arrow-left"></i> <span id="ui-ta-back">一覧に戻る</span>
-        </button>
-        <div id="tap-play-content"></div>
-      </div>
-    </div>
-  </div>
 
 </div>
 
@@ -633,9 +531,6 @@
       </button>
       <button class="guide-tab" data-guide="ame" onclick="switchGuideTab('ame')">
         <span id="ui-gtab-ame">空雨傘</span>
-      </button>
-      <button class="guide-tab" data-guide="tsumiaage" onclick="switchGuideTab('tsumiaage')">
-        <span id="ui-gtab-tsumiaage">積み上げ</span>
       </button>
     </div>
     <div class="guide-body" id="guide-body">
@@ -743,7 +638,6 @@
 <script src="js/logic/13-past.js" defer></script>
 <script src="js/logic/14-guide.js" defer></script>
 <script src="js/logic/15-kibari.js" defer></script>
-<script src="js/logic/17-tsumiaage.js" defer></script>
 <script src="js/logic/16-init.js" defer></script>
 </body>
 </html>

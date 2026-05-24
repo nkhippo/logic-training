@@ -13,11 +13,9 @@ vault/
 ├── README.md                          ← Vault 概要
 ├── ideas/                             ← アイデア・要件検討の場
 │   ├── REQ-001-thinking.md
-│   ├── REQ-002-tsumiaage.md
 │   └── template.md                    ← テンプレ
 ├── claude-conversations/              ← Claude との議論ログ
 │   ├── 2025-01-15-thinking-requirement.md
-│   └── 2025-01-18-tsumiaage-discussion.md
 ├── project-status/                    ← プロジェクト進捗
 │   ├── weekly-status.md               ← 週単位のサマリ
 │   ├── monthly-review.md              ← 月単位の振り返り
@@ -45,7 +43,6 @@ vault/
 ideas/
 ├── template.md                ← テンプレ（新規作成時のひな形）
 ├── REQ-001-thinking.md        ← 思考トレーニング実装
-├── REQ-002-tsumiaage.md       ← 積み上げタブ改善
 └── REQ-003-figma-design.md    ← Figma 連携（未定）
 ```
 
@@ -222,13 +219,11 @@ claude-conversations/
 
 ### 進行中のタスク
 - [ ] js/17-18 実装（Cursor実装中）
-- [ ] 積み上げタブ動作確認（Naoya 検証中）
 - [ ] GitHub Projects セットアップ
 
 ### 来週の優先タスク
 1. 高: js/17-18 実装完了
 2. 高: GAS再デプロイ
-3. 中: 積み上げタブ 全テスト完了
 
 ### ボトルネック・課題
 - GAS の複雑さが増している（将来の技術負債候補）
@@ -290,7 +285,7 @@ claude-conversations/
 
 ```
 [ホーム] 
-  → [タブ選択: 穴埋め・要約・批判読み・空雨傘・積み上げ]
+  → [タブ選択: 穴埋め・要約・批判読み・空雨傘]
   → [難易度選択]
   → [問題表示]
   → [回答入力]

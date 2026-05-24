@@ -594,12 +594,12 @@ thinkgrindai/
 │   │   ├── 11-gas-past.js
 │   │   └── 12-lang.js
 │   ├── logic/                   ← 論理トレーニング専用
-│   │   ├── 04-domain.js 〜 17-tsumiaage.js
+│   │   ├── 04-domain.js 〜 15-kibari.js
 │   └── thinking/                ← 思考トレーニング専用
 │       ├── app.js               ← メインロジック
 │       └── domain.js            ← 定数・LOGIC_CHECK_MAP・THINKING_*
 ├── guide/
-│   ├── overview.md 〜 tsumiaage.md   ← 論理トレーニング用
+│   ├── overview.md 〜 ame.md   ← 論理トレーニング用
 │   ├── thinking-overview.md          ← 思考トレーニング用
 │   └── en/
 │       └── ...

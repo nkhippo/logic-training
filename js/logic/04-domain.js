@@ -68,12 +68,6 @@ const AME_PRESETS={
     {value:'strategy',label:'Management / Strategy',minDiff:3},
   ],
 };
-const TA_MAX_ROUNDS={1:1,2:2,3:2,4:3,5:3};
-const TA_EXTRA_INFO={1:'none',2:'none',3:'after_first',4:'after_second',5:'multiple'};
-const TSUMIAAGE_COLS=[
-  'id','theme','diff','date','industry',
-  'situation','steps','finalMode','finalAnswer','feedback','lang'
-];
 const INDUSTRY_CONSTRAINT={
   ja:'\n- 業界が指定されている場合は文脈の色付けのみに使用し、その業界の専門知識・専門用語・規制・法律を知らなくても読める内容にすること',
   en:'\n- If an industry is specified, use it only as context coloring. The content must be readable without specialized knowledge of that industry\'s regulations, terminology, or laws.',

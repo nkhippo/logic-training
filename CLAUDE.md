@@ -41,8 +41,7 @@ thinkgrindai/
 │   ├── 02-summary.js                ← 要約タブ
 │   ├── 03-critique.js               ← 批判読みタブ
 │   ├── 04-ame.js                    ← 空雨傘タブ
-│   ├── 05-tsumiaage.js              ← 積み上げタブ
-│   └── 17-thinking.js               ← 思考トレーニング（実装中）
+│   └── 17-thinking.js               ← 思考トレーニング
 ├── docs/
 │   ├── PROJECT_CONTEXT.md           ← GitHub docs/ に配置済み
 │   ├── DEVELOPMENT_POLICY.md        ← GitHub docs/ に配置済み

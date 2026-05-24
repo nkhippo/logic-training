@@ -7,7 +7,6 @@ function filterPast(mode,f){
   else if(mode==='summary')st.sFilter=f;
   else if(mode==='critique')st.cFilter=f;
   else if(mode==='kibari')st.kbFilter=f;
-  else if(mode==='tsumiaage')st.taFilter=f;
   else st.aFilter=f;
   document.querySelectorAll('#'+pastPrefix(mode)+'-tabs .pf-tab').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
   renderPL(mode);
@@ -24,7 +23,7 @@ async function loadPast(mode){
 }
 function renderPL(mode){
   const all=pastList(mode);
-  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:mode==='tsumiaage'?st.taFilter:st.aFilter;
+  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:st.aFilter;
   const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
   const list=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   const c=document.getElementById(pastPrefix(mode)+'-list');
@@ -33,13 +32,13 @@ function renderPL(mode){
     <div class="pcard" onclick="openPast('${mode}','${p.id}')">
       <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
         <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span></div></div>
-      <div class="pc-pre">${esc((mode==='fill'?p.text:mode==='summary'?normSummaryProb(p).text:mode==='ame'?String(p.article||''):mode==='kibari'||mode==='tsumiaage'?String(p.situation||''):critiquePreviewText(p)).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
+      <div class="pc-pre">${esc((mode==='fill'?p.text:mode==='summary'?normSummaryProb(p).text:mode==='ame'?String(p.article||''):mode==='kibari'?String(p.situation||''):critiquePreviewText(p)).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
       <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
     </div>`).join('');
 }
 function randomPast(mode){
   const all=pastList(mode);
-  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:mode==='tsumiaage'?st.taFilter:st.aFilter;
+  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:st.aFilter;
   const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
   const pool=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   if(!pool.length){alert(L[st.lang].noData);return;}
@@ -182,30 +181,6 @@ function openPast(mode,id){
       if(s2)s2.className='step done';
       if(s3)s3.className='step done';
     }
-  } else if(mode==='tsumiaage'){
-    const pLang=prob.lang||'ja';
-    const l=L[pLang];
-    const stepsHtml=pastTsumiaageStepsHtml(prob,pLang);
-    const finalHtml=prob.finalAnswer?`
-      <div class="ta-section-block" style="margin-top:1rem;">
-        <p class="slabel">${esc(l.taFinalLbl||'最終判断')}</p>
-        <div class="problem-box" style="background:var(--bg2);">${esc(prob.finalAnswer)}</div>
-        ${prob.summaryAnswer?`<p class="slabel" style="margin-top:8px;">${esc(l.taSummaryLbl||'')}</p><div class="problem-box" style="background:var(--bg2);">${esc(prob.summaryAnswer)}</div>`:''}
-      </div>`:'';
-    const fbHtml=prob.feedback?`<div class="feedback-box">${md2h(prob.feedback)}</div>`:'';
-    cnt.innerHTML=`
-      ${buildProblemMetaHtml(prob,pLang)}
-      <p class="slabel">${l.taSituationLbl||'状況'}</p>
-      <div class="problem-box">${esc(prob.situation||'')}</div>
-      ${stepsHtml}
-      ${finalHtml}
-      <div class="action-bar" style="margin-top:8px;">
-        <button class="btn btn-icon btn-sm" onclick="window.print()">
-          <i class="ti ti-printer"></i>
-          <span>${l.pq}</span>
-        </button>
-      </div>
-      <div id="tap-pp-fb" style="margin-top:.5rem;">${fbHtml}</div>`;
   }
 }
 
@@ -295,7 +270,6 @@ async function deletePast(mode,id){
     else if(mode==='summary')st.sPast=st.sPast.filter(p=>String(p.id)!==String(id));
     else if(mode==='critique')st.cPast=st.cPast.filter(p=>String(p.id)!==String(id));
     else if(mode==='kibari')st.kbPast=st.kbPast.filter(p=>String(p.id)!==String(id));
-    else if(mode==='tsumiaage')st.taPast=st.taPast.filter(p=>String(p.id)!==String(id));
     else st.aPast=st.aPast.filter(p=>String(p.id)!==String(id));
     const n=pastList(mode).length;
     setSync(mode,'ok',n+L[st.lang].syncItems);renderPL(mode);showToast(L[st.lang].deletedOk);
