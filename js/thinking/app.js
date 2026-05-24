@@ -40,6 +40,7 @@ const thinkingSt = {
 function initThinking() {
   migrateLocalStorageKeys();
   loadPersonaIntoState();
+  loadPersona();
   applyThinkingLang(thinkingSt.lang);
   renderThinkingCoreRow();
   renderThinkingIndustryRow();
@@ -50,6 +51,7 @@ function initThinking() {
 // ── 言語設定 ──────────────────────────────────────────
 function applyThinkingLang(lang) {
   thinkingSt.lang = lang;
+  if (typeof st !== 'undefined') st.lang = lang;
   setSavedLang(lang);
   document.documentElement.lang = lang;
   const l = L[lang];
@@ -59,6 +61,10 @@ function applyThinkingLang(lang) {
   if (titleEl) titleEl.textContent = l.thinkingAppTitle || '思考トレーニング';
   const linkLogic = document.getElementById('link-to-logic');
   if (linkLogic) linkLogic.textContent = l.thinkingLinkToLogic || '← 論理トレーニング';
+  const guideBtn = document.getElementById('ui-thinking-guide-btn');
+  if (guideBtn) guideBtn.textContent = l.guideBtn || 'ガイド？';
+  updateLangHeaderUI();
+  updatePersonaBadge();
 
   // UI各所
   const ids = [
@@ -89,7 +95,6 @@ function applyThinkingLang(lang) {
   renderThinkingLevelRow();
   updateThinkingDiffDesc();
 
-  updateLangButtonActive(lang);
 }
 
 // ── 問いの核心 UI ─────────────────────────────────────
