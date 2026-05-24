@@ -507,5 +507,19 @@ const THINKING_SITUATION_PARAMS = {
 // ── GASカラム定義 ─────────────────────────────────────
 const THINKING_COLS = [
   'id', 'core', 'diff', 'level', 'date', 'industry',
+  'situation', 'questions', 'user_core', 'theme',
+  'persona_snapshot', 'lang'
+];
+
+const THINKING_COLS_LEGACY = [
+  'id', 'core', 'diff', 'level', 'date', 'industry',
   'situation', 'questions', 'lang'
 ];
+
+function mapThinkingPastRow(row) {
+  if (!Array.isArray(row)) return row;
+  const cols = row.length >= THINKING_COLS.length ? THINKING_COLS : THINKING_COLS_LEGACY;
+  const obj = {};
+  cols.forEach((col, i) => { obj[col] = row[i] ?? ''; });
+  return obj;
+}

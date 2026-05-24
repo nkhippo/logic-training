@@ -1,5 +1,5 @@
 /* Config */
-const GAS_URL='https://script.google.com/macros/s/AKfycbwhhe__vijEOW9uO5KVWOH6tEFt_IJKX9geh0rwUS6vyU8UTTkT_eZ6k7zWyAatVWjf/exec';
+const GAS_URL='https://script.google.com/macros/s/AKfycbz5H7U4s55XLtvRMLONmjfYXgqP3I0t1YJH5hulg3DU4WEkeKms7jtYeiy0W_-13OER/exec';
 // 本番: GitHub Actions が Secrets から注入。ローカル: js/shared/01-config.local.js（gitignore）
 let CLAUDE_API_KEY='';
 const LANG_KEY='thinkgrindai_lang';

@@ -15,7 +15,7 @@
  *   ame      — id, theme, diff, date, law, article, constraint, questions, feedback, form, lang
  *   kibari   — id, theme, diff, scene, date, industry, situation, readers, points, constraint, writeInstruction, rewriteInstruction, openingPhrase, closingPhrase, firstAnswer, feedback, lang
  *   tsumiaage — id, theme, diff, date, industry, situation, steps, finalMode, finalAnswer, feedback, lang
- *   thinking — id, core, diff, level, date, industry, situation, questions, lang
+ *   thinking — id, core, diff, level, date, industry, situation, questions, user_core, theme, persona_snapshot, lang
  *
  * ※「要約」「穴埋め」タブは v3 では作りません。残っている場合は削除してください。
  */
@@ -27,7 +27,7 @@ const CRITIQUE_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'text', 'quest
 const AME_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'law', 'article', 'constraint', 'questions', 'feedback', 'form', 'lang'];
 const KIBARI_COLS = ['id', 'theme', 'diff', 'scene', 'date', 'industry', 'situation', 'readers', 'points', 'constraint', 'writeInstruction', 'rewriteInstruction', 'openingPhrase', 'closingPhrase', 'firstAnswer', 'feedback', 'lang'];
 const TSUMIAAGE_COLS = ['id', 'theme', 'diff', 'date', 'industry', 'situation', 'steps', 'finalMode', 'finalAnswer', 'feedback', 'lang'];
-const THINKING_COLS = ['id', 'core', 'diff', 'level', 'date', 'industry', 'situation', 'questions', 'lang'];
+const THINKING_COLS = ['id', 'core', 'diff', 'level', 'date', 'industry', 'situation', 'questions', 'user_core', 'theme', 'persona_snapshot', 'lang'];
 /** 旧シート名（読み書きは fill / summary / critique / ame） */
 const LEGACY_SHEET_NAMES = {
   fill: ['穴埋め'],

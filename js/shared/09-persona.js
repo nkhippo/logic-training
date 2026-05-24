@@ -9,6 +9,14 @@ function loadPersonaIntoState(){
   }catch(e){}
 }
 
+function getPersonaSnapshot(){
+  if(!st.personas||!st.personas.length)return null;
+  return{
+    personas:st.personas,
+    tenure:st.tenure||''
+  };
+}
+
 function buildPersonaPromptNote(isEN){
   if(!st.personas.length&&!st.tenure)return '';
   const lang=isEN?'en':'ja';

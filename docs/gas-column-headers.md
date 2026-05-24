@@ -84,10 +84,10 @@ id	theme	diff	date	industry	situation	steps	finalMode	finalAnswer	feedback	lang
 **A1に貼り付け**
 
 ```
-id	core	diff	level	date	industry	situation	questions	lang
+id	core	diff	level	date	industry	situation	questions	user_core	theme	persona_snapshot	lang
 ```
 
-列のみ: `id`, `core`, `diff`, `level`, `date`, `industry`, `situation`, `questions`, `lang`
+列のみ: `id`, `core`, `diff`, `level`, `date`, `industry`, `situation`, `questions`, `user_core`, `theme`, `persona_snapshot`, `lang`
 
 ---
 

@@ -21,7 +21,7 @@ thinkgrindai/
 │   └── dev-flow.md         # 開発フロー
 ├── index.html              # ルートリダイレクト（logic.html へ）
 ├── logic.html              # 論理トレーニング（メインアプリ）
-├── thinking.html           # 思考トレーニング（準備中）
+├── thinking.html           # 思考トレーニング（docs/specification-thinking.md 参照）
 ├── style.css               # 全タブ共通のスタイル
 ├── app.monolith.js         # 旧単一ファイル（参照・再分割用。実行時は未使用）
 ├── js/                     # フロントエンドロジック（読み込み順に依存）
