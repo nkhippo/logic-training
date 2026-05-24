@@ -533,7 +533,6 @@ docs/
 │
 ├── cursor-instructions/
 │   ├── cursor_instruction_thinking_v2.md
-│   ├── cursor_instruction_tsumiaage.md
 │   └── cursor_instruction_REQ-XXX.md （新機能ごと）
 │
 └── guides/

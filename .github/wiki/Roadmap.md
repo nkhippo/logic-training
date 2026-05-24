@@ -24,15 +24,14 @@ Phase 5: SaaS 化
 
 ### 完了済み
 
-- ✅ 5 タブ（穴埋め・要約・批判読み・空雨傘・積み上げ）の実装
+- ✅ 4 タブ（穴埋め・要約・批判読み・空雨傘）の実装
 - ✅ GAS + Google Sheets バックエンド
 - ✅ 80/90 点ルール採点
 - ✅ Claude Sonnet 4.6 との AI 連携
 
 ### 進行中のタスク
 
-- ⏳ GAS 再デプロイ（新規シート「mece」追加）
-- ⏳ 積み上げタブの全動作確認（STEP・上司問い返し・採点）
+- ⏳ GAS 再デプロイ
 - ⏳ 全タブの横断テスト（バグ検出）
 - ⏳ ユーザーテスト（5-10 名）
 
@@ -125,7 +124,6 @@ Phase 5: SaaS 化
 | REQ ID | 内容 | ステータス |
 |--------|------|-----------|
 | REQ-001 | Thinking Training 実装準備 | 検討中 |
-| REQ-002 | 積み上げタブ全テスト | 進行中 |
 | REQ-003 | GAS 再デプロイ | 待機中 |
 
 詳細: [Google Sheets - 要件確定シート](https://docs.google.com/spreadsheets/d/1b4bod69wE_KjM-qL4hOIa2n_MPRw8XDb6dM3RYVCTto/)

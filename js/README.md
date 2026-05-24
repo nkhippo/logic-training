@@ -34,7 +34,7 @@
 |---|---|
 | 04-domain.js | 論理タブの定数・ドメイン関数 |
 | 05-core-ui.js | タブ UI・ペルソナモーダル・applyLang |
-| 08–15, 17-tsumiaage | タブ別 |
+| 08–15 | タブ別 |
 | 13-past.js, 10-past-shared.js | 過去問 |
 | 16-init.js | 起動 |
 

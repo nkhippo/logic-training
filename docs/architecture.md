@@ -5,7 +5,7 @@ GitHub Pages 向けの**ビルドなし**構成。エントリポイントは HT
 | ページ | 役割 |
 |---|---|
 | `index.html` | ルート → `logic.html` へリダイレクト |
-| `logic.html` | 論理トレーニング（穴埋め・要約・批判読み・空雨傘・積み上げ） |
+| `logic.html` | 論理トレーニング（穴埋め・要約・批判読み・空雨傘） |
 | `thinking.html` | 思考トレーニング |
 
 ## ディレクトリ
@@ -27,7 +27,7 @@ js/
   logic/           # logic.html のみ
     04-domain.js
     05-core-ui.js
-    08-fill.js … 17-tsumiaage.js
+    08-fill.js … 15-kibari.js
     16-init.js
   thinking/        # thinking.html のみ
     domain.js      # THINKING_* 定数

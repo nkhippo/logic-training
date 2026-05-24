@@ -360,7 +360,7 @@ label.upload-zone{cursor:pointer;display:block;}
   opacity:0.4;
   cursor:not-allowed;
 }
-/* 積み上げタブ */
+/* 段階的STEP UI（思考トレーニング等で共用） */
 .ta-step-block{
   background:var(--bg);
   border:.5px solid var(--border);
