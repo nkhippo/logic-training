@@ -1,0 +1,123 @@
+---
+description: thinkgrindai の開発フロー・実装ルール
+globs: ["**/*.js", "**/*.html", "**/*.css", "**/gas-script*.js"]
+alwaysApply: true
+---
+
+# Cursor 開発フロールール — thinkgrindai
+
+## あなたの役割
+
+ソースコードの実装を担当します。
+Naoya（PM）が GitHub Issue と Cursor 指示書を用意します。
+あなたはそれを読んで実装し、PR を作成します。
+
+## 実装前に必ずやること（この順番で）
+
+### Step 1: GitHub Issue を確認
+- Issue の Body を読む
+- 実装範囲・完了定義を把握する
+- ドキュメントへのリンクを確認する
+
+### Step 2: Cursor 指示書を読む（最重要）
+`docs/cursor-instructions/cursor_instruction_XX.md` を必ず熟読。
+指示書がない・見つからない場合 → **実装を開始せず Naoya に確認する**
+
+### Step 3: 仕様書を確認
+`docs/specification-XX.md` を確認（技術スタック・ロジック・データスキーマ）
+
+### Step 4: 既存コードを確認
+関連する `js/XX-xxx.js` を確認してから実装を始める。
+
+---
+
+## 実装ルール
+
+### ファイル操作
+```
+✅ やること
+- 新機能は新規ファイルで実装（例: js/07-mece.js）
+- style.css は新規 class のみ追加
+- index.html はタブボタン追加のみ（最小限）
+
+❌ やらないこと
+- 既存の js/01〜05 ファイルの関数を変更する
+- gas-script-v3.js の既存関数を変更する（新規関数のみ追加）
+```
+
+### コード品質
+```
+✅ 必須
+- 関数に JSDoc コメントを書く
+- エラーハンドリング（try/catch）を実装する
+- API 呼び出しは非同期処理（async/await）
+
+❌ 禁止
+- console.log をコードに残す
+- 未使用の変数・関数を残す
+- ハードコードされた API キー・URL
+```
+
+---
+
+## PR 作成のルール
+
+### PR タイトル形式
+```
+feat: <機能名>（#T0XX）
+fix: <バグ内容>（#T0XX）
+chore: <作業内容>（#T0XX）
+```
+
+### PR Description（必ずこの形式で）
+
+```markdown
+## 実装内容
+- 〇〇を実装した
+
+## テスト方法
+1. 〇〇タブを開く
+2. Level X を選択
+3. 動作確認
+
+## テスト結果
+- [x] 動作確認 ✅
+- [x] 既存タブへの影響なし ✅
+
+## 既知の問題・TODO
+なし
+
+## 関連 Issue
+Fixes #T0XX
+```
+
+---
+
+## PR 作成後、必ず Naoya に伝えること
+
+```
+✅ PR を作成しました。（PR #YYY）
+
+📋 Naoya さんの次のアクション:
+1. 【GitHub】PR をテスト
+   テスト項目: docs/cursor-instructions/cursor_instruction_XX.md の「テスト項目」参照
+2. 問題なければ【GitHub】Merge
+3. Merge 後:
+   【Google Sheets】REQ-XXX のステータスを「完了」に変更 / 実完了日を記入
+   【Obsidian】ideas/REQ-XXX-XX.md に完了ログを追記
+
+🔗 関連:
+- Issue: #T0XX
+- 仕様書: docs/specification-XX.md
+```
+
+---
+
+## バグ・問題が起きたとき
+
+| 状況 | 対応 |
+|------|------|
+| 指示書に書いていない仕様判断が必要 | 実装を止めて Naoya に確認 |
+| 既存コードと仕様書が矛盾する | Naoya に報告して判断を仰ぐ |
+| 実装範囲外のバグを発見 | PR コメントに記録し、別 Issue を Naoya に提案 |
+| GAS デプロイが必要 | Naoya に「GAS の再デプロイが必要です」と伝える |
