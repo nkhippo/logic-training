@@ -1,0 +1,42 @@
+name: Sync GitHub Wiki
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/wiki/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-wiki
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Push .github/wiki to GitHub Wiki repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git clone "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git" wiki-repo
+          rsync -av --delete --exclude '.git' --exclude 'README.md' .github/wiki/ wiki-repo/
+
+          cd wiki-repo
+          git add -A
+          if git diff --staged --quiet; then
+            echo "Wiki repository is already up to date."
+          else
+            git commit -m "docs: sync wiki from main repository (${GITHUB_SHA::7})"
+            git push origin master || git push origin main
+          fi
