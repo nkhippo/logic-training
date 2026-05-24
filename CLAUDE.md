@@ -44,8 +44,11 @@ thinkgrindai/
 │   ├── 05-tsumiaage.js              ← 積み上げタブ
 │   └── 17-thinking.js               ← 思考トレーニング（実装中）
 ├── docs/
-│   ├── PROJECT_CONTEXT.md
-│   ├── DEVELOPMENT_POLICY.md
+│   ├── PROJECT_CONTEXT.md           ← GitHub docs/ に配置済み
+│   ├── DEVELOPMENT_POLICY.md        ← GitHub docs/ に配置済み
+│   ├── PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md
+│   ├── setup/                       ← セットアップガイド一式
+│   ├── README.md                    ← ドキュメント索引
 │   ├── requirements-*.md
 │   ├── specification-*.md
 │   └── cursor-instructions/
