@@ -121,3 +121,99 @@ Fixes #T0XX
 | 既存コードと仕様書が矛盾する | Naoya に報告して判断を仰ぐ |
 | 実装範囲外のバグを発見 | PR コメントに記録し、別 Issue を Naoya に提案 |
 | GAS デプロイが必要 | Naoya に「GAS の再デプロイが必要です」と伝える |
+
+---
+
+# Obsidian 同期タスク自動リマインド
+
+## あなたが GitHub に commit・push するたびに
+
+以下の「Obsidian 同期タスク」メッセージを **必ず Naoya への返答末尾** に含め、可能なら **GitHub Issue コメント** または **ターミナル** でも提示してください。
+
+初回セットアップ: `bash scripts/install-git-hooks.sh`（post-push フック有効化）
+
+push 後の手動実行: `bash scripts/obsidian-sync-reminder.sh`
+
+## リマインドメッセージテンプレ
+
+### パターン 1: 要件定義書・仕様書・指示書を push したとき
+
+対象: `docs/requirements-*.md` / `docs/specification-*.md` / `docs/cursor-instructions/*.md`
+
+```
+🔄 Obsidian 同期タスク（自動生成）
+
+要件が GitHub に確定しました。Naoya さんが以下を Obsidian に記入してください：
+
+📋 直後（即座）にやること:
+  □ discussions/2025-XX-XX_round-X.md を作成
+    └ 今日の Claude との議論ログをコピペ
+
+📋 要件確定後にやること:
+  □ discussions/summary-REQ-XXX.md を作成
+    └ 最終確定事項をまとめる
+
+📋 このファイルを GitHub に push した後:
+  □ confirmed-decisions/REQ-XXX.md を作成
+    └ requirements + specification を統合してコピペ
+
+チェック: 上記すべてに ✅ が入ったら Issue をクローズしてください
+```
+
+### パターン 2: ソースコード実装を push したとき
+
+対象: `js/**/*.js` / `gas-script*.js`
+
+```
+🔄 Obsidian 同期タスク（自動生成）
+
+実装が GitHub に push されました。以下は Naoya さんが完了後に実施してください：
+
+📋 PR マージ後:
+  □ Google Sheets REQ-XXX のステータスを「完了」に変更
+  □ 実完了日を記入
+  □ Obsidian confirmed-decisions/ へ行をコピー
+
+完了後、Issue をクローズしてください
+```
+
+## トリガー一覧
+
+| 行動 | 出力パターン | リマインド内容 |
+|------|-------------|----------------|
+| `docs/requirements-*.md` を push | パターン 1 | 議論ログ整理タスク |
+| `docs/specification-*.md` を push | パターン 1 | 確定版コピータスク |
+| `docs/cursor-instructions/*.md` を push | パターン 1 | 確定版コピータスク |
+| `js/**/*.js` / `gas-script*.js` を push | パターン 2 | Sheets 更新・Obsidian 完了ログ |
+| `.github/wiki/*.md` を push | なし | リマインド不要 |
+
+## 実装方法（Cursor の作業手順）
+
+### Option A: Issue コメント（推奨・gh 利用）
+
+commit message から Issue 番号を抽出（例: `Fixes #T005` → `5`）し、投稿:
+
+```bash
+gh issue comment 5 --repo nkhippo/thinkgrindai --body-file -
+```
+
+post-push フック / `scripts/obsidian-sync-reminder.sh` が自動実行する場合は、Cursor は push 後にスクリプト出力を Naoya に転記する。
+
+### Option B: ターミナル出力（フォールバック）
+
+gh が使えない・Issue 番号がない場合は、push 完了メッセージとともに上記テンプレをターミナルに表示する。
+
+## Issue 番号の抽出
+
+```
+# 良い commit message
+git commit -m "feat: implement MECE tab (Fixes #T005)"
+```
+
+`Fixes #T005` / `#5` などから数字を抽出し、該当 Issue にコメントする。
+
+## push 後に Cursor が必ずすること
+
+1. `git push` を実行したら、変更ファイルに応じてパターン 1 または 2 のメッセージを **ユーザーへの返答に含める**
+2. post-push フックの出力があれば、その内容を共有する
+3. Wiki のみの変更（`.github/wiki/`）ではリマインドしない

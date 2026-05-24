@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# push 後に Obsidian 同期タスクをリマインド
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+ZERO=$(git hash-object --stdin </dev/null | tr '0-9a-f' '0')
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ -z "$local_sha" ]] && continue
+  if [[ "$local_sha" == "$ZERO" ]]; then
+    continue
+  fi
+  if [[ "$remote_sha" == "$ZERO" ]]; then
+    "$REPO_ROOT/scripts/obsidian-sync-reminder.sh" "$ZERO" "$local_sha"
+  else
+    "$REPO_ROOT/scripts/obsidian-sync-reminder.sh" "$remote_sha" "$local_sha"
+  fi
+done
+
+exit 0
