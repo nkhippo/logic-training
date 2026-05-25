@@ -6,7 +6,6 @@ function filterPast(mode,f){
   if(mode==='fill')st.fFilter=f;
   else if(mode==='summary')st.sFilter=f;
   else if(mode==='critique')st.cFilter=f;
-  else if(mode==='kibari')st.kbFilter=f;
   else st.aFilter=f;
   document.querySelectorAll('#'+pastPrefix(mode)+'-tabs .pf-tab').forEach(b=>b.classList.toggle('active',b.dataset.f===f));
   renderPL(mode);
@@ -23,7 +22,7 @@ async function loadPast(mode){
 }
 function renderPL(mode){
   const all=pastList(mode);
-  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:st.aFilter;
+  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:st.aFilter;
   const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
   const list=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   const c=document.getElementById(pastPrefix(mode)+'-list');
@@ -32,13 +31,13 @@ function renderPL(mode){
     <div class="pcard" onclick="openPast('${mode}','${p.id}')">
       <div class="pc-h"><div class="pc-t">${esc(p.theme)}</div>
         <div class="pc-m"><span class="badge ${BADGE[p.diff]||'b3'}">${dlabel(p.diff)}</span></div></div>
-      <div class="pc-pre">${esc((mode==='fill'?p.text:mode==='summary'?normSummaryProb(p).text:mode==='ame'?String(p.article||''):mode==='kibari'?String(p.situation||''):critiquePreviewText(p)).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
+      <div class="pc-pre">${esc((mode==='fill'?p.text:mode==='summary'?normSummaryProb(p).text:mode==='ame'?String(p.article||''):critiquePreviewText(p)).replace(/【_\d+_】/g,'[  ]').substring(0,80))}</div>
       <div class="pc-date">${fmtDate(p.date)}${p.lang?' · '+p.lang.toUpperCase():''}</div>
     </div>`).join('');
 }
 function randomPast(mode){
   const all=pastList(mode);
-  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:mode==='kibari'?st.kbFilter:st.aFilter;
+  const f=mode==='fill'?st.fFilter:mode==='summary'?st.sFilter:mode==='critique'?st.cFilter:st.aFilter;
   const byDiff=f==='all'?all:all.filter(p=>String(p.diff)===f);
   const pool=byDiff.filter(p=>(p.lang||'ja')===st.lang);
   if(!pool.length){alert(L[st.lang].noData);return;}
@@ -154,33 +153,6 @@ function openPast(mode,id){
       <div id="pp-fb"></div>`;
     resetAnswerPhotos();
     setAnswerMode('pp','text');
-  } else if(mode==='kibari'){
-    const p=pastKibariToPlayable(prob);
-    st.kibariPast=p;
-    const fbHtml=prob.feedback?`<div class="feedback-box">${md2h(prob.feedback)}</div>`:'';
-    cnt.innerHTML=`
-      ${buildProblemMetaHtml(prob,pLang)}
-      <div class="step-bar"><div class="step done" id="kbp-s1"></div><div class="step active" id="kbp-s2"></div><div class="step" id="kbp-s3"></div></div>
-      <p class="slabel">${l.kbSituationLbl}</p>
-      <div class="problem-box">${esc(p.situation)}</div>
-      <div id="kbp-rounds">${buildKibariRoundHtml(p,0,'kbp')}</div>
-      <div class="action-bar" id="kbp-submit-bar" style="display:none;">
-        <button class="btn" onclick="submitKibari('kbp')"><span>${l.kbSubmit}</span></button>
-      </div>
-      <div class="action-bar" style="margin-top:8px;">
-        <button class="btn btn-icon btn-sm" onclick="window.print()">
-          <i class="ti ti-printer"></i>
-          <span>${l.pq}</span>
-        </button>
-      </div>
-      <div id="kbp-fb">${fbHtml}</div>`;
-    updateKibariCoreCount('kbp',0);
-    if(prob.feedback){
-      const s2=document.getElementById('kbp-s2');
-      const s3=document.getElementById('kbp-s3');
-      if(s2)s2.className='step done';
-      if(s3)s3.className='step done';
-    }
   }
 }
 
@@ -258,7 +230,6 @@ function closePP(mode){
   document.getElementById(pfx+'-list-view').style.display='';
   document.getElementById(pfx+'-play').style.display='none';
   document.getElementById(pfx+'-play-content').innerHTML='';
-  if(mode==='kibari')st.kibariPast=null;
   resetAnswerPhotos();
 }
 async function deletePast(mode,id){
@@ -269,7 +240,6 @@ async function deletePast(mode,id){
     if(mode==='fill')st.fPast=st.fPast.filter(p=>String(p.id)!==String(id));
     else if(mode==='summary')st.sPast=st.sPast.filter(p=>String(p.id)!==String(id));
     else if(mode==='critique')st.cPast=st.cPast.filter(p=>String(p.id)!==String(id));
-    else if(mode==='kibari')st.kbPast=st.kbPast.filter(p=>String(p.id)!==String(id));
     else st.aPast=st.aPast.filter(p=>String(p.id)!==String(id));
     const n=pastList(mode).length;
     setSync(mode,'ok',n+L[st.lang].syncItems);renderPL(mode);showToast(L[st.lang].deletedOk);

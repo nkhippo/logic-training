@@ -54,6 +54,10 @@ thinkgrindai/
 //          設定UI・localStorage は使わない
 ```
 
+**現行モデル**：`claude-sonnet-4-6`  
+**モデル変更時の手順**：`js/shared/07-api.js` の `callClaude`・`callClaudeMsg` 内の `model` 文字列を編集する。
+モデルが変わると採点品質・問題生成品質に影響するため、必ず全タブ・全シナリオでの動作確認を実施すること。
+
 | 用途 | temperature | 備考 |
 |---|---|---|
 | 問題生成 | 0.9 | 多様な問題が生成されるよう創造性を確保 |

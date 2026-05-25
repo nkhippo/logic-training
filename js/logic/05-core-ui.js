@@ -89,18 +89,17 @@ function applyLang(){
 
   // diff labels
   for(let d=1;d<=5;d++){
-    const fe=document.getElementById('fd'+d),se=document.getElementById('sd'+d),ce=document.getElementById('cd'+d),ae=document.getElementById('ad'+d),kbe=document.getElementById('kbd'+d);
+    const fe=document.getElementById('fd'+d),se=document.getElementById('sd'+d),ce=document.getElementById('cd'+d),ae=document.getElementById('ad'+d);
     if(fe)fe.textContent=l.dLabels[d-1];
     if(se)se.textContent=l.dLabels[d-1];
     if(ce)ce.textContent=l.dLabels[d-1];
     if(ae)ae.textContent=l.dLabels[d-1];
-    if(kbe)kbe.textContent=l.dLabels[d-1];
   }
   // diff desc & auto info
-  updateDiffUI('f');updateDiffUI('s');updateDiffUI('c');updateDiffUI('a');updateDiffUI('kb');
-  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  updateDiffUI('f');updateDiffUI('s');updateDiffUI('c');updateDiffUI('a');
+  ['f','s','c','a'].forEach(m=>updateThemeUI(m));
   updateIndustryUI();
-  ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
+  ['f','s','c','a'].forEach(m=>updateDiffUI(m));
   document.documentElement.lang=st.lang;
   if(st.genBusy)updateGenStatusUI(st.genBusy);
   if(st.gradeBusy)updateGradeStatusUI(st.gradeBusy);
@@ -109,14 +108,13 @@ function applyLang(){
   updatePersonaBadge();
 }
 
-function genPrefix(mode){if(mode==='fill')return 'f';if(mode==='summary')return 's';if(mode==='critique')return 'c';if(mode==='ame')return 'a';if(mode==='kibari')return 'kb';return mode;}
+function genPrefix(mode){if(mode==='fill')return 'f';if(mode==='summary')return 's';if(mode==='critique')return 'c';if(mode==='ame')return 'a';return mode;}
 function genBtnLabel(mode){
   const l=L[st.lang];
   if(mode==='fill')return l.genBtn;
   if(mode==='summary')return l.sGenBtn;
   if(mode==='critique')return l.cGenBtn;
   if(mode==='ame')return l.aGenBtn;
-  if(mode==='kibari')return l.kbGenBtn;
   return l.cGenBtn;
 }
 function updateGenStatusUI(mode){
@@ -216,12 +214,12 @@ function endAppBusy(kind,mode){
 }
 function beginGen(mode){
   const l=L[st.lang];
-  const msg=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:mode==='kibari'?l.kbGenLoading:l.busyOverlayGen||l.genLoading;
+  const msg=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:l.busyOverlayGen||l.genLoading;
   if(!beginAppBusy('gen',mode,msg))return false;
   const p=genPrefix(mode);
   const loadEl=document.getElementById(p+'-gen-loading');
   if(loadEl)loadEl.style.display='flex';
-  const loadLbl=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:mode==='kibari'?l.kbGenLoading:l.genLoading;
+  const loadLbl=mode==='summary'?l.sGenLoading:mode==='critique'?l.cGenLoading:mode==='ame'?l.aGenLoading:l.genLoading;
   ui(p+'-gen-loading',loadLbl);
   const btn=document.getElementById(p+'-gen-btn');
   if(btn){
@@ -310,12 +308,10 @@ function resetGenConditions(){
   st.sDiff=0;
   st.cDiff=0;
   st.aDiff=0;
-  st.kibariDiff=0;
-  st.kibariScene='';
   st.sVolume='';
-  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  ['f','s','c','a'].forEach(m=>updateThemeUI(m));
   updateIndustryUI();
-  ['f','s','c','a','kb'].forEach(m=>updateDiffUI(m));
+  ['f','s','c','a'].forEach(m=>updateDiffUI(m));
   document.querySelectorAll('#s-volume-selector .vol-btn').forEach(b=>b.classList.remove('active'));
 }
 
@@ -323,7 +319,6 @@ function diffValueFor(mode){
   if(mode==='f')return st.fDiff;
   if(mode==='s')return st.sDiff;
   if(mode==='c')return st.cDiff;
-  if(mode==='kb')return st.kibariDiff;
   return st.aDiff;
 }
 function isDiffSelected(mode){
@@ -353,18 +348,17 @@ function validateBeforeGen(mode){
 function updateDiffUI(m){
   const l=L[st.lang];
   const diff=diffValueFor(m);
-  const prefix=m==='f'?'f':m==='s'?'s':m==='c'?'c':m==='kb'?'kb':'a';
+  const prefix=m==='f'?'f':m==='s'?'s':m==='c'?'c':'a';
   document.querySelectorAll('#'+prefix+'-diff-row .diff-btn').forEach(b=>{
     b.classList.toggle('sel',isDiffSelected(m)&&parseInt(b.dataset.d)===diff);
   });
-  const descId=m==='f'?'f-diff-desc':m==='s'?'s-diff-desc':m==='c'?'c-diff-desc':m==='kb'?'kb-diff-desc':'a-diff-desc';
+  const descId=m==='f'?'f-diff-desc':m==='s'?'s-diff-desc':m==='c'?'c-diff-desc':'a-diff-desc';
   const descEl=document.getElementById(descId);
   if(descEl){
     if(!isDiffSelected(m))descEl.textContent='';
     else if(m==='f')descEl.textContent=l.fDescs[diff-1];
     else if(m==='s')descEl.textContent=l.sDescs[diff-1];
     else if(m==='c')descEl.textContent=l.cDescs[diff-1];
-    else if(m==='kb')descEl.textContent=l.kbDescs[diff-1];
     else descEl.textContent=l.aDescs[diff-1];
   }
   if(m==='s'){
@@ -381,7 +375,6 @@ function themeListFor(mode){
   if(mode==='f')return FILL_PRESETS[lang];
   if(mode==='s')return SUMMARY_PRESETS[lang];
   if(mode==='c')return CRITIQUE_PRESETS[lang];
-  if(mode==='kb')return KIBARI_PRESETS[lang];
   return AME_PRESETS[lang];
 }
 
@@ -389,7 +382,6 @@ function themeDiffFor(mode){
   if(mode==='f')return st.fDiff;
   if(mode==='s')return st.sDiff;
   if(mode==='c')return st.cDiff;
-  if(mode==='kb')return st.kibariDiff;
   return st.aDiff;
 }
 
@@ -397,7 +389,6 @@ function themeValueFor(mode){
   if(mode==='f')return st.fDocType;
   if(mode==='s')return st.sDocType;
   if(mode==='c')return st.cDocType;
-  if(mode==='kb')return st.kibariScene;
   return st.aDocType;
 }
 
@@ -405,7 +396,6 @@ function themeStKey(mode){
   if(mode==='f')return 'fDocType';
   if(mode==='s')return 'sDocType';
   if(mode==='c')return 'cDocType';
-  if(mode==='kb')return 'kibariScene';
   return 'aDocType';
 }
 
@@ -492,12 +482,11 @@ function resetUIOnLangSwitch(){
   st.summary=null;
   st.critique=null;
   st.ame=null;
-  st.kibari=null;
-  ['fill-result','summary-result','critique-result','ame-result','kibari-result'].forEach(id=>{
+  ['fill-result','summary-result','critique-result','ame-result'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.style.display='none';
   });
-  ['f-fb','s-fb','c-fb','a-fb','kb-fb'].forEach(id=>{
+  ['f-fb','s-fb','c-fb','a-fb'].forEach(id=>{
     const el=document.getElementById(id);
     if(el)el.innerHTML='';
   });
@@ -534,22 +523,7 @@ function resetUIOnLangSwitch(){
   if(as3)as3.className='step';
   const apa=document.getElementById('a-pa-btn');
   if(apa)apa.style.display='none';
-  const kbEl=document.getElementById('kibari-result');
-  if(kbEl)kbEl.style.display='none';
-  const kbRounds=document.getElementById('kb-rounds');
-  if(kbRounds)kbRounds.innerHTML='';
-  const kbSubmitBar=document.getElementById('kb-submit-bar');
-  if(kbSubmitBar)kbSubmitBar.style.display='none';
-  const kbpa=document.getElementById('kb-pa-btn');
-  if(kbpa)kbpa.style.display='none';
-  const kbs1=document.getElementById('kbs1'),kbs2=document.getElementById('kbs2'),kbs3=document.getElementById('kbs3');
-  if(kbs1)kbs1.className='step done';
-  if(kbs2)kbs2.className='step active';
-  if(kbs3)kbs3.className='step';
-  const kbPreviewOverlay=document.getElementById('kb-preview-overlay');
-  if(kbPreviewOverlay)kbPreviewOverlay.classList.remove('show');
-  document.removeEventListener('keydown',onKibariPreviewKeyDown);
-  ['f','s','c','a','kb'].forEach(m=>updateThemeUI(m));
+  ['f','s','c','a'].forEach(m=>updateThemeUI(m));
   updateIndustryUI();
   updateApiKeyUI();
 }
@@ -576,7 +550,6 @@ function setDiff(m,d){
   if(m==='f')st.fDiff=d;
   else if(m==='s')st.sDiff=d;
   else if(m==='c')st.cDiff=d;
-  else if(m==='kb')st.kibariDiff=d;
   else st.aDiff=d;
   const cur=themeValueFor(m);
   if(cur){
