@@ -1,0 +1,32 @@
+{
+  "name": "thinkgrindai-backend",
+  "version": "1.0.0",
+  "description": "thinkgrindai backend server",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.19.0",
+    "googleapis": "^140.0.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
