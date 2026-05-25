@@ -389,17 +389,15 @@ async function syncPastOnGen(mode,prob){
   if(mode==='fill')entry=buildFillEntry(prob);
   else if(mode==='summary')entry=buildSummaryEntry(prob);
   else if(mode==='critique')entry=buildCritiqueEntry(prob);
-  else if(mode==='ame')entry=buildAmeEntry(prob);
-  else entry=buildKibariEntry(prob);
+  else entry=buildAmeEntry(prob);
   prob.id=entry.id;
   setSync(mode,'spin',L[st.lang].genPhaseProcess+'...');
   await gasPostEntry(entry);
-  const store=mode==='fill'?st.fPast:mode==='summary'?st.sPast:mode==='critique'?st.cPast:mode==='ame'?st.aPast:st.kbPast;
+  const store=mode==='fill'?st.fPast:mode==='summary'?st.sPast:mode==='critique'?st.cPast:st.aPast;
   const idx=store.findIndex(p=>String(p.id)===String(entry.id));
   if(idx>=0)store[idx]=entry;else store.unshift(entry);
   renderPL(mode);
   setSync(mode,'ok',pastSyncCount(mode)+L[st.lang].syncItems);
   if(mode==='fill')showToast(L[st.lang].savedOk);
   else if(mode==='summary')showToast(L[st.lang].sSavedOk);
-  else if(mode==='kibari')showToast(L[st.lang].kbSavedOk);
 }

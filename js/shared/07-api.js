@@ -5,7 +5,7 @@ function getKey(){return CLAUDE_API_KEY||'';}
 function updateApiKeyUI(){
   const l=L[st.lang],busy=isBusy();
   const needProb=st.lang==='ja'?'先に問題を生成してください':'Generate a problem first';
-  ['f-gen-btn','s-gen-btn','c-gen-btn','a-gen-btn','kb-gen-btn'].forEach(id=>{
+  ['f-gen-btn','s-gen-btn','c-gen-btn','a-gen-btn'].forEach(id=>{
     const b=document.getElementById(id);
     if(b)b.disabled=busy;
   });
@@ -23,12 +23,6 @@ function updateApiKeyUI(){
   if(asub){
     asub.disabled=busy||!st.ame;
     asub.title=!st.ame&&!busy?needProb:'';
-  }
-  const kbsub=document.getElementById('kb-submit');
-  if(kbsub){
-    const canKb=!busy&&!!st.kibari&&document.getElementById('kb-submit-bar')?.style.display!=='none';
-    kbsub.disabled=!canKb;
-    kbsub.title=!st.kibari&&!busy?needProb:'';
   }
 }
 
@@ -156,7 +150,6 @@ function isGasV3Payload(p){
   return !!(p&&(Number(p.version)===3
     ||(Array.isArray(p.critiqueCols)&&p.critiqueCols.includes('questions'))
     ||(Array.isArray(p.ameCols)&&p.ameCols.includes('article'))
-    ||(Array.isArray(p.kibariCols)&&p.kibariCols.includes('situation'))
     ||(Array.isArray(p.thinkingCols)&&p.thinkingCols.includes('core'))
     ||(Array.isArray(p.summaryCols)&&p.summaryCols.includes('text'))));
 }
@@ -175,17 +168,12 @@ function rowLooksLikeCritique(r){
 function rowLooksLikeAme(r){
   return !!(r&&r.article!==undefined&&String(r.article).trim()!=='');
 }
-function rowLooksLikeKibari(r){
-  return !!(r&&r.situation!==undefined&&String(r.situation).trim()!==''
-    &&r.readers!==undefined&&String(r.readers).trim()!=='');
-}
 function filterPastRowsByMode(mode,rows){
   const list=Array.isArray(rows)?rows:[];
   if(mode==='fill')return list.filter(rowLooksLikeFill);
   if(mode==='summary')return list.filter(rowLooksLikeSummary);
   if(mode==='critique')return list.filter(rowLooksLikeCritique);
   if(mode==='ame')return list.filter(rowLooksLikeAme);
-  if(mode==='kibari')return list.filter(rowLooksLikeKibari);
   return list;
 }
 async function gasGetPast(mode){
@@ -202,7 +190,6 @@ function assignPastStore(mode,rows){
   if(mode==='fill')st.fPast=rows;
   else if(mode==='summary')st.sPast=rows;
   else if(mode==='critique')st.cPast=rows;
-  else if(mode==='kibari')st.kbPast=rows;
   else st.aPast=rows;
 }
 function pastSyncCount(mode){
@@ -227,7 +214,7 @@ async function ensureGasV3(){
 // ── 印刷 ─────────────────────────────────────────────────
 function doPrint(mode,part){
   if(part==='a'){
-    const fbId=mode==='fill'?'f-fb':mode==='summary'?'s-fb':mode==='critique'?'c-fb':mode==='kibari'?'kb-fb':'a-fb';
+    const fbId=mode==='fill'?'f-fb':mode==='summary'?'s-fb':mode==='critique'?'c-fb':'a-fb';
     const fb=document.getElementById(fbId);
     if(!fb||fb.innerHTML.trim()===''){alert(st.lang==='ja'?'先に添削を実行してください。':'Please grade first.');return;}
   }

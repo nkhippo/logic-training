@@ -5,6 +5,24 @@
 
 ---
 
+## 重要：ドキュメント編集時の基準ファイル
+
+このプロジェクトでドキュメント（特に要件定義書・仕様書）を編集する際は、
+以下のファイルを **必ず** 先に読むこと。
+
+| ファイル | 役割 |
+|---|---|
+| `docs/TERMS.md` | プロジェクト内の用語定義（「要件定義書とは何か」など） |
+| `docs/DOCUMENT_GUIDELINES.md` | ドキュメント記載粒度のガイドライン |
+
+Claudeが Cursor向けの指示書を作成する際、ドキュメント編集を含む場合は、
+指示書冒頭でこれらのファイルへのリンクを必ず提示すること。
+
+Naoyaが曖昧な用語（例：「ドキュメントを修正して」「難しさを変えて」など）を使った場合、
+Claudeは `docs/TERMS.md` を参照して具体的にどのファイル・どの概念を指すか確認すること。
+
+---
+
 ## プロジェクト概要
 
 - **名称**: thinkgrindai
@@ -43,6 +61,15 @@ thinkgrindai/
 │   ├── 04-ame.js                    ← 空雨傘タブ
 │   └── 17-thinking.js               ← 思考トレーニング
 ├── docs/
+│   ├── TERMS.md                         ← プロジェクト用語定義（最優先で読む）
+│   ├── DOCUMENT_GUIDELINES.md           ← ドキュメント記載粒度ガイドライン（最優先で読む）
+│   ├── PROJECT_CONTEXT.md               ← ビジョン・ロードマップ
+│   ├── DEVELOPMENT_POLICY.md            ← 開発フロー・タスク分類
+│   ├── DESIGN_DECISION_HISTORY.md       ← 設計判断の経緯メモ
+│   ├── _index.md                        ← ドキュメント索引
+│   ├── architecture.md                  ← フロントエンド構成
+│   ├── gas-column-headers.md            ← GAS スキーマ
+│   ├── dev-flow.md                      ← 開発フロー詳細
 │   ├── requirements/
 │   │   ├── common.md
 │   │   ├── logic/（overview・fill・summary・critique・ame）
@@ -51,14 +78,8 @@ thinkgrindai/
 │   │   ├── common.md
 │   │   ├── logic/（common・fill・summary・critique・ame）
 │   │   └── thinking/（overview・steps・api・data）
-│   ├── cursor-instructions/
-│   ├── setup/
-│   ├── PROJECT_CONTEXT.md
-│   ├── DEVELOPMENT_POLICY.md
-│   ├── architecture.md
-│   ├── gas-column-headers.md
-│   ├── dev-flow.md
-│   └── _index.md
+│   ├── cursor-instructions/             ← Cursor向け作業指示書
+│   └── setup/                           ← セットアップガイド
 ├── guide/
 └── .cursor/rules/dev-flow.mdc       ← Cursor 専用ルール
 ```

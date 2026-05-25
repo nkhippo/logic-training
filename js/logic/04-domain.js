@@ -79,22 +79,6 @@ function addIndustryConstraintToPrompts(prompts){
   return out;
 }
 
-const KB_MAX_ROUNDS={1:1,2:1,3:2,4:2,5:3};
-const KIBARI_PRESETS={
-  ja:[
-    {value:'report',label:'報告・共有',minDiff:1},
-    {value:'request',label:'依頼・指示',minDiff:1},
-    {value:'proposal',label:'提案・説明',minDiff:1},
-    {value:'self',label:'自己表現',minDiff:1},
-  ],
-  en:[
-    {value:'report',label:'Report / Share',minDiff:1},
-    {value:'request',label:'Request / Instruction',minDiff:1},
-    {value:'proposal',label:'Proposal / Explanation',minDiff:1},
-    {value:'self',label:'Self-introduction',minDiff:1},
-  ],
-};
-
 /** 採点（答え合わせ）用 max_tokens — 従来比約1.5倍。問題生成には使わない */
 const GRADE_MAX_TOKENS={
   diffLow:2250,diffHigh:3750,

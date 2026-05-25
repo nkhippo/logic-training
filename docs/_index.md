@@ -1,6 +1,6 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-25（ドキュメント構造を全面再編）  
+**最終更新**: 2026-05-25（整合性修正・用語定義・ガイドライン整備・気配りタブ完全削除）  
 **対応バージョン**: Ver.3.3
 
 > このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
@@ -12,10 +12,14 @@
 
 ```
 docs/
+├── TERMS.md                   ← ★まず読む：プロジェクト用語定義
+├── DOCUMENT_GUIDELINES.md     ← ★まず読む：ドキュメント記載粒度ガイドライン
+├── DESIGN_DECISION_HISTORY.md ← 設計判断の経緯メモ（没案・変更理由の記録）
+│
 ├── requirements/          ← 「なぜ・何を」（ユーザー体験・設計の動機）
 │   ├── common.md          ← 両サービス共通（目的・背景・AI方針・ペルソナ設計）
 │   ├── logic/
-│   │   ├── overview.md    ← 論理トレーニング全体（タブ構成・論理力定義）
+│   │   ├── overview.md    ← 論理トレーニング全体（タブ構成・論理力定義・テーマプリセット）
 │   │   ├── fill.md        ← 穴埋め
 │   │   ├── summary.md     ← 要約
 │   │   ├── critique.md    ← 批判読み
@@ -36,7 +40,7 @@ docs/
 │       ├── overview.md    ← 状態オブジェクト・問題オブジェクト・画面構成・定数一覧
 │       ├── steps.md       ← レベル別ステップフロー・80点ルール・90点ルール・振り返りUI
 │       ├── api.md         ← 全API呼び出し仕様（temperature・max_tokens・プロンプト設計意図）
-│       └── data.md        ← user_coreフロー・GASカラム・ENABLE_REFLECTION・残タスク
+│       └── data.md        ← user_coreフロー・GASカラム・persona_snapshot・残タスク
 │
 ├── cursor-instructions/   ← Cursor向け作業指示書（実装単位で追加）
 ├── setup/                 ← 環境構築ガイド
@@ -54,10 +58,23 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-25 | 整合性修正：requirements/common.md §4欠番・thinking/overview.md §3-3重複・crossref全体を修正 |
+| 2026-05-25 | 粒度修正：各タブ要件定義書の難易度別パラメータを「学習体験」記述に統一、実装値は仕様書に集約 |
+| 2026-05-25 | 気配りタブ（kibari）完全削除（コード・ドキュメント両方から） |
+| 2026-05-25 | 新規：TERMS.md（用語定義）・DOCUMENT_GUIDELINES.md（記載粒度ガイドライン）を追加 |
 | 2026-05-25 | ドキュメント構造を全面再編（単一ファイル → requirements/ + specification/ の階層構造へ） |
-| 2026-05-25 | 旧 requirements.md・requirements-thinking.md・specification.md・specification-thinking.md を分割 |
-| 2026-05-25 | 思考トレーニングの設計意図（Obsidianメモ06〜12）を仕様書に反映 |
-| 2026-05-25 | 状態遷移フロー・プロンプト設計意図を全タブの仕様書に追加 |
+| 2026-05-25 | 思考トレーニングの設計意図（Obsidianメモ・ヒアリング）を全ドキュメントに反映 |
+
+---
+
+## ドキュメント編集時に最初に読むファイル
+
+> **Claude・Cursor 共通**：ドキュメントを編集・追加するときは、作業前に必ず以下を確認すること。
+
+| ファイル | 確認すること |
+|---|---|
+| `docs/TERMS.md` | 「要件定義書」「仕様書」「難易度」「レベル」など用語の正確な意味 |
+| `docs/DOCUMENT_GUIDELINES.md` | どこに何を書くか・crossrefのルール・チェックリスト |
 
 ---
 
@@ -79,6 +96,12 @@ docs/
 3. specification/thinking/steps.md    ← ステップフローへの影響を確認
 ```
 
+### 「設計判断の経緯を確認したい」
+
+```
+docs/DESIGN_DECISION_HISTORY.md ← 没案・変更理由・ヒアリング確定事項
+```
+
 ### 「新しいタブを追加したい」
 
 ```
@@ -92,7 +115,7 @@ docs/
 ### 「AIの採点精度を上げたい」
 
 ```
-1. requirements/common.md §5-3       ← temperatureの原則
+1. requirements/common.md §6-3       ← temperatureの原則
 2. specification/logic/{tab}.md      ← タブ別プロンプト設計意図
    または specification/thinking/api.md
 ```
@@ -109,10 +132,11 @@ docs/
 
 ## 廃止・非表示だがコード・仕様書に残るもの
 
-| 機能 | 状態 | 関連ファイル |
-|---|---|---|
-| 気配りタブ（kibari） | UI非表示・コード残存 | `js/logic/15-kibari.js`・GAS kibariシート |
-| 積み上げタブ（tsumiaage） | 完全廃止 | 削除済み |
+現フェーズでは該当なし。
+
+> **過去の廃止履歴：**
+> - 気配りタブ（kibari）：完全削除（2026-05-25）
+> - 積み上げタブ（tsumiaage）：完全削除（2026-05-25以前）
 
 ---
 

@@ -27,7 +27,7 @@ js/
   logic/           # logic.html のみ
     04-domain.js
     05-core-ui.js
-    08-fill.js … 15-kibari.js
+    08-fill.js … 13-past.js, 14-guide.js
     16-init.js
   thinking/        # thinking.html のみ
     domain.js      # THINKING_* 定数

@@ -55,18 +55,6 @@ id	theme	diff	date	industry	law	article	constraint	questions	feedback	form	lang
 
 ---
 
-## kibari
-
-**A1に貼り付け**
-
-```
-id	theme	diff	scene	date	industry	situation	readers	points	constraint	writeInstruction	rewriteInstruction	openingPhrase	closingPhrase	firstAnswer	feedback	lang
-```
-
-列のみ: `id`, `theme`, `diff`, `scene`, `date`, `industry`, `situation`, `readers`, `points`, `constraint`, `writeInstruction`, `rewriteInstruction`, `openingPhrase`, `closingPhrase`, `firstAnswer`, `feedback`, `lang`
-
----
-
 ## thinking
 
 **A1に貼り付け**
