@@ -16,6 +16,7 @@ function getClaudeClient() {
   return client;
 }
 
-const MODEL = 'claude-sonnet-4-20250514';
+/** フロント・GAS と同一（docs/specification/common.md） */
+const MODEL = 'claude-sonnet-4-6';
 
 module.exports = { getClaudeClient, MODEL };

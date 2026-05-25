@@ -3,21 +3,47 @@ const { google } = require('googleapis');
 let sheetsClient = null;
 
 /**
+ * 環境変数からサービスアカウント JSON を読み込み、Sheets API を初期化する
+ */
+function initializeAuth() {
+  try {
+    let keyData;
+
+    if (process.env.GOOGLE_SHEETS_CREDENTIALS) {
+      keyData = JSON.parse(process.env.GOOGLE_SHEETS_CREDENTIALS);
+    } else if (process.env.GOOGLE_SHEETS_API_KEY) {
+      keyData = JSON.parse(process.env.GOOGLE_SHEETS_API_KEY);
+    } else if (process.env.GOOGLE_SHEETS_API_KEY_BASE64) {
+      const keyDataBase64 = process.env.GOOGLE_SHEETS_API_KEY_BASE64;
+      keyData = JSON.parse(Buffer.from(keyDataBase64, 'base64').toString('utf-8'));
+    } else {
+      throw new Error(
+        'None of GOOGLE_SHEETS_CREDENTIALS, GOOGLE_SHEETS_API_KEY, or GOOGLE_SHEETS_API_KEY_BASE64 is set'
+      );
+    }
+
+    const auth = new google.auth.GoogleAuth({
+      credentials: keyData,
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+
+    sheetsClient = google.sheets({ version: 'v4', auth });
+    // eslint-disable-next-line no-console -- startup confirmation
+    console.log('[sheets-service] Google Sheets API initialized');
+  } catch (error) {
+    // eslint-disable-next-line no-console -- auth error log
+    console.error('[sheets-service] Sheets auth error:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Google Sheets API クライアントを取得する
  * @returns {import('googleapis').sheets_v4.Sheets}
  */
 function getSheetsClient() {
   if (!sheetsClient) {
-    const credentialsRaw = process.env.GOOGLE_SHEETS_CREDENTIALS;
-    if (!credentialsRaw) {
-      throw new Error('GOOGLE_SHEETS_CREDENTIALS is not set');
-    }
-    const credentials = JSON.parse(credentialsRaw);
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    });
-    sheetsClient = google.sheets({ version: 'v4', auth });
+    initializeAuth();
   }
   return sheetsClient;
 }
@@ -158,4 +184,4 @@ async function updateUserScore(user_id, service, new_score) {
   }
 }
 
-module.exports = { getUserCore, updateUserScore };
+module.exports = { getUserCore, updateUserScore, initializeAuth };
