@@ -9,7 +9,8 @@ alwaysApply: true
 ## あなたの役割
 
 ソースコードの実装を担当します。
-Naoya（PM）が GitHub Issue と Cursor 指示書を用意します。
+Naoya（PM）が GitHub Issue URL を渡します（仕様の正本は Issue 本文）。
+タイプ C のみ `docs/` の要件・仕様・cursor-instructions を追加参照します。
 あなたはそれを読んで実装し、PR を作成します。
 
 ## 実装前に必ずやること（この順番で）
@@ -26,20 +27,39 @@ Naoya（PM）が GitHub Issue と Cursor 指示書を用意します。
 
 不明な用語・粒度判断に迷う場合は、実装を開始せず Naoya に確認する。
 
-### Step 1: GitHub Issue を確認
-- Issue の Body を読む
-- 実装範囲・完了定義を把握する
-- ドキュメントへのリンクを確認する
+### Step 1: GitHub Issue を確認（正本・最重要）
 
-### Step 2: Cursor 指示書を読む（最重要）
-`docs/cursor-instructions/cursor_instruction_XX.md` を必ず熟読。
-指示書がない・見つからない場合 → **実装を開始せず Naoya に確認する**
+Issue 本文に実装仕様・完了定義・チェックリストがすべて記載されている。
 
-### Step 3: 仕様書を確認
-`docs/specification-XX.md` を確認（技術スタック・ロジック・データスキーマ）
+- Issue URL を開く、または `gh issue view <番号> --repo nkhippo/thinkgrindai` で最新本文を取得する
+- 実装範囲・完了定義・チェックリスト・Obsidian記録セクションを把握する
+- Issue 内の `docs/` リンクの有無でタイプを判断する（リンクなし＝タイプ A・B、あり＝タイプ C の可能性）
 
-### Step 4: 既存コードを確認
+### Step 2: タイプに応じた追加参照（Issue 本文のリンクに従う）
+
+| タイプ | 参照先 |
+|--------|--------|
+| A・B（Hotfix・中規模） | **Issue 本文のみ**。`docs/cursor-instructions/` は作成・参照しない |
+| C（大規模） | Issue 内リンクの `docs/requirements/`・`docs/specification/`・`docs/cursor-instructions/` を読む |
+
+リンクが Issue に記載されているのにファイルが見つからない場合 → **実装を開始せず Naoya に確認する**。
+
+### Step 3: 既存コードを確認
+
 関連する `js/XX-xxx.js` を確認してから実装を始める。
+
+---
+
+## 実装中に Issue が更新されたとき
+
+Naoya が実装中に Issue 本文を更新した場合、**最初に読んだ内容だけを正としない**。
+
+1. **Issue を再取得する**（`gh issue view <番号> --repo nkhippo/thinkgrindai` または Issue URL を再確認）
+2. 追記・変更された完了定義・実装範囲・チェックリストを確認する
+3. すでに実装済みの内容と矛盾する場合は、実装を止めて Naoya に確認する
+4. Naoya がチャットで「Issue を更新した」と伝えた場合も、上記 1〜3 を必ず行う
+
+PR 作成前に、Issue 本文のチェックリストと実装内容が一致していることを確認する。
 
 ---
 
@@ -112,15 +132,15 @@ Fixes #T0XX
 
 📋 Naoya さんの次のアクション:
 1. 【GitHub】PR をテスト
-   テスト項目: docs/cursor-instructions/cursor_instruction_XX.md の「テスト項目」参照
+   テスト項目: Issue 本文の「テスト方法」または完了定義を参照
 2. 問題なければ【GitHub】Merge
 3. Merge 後:
-   【Google Sheets】REQ-XXX のステータスを「完了」に変更 / 実完了日を記入
-   【Obsidian】ideas/REQ-XXX-XX.md に完了ログを追記
+   【Google Sheets】REQ-XXX のステータスを「完了」に変更 / 実完了日を記入（タイプ C）
+   【Obsidian】Issue 本文の「Obsidian記録」セクションに従い decisions/ に保存
 
 🔗 関連:
-- Issue: #T0XX
-- 仕様書: docs/specification-XX.md
+- Issue: #XXXX
+- 仕様: Issue 本文（タイプ C は docs/ も参照）
 ```
 
 ---
@@ -129,7 +149,8 @@ Fixes #T0XX
 
 | 状況 | 対応 |
 |------|------|
-| 指示書に書いていない仕様判断が必要 | 実装を止めて Naoya に確認 |
+| Issue に書いていない仕様判断が必要 | 実装を止めて Naoya に確認 |
+| 実装中に Issue が更新された | Issue を再取得し、差分を確認してから続行 |
 | 既存コードと仕様書が矛盾する | Naoya に報告して判断を仰ぐ |
 | 実装範囲外のバグを発見 | PR コメントに記録し、別 Issue を Naoya に提案 |
 | GAS デプロイが必要 | Naoya に「GAS の再デプロイが必要です」と伝える |
