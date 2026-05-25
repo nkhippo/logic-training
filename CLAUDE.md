@@ -35,7 +35,7 @@ Claudeは `docs/TERMS.md` を参照して具体的にどのファイル・どの
 | 役割 | 担当 | 主な作業 |
 |------|------|---------|
 | PM・テスター | Naoya | 要件決定・テスト・Merge 判断 |
-| 要件・仕様・指示書 | Claude | アイデア整理・要件定義書・仕様書・Cursor 指示書作成 |
+| 要件・仕様・Issue草稿 | Claude | アイデア整理・要件定義書・仕様書（タイプC）・Issue本文草稿（.md）作成 |
 | ソースコード実装 | Cursor | Issue を読んで実装・PR 作成 |
 
 ## 技術スタック
@@ -78,7 +78,7 @@ thinkgrindai/
 │   │   ├── common.md
 │   │   ├── logic/（common・fill・summary・critique・ame）
 │   │   └── thinking/（overview・steps・api・data）
-│   ├── cursor-instructions/             ← Cursor向け作業指示書
+│   ├── cursor-instructions/             ← Cursor向け作業指示書（タイプCのみ）
 │   └── setup/                           ← セットアップガイド
 ├── guide/
 └── .cursor/rules/dev-flow.mdc       ← Cursor 専用ルール
@@ -95,20 +95,20 @@ Phase 1: アイデア出し
 Phase 2: 要件確定
   Claude と議論 → 確定 → Google Sheets「要件確定シート」に記入
 
-Phase 3: 仕様書作成（Claude が担当）
-  docs/requirements-XX.md
-  docs/specification-XX.md
-  docs/cursor-instructions/cursor_instruction_XX.md
-  → GitHub に commit・push
-  → Sheets の URL 列を更新（ステータス: 指示書作成済）
+Phase 3: 仕様・Issue 草稿（Claude が担当）
+  タイプ A・B: Issue 本文草稿を .md ファイルで出力
+  タイプ C: docs/requirements/ + docs/specification/ + cursor-instructions/ を作成
+            → Issue 本文草稿も .md ファイルで出力
+  → タイプ C は GitHub に docs を commit・push
 
-Phase 4: GitHub Issue 作成
-  テンプレ feature.md で Issue 作成
+Phase 4: GitHub Issue 作成（Naoya が担当）
+  Claude 出力の .md をコピペして Issue 作成
   Label: feature / ready-for-cursor / <priority>
-  Body に全ドキュメントの URL を記載
+  タイプ C: Body に docs/ の URL を記載
 
 Phase 5: 実装（Cursor が担当）
-  指示書を読んで実装 → PR 作成（Fixes #T0XX）
+  Naoya が Issue URL を Cursor に渡す
+  → Issue 本文（+ タイプ C は docs/）を読んで実装 → PR 作成（Fixes #XXXX）
 
 Phase 6: 完了処理
   Naoya がテスト → Merge
@@ -184,21 +184,47 @@ Wiki の更新が不要な場合（議論・相談のみ）は、次のいずれ
 - 「Issue の文面を作って」→ Phase 4 のサポート
 - 「PR のテストをしたい」→ Phase 5-6 のサポート
 
-### 要件定義書・仕様書・指示書を作るときの形式
+### Issue 草稿・仕様書を作るときの形式
 
-必ず以下のファイルを**この順番で**作成してください：
+#### タイプ A・B（中規模以下）
 
-1. `docs/requirements-<name>.md`（要件定義書）
-2. `docs/specification-<name>.md`（仕様書）
-3. `docs/cursor-instructions/cursor_instruction_<name>.md`（Cursor 指示書）
+Claude は **Issue 本文草稿を `.md` ファイルとして出力`** する（チャット本文への貼り付けは行わない）。
+
+草稿に必ず含めるセクション:
+- 背景・実装範囲・完了定義
+- **Obsidian記録**（実装完了後に Cursor が保存するパス・テンプレ）
+- **チェックリスト**（実装完了・動作確認・PR・Obsidian 保存）
 
 作成後に Naoya に伝えること：
 ```
-3 つのファイルを作成しました。以下を実施してください：
-1. 【GitHub】上記ファイルを commit・push
-2. 【Google Sheets】REQ-XXX 行の G/H/I 列に URL を記入、ステータスを「指示書作成済」に変更
-3. 【GitHub】Issue を作成（テンプレ: feature.md、全ドキュメント URL を Body に記載）
+Issue 草稿（.md）を作成しました。以下を実施してください：
+1. 【GitHub】草稿をコピペして Issue を作成
+2. 【Cursor】Issue URL を渡して実装依頼
 ```
+
+#### タイプ C（大規模・新機能）
+
+以下を**この順番で**作成してください：
+
+1. `docs/requirements/...`（要件定義書）
+2. `docs/specification/...`（仕様書）
+3. `docs/cursor-instructions/cursor_instruction_<name>.md`（Cursor 指示書・タイプ C のみ）
+4. Issue 本文草稿（`.md` ファイル）
+
+作成後に Naoya に伝えること：
+```
+docs/ と Issue 草稿を作成しました。以下を実施してください：
+1. 【GitHub】docs/ を commit・push
+2. 【Google Sheets】REQ-XXX 行の G/H/I 列に URL を記入、ステータスを「指示書作成済」に変更
+3. 【GitHub】Issue 草稿をコピペして Issue を作成（docs/ の URL を Body に記載）
+4. 【Cursor】Issue URL を渡して実装依頼
+```
+
+#### タイプ B / C の判断
+
+- **タイプ B**: 1 PR・影響ファイル 3 つ以下・仕様が Issue 内で完結
+- **タイプ C**: 複数 PR・影響ファイル 4 つ以上または複数タブ・将来参照される仕様
+- グレーゾーンは Claude が B 寄り / C 寄りを提示し、Naoya が最終判断
 
 ---
 
@@ -207,6 +233,9 @@ Wiki の更新が不要な場合（議論・相談のみ）は、次のいずれ
 詳細は `.cursor/rules/dev-flow.mdc` を参照してください。
 
 基本ルール：
-- 実装前に必ず `docs/cursor-instructions/cursor_instruction_XX.md` を熟読する
+- 実装前に GitHub Issue 本文を熟読する（仕様の正本）
+- タイプ C のみ `docs/cursor-instructions/cursor_instruction_XX.md` および requirements/specification を参照
+- タイプ A・B では `cursor-instructions/` は作成・参照しない
 - 既存の js ファイルへの変更は最小限（新機能は新規ファイルで実装）
+- PR 作成後、Issue 本文の Obsidian記録セクションに従いメモを保存する
 - PR 作成後、必ず Naoya へのネクストアクションを提案する
