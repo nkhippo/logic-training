@@ -1,6 +1,6 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-25（開発フロー GitHub Issue ベース移行・cursor-instructions はタイプ C のみ）  
+**最終更新**: 2026-05-26（Phase 1-3 BEサーバー基盤・Cursor指示書索引追記）  
 **対応バージョン**: Ver.3.3
 
 > このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
@@ -43,6 +43,8 @@ docs/
 │       └── data.md        ← user_coreフロー・GASカラム・persona_snapshot・残タスク
 │
 ├── cursor-instructions/   ← Cursor向け作業指示書（タイプ C・大規模案件のみ）
+│   ├── cursor_instruction_backend_phase1_3.md      ← BEサーバー Phase 1-3（Issue #40）
+│   └── cursor_instruction_phase1-3_backend_base.md
 ├── setup/                 ← 環境構築ガイド
 ├── PROJECT_CONTEXT.md     ← ビジョン・ロードマップ
 ├── DEVELOPMENT_POLICY.md  ← 開発フロー・タスク分類・運用ルール
@@ -58,6 +60,7 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-26 | Phase 1-3：BEサーバー基盤仕様書・Cursor指示書作成完了 |
 | 2026-05-25 | 整合性修正：requirements/common.md §4欠番・thinking/overview.md §3-3重複・crossref全体を修正 |
 | 2026-05-25 | 粒度修正：各タブ要件定義書の難易度別パラメータを「学習体験」記述に統一、実装値は仕様書に集約 |
 | 2026-05-25 | 開発フローを GitHub Issue ベースに移行（cursor-instructions はタイプ C のみ） |
