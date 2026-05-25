@@ -1,3 +1,8 @@
+> ⚠️ **このファイルは廃止予定です。**
+> 新しいドキュメントは以下を参照してください：
+> - `docs/requirements/thinking/overview.md`（思考トレーニング全体）
+> - `docs/requirements/thinking/scoring.md`（採点・振り返り設計）
+
 # 思考トレーニング 要件定義書
 
 **サービス名**: thinkgrindai（思考トレーニング）

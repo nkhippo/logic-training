@@ -43,15 +43,22 @@ thinkgrindai/
 │   ├── 04-ame.js                    ← 空雨傘タブ
 │   └── 17-thinking.js               ← 思考トレーニング
 ├── docs/
-│   ├── PROJECT_CONTEXT.md           ← GitHub docs/ に配置済み
-│   ├── DEVELOPMENT_POLICY.md        ← GitHub docs/ に配置済み
-│   ├── PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md
-│   ├── setup/                       ← セットアップガイド一式
-│   ├── README.md                    ← ドキュメント索引
-│   ├── requirements-*.md
-│   ├── specification-*.md
-│   └── cursor-instructions/
-│       └── cursor_instruction_*.md
+│   ├── requirements/
+│   │   ├── common.md
+│   │   ├── logic/（overview・fill・summary・critique・ame）
+│   │   └── thinking/（overview・scoring）
+│   ├── specification/
+│   │   ├── common.md
+│   │   ├── logic/（common・fill・summary・critique・ame）
+│   │   └── thinking/（overview・steps・api・data）
+│   ├── cursor-instructions/
+│   ├── setup/
+│   ├── PROJECT_CONTEXT.md
+│   ├── DEVELOPMENT_POLICY.md
+│   ├── architecture.md
+│   ├── gas-column-headers.md
+│   ├── dev-flow.md
+│   └── _index.md
 ├── guide/
 └── .cursor/rules/dev-flow.mdc       ← Cursor 専用ルール
 ```

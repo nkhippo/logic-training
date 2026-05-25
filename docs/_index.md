@@ -1,145 +1,128 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-25（PR #34 マージ後の索引メンテ）
+**最終更新**: 2026-05-25（ドキュメント構造を全面再編）  
 **対応バージョン**: Ver.3.3
 
-> このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。
-> 仕様変更・ドキュメント追加のたびに必ずこのファイルも更新してください。
+> このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
+> ドキュメント追加・変更のたびに必ず更新してください。
 
 ---
 
-## 直近の仕様変更（索引メンテ用）
+## ドキュメント構造の方針
 
-| 日付 | 内容 | 参照 |
-|------|------|------|
-| 2026-05-25 | 積み上げタブ廃止。論理トレーニングは **4タブ**（穴埋め・要約・批判読み・空雨傘） | `specification.md` §6 変更履歴 v2.5 |
-| 2026-05-25 | Obsidian Vault を iCloud から `~/Documents/Obsidian/ThinkGrindAi` へ移行 | `docs/setup/OBSIDIAN_SETUP.md` |
-| 2026-05-25 | 本索引（`docs/_index.md`）を新設。`CLAUDE.md` に索引更新チェックを追加 | PR #34 |
-
-**廃止・非表示だがコード・仕様書に残るもの**
-
-- **積み上げタブ**: UI・`js/logic/17-tsumiaage.js`・GAS `tsumiaage` 連携は削除済み
-- **気配りタブ（kibari）**: `logic.html` には未表示。`specification.md` §3-5・`js/logic/15-kibari.js` は残存
+```
+docs/
+├── requirements/          ← 「なぜ・何を」（ユーザー体験・設計の動機）
+│   ├── common.md          ← 両サービス共通（目的・背景・AI方針・ペルソナ設計）
+│   ├── logic/
+│   │   ├── overview.md    ← 論理トレーニング全体（タブ構成・論理力定義）
+│   │   ├── fill.md        ← 穴埋め
+│   │   ├── summary.md     ← 要約
+│   │   ├── critique.md    ← 批判読み
+│   │   └── ame.md         ← 空雨傘
+│   └── thinking/
+│       ├── overview.md    ← 思考トレーニング全体（6タイプ・4レベル・設計思想）
+│       └── scoring.md     ← 採点・振り返り設計（役割A〜D3・user_core）
+│
+├── specification/         ← 「どのように動くか」（設計詳細・状態遷移・API仕様）
+│   ├── common.md          ← 両サービス共通（ファイル構成・API呼び出し・ヘッダー・GAS共通）
+│   ├── logic/
+│   │   ├── common.md      ← 論理トレーニング共通UI（テーマ選択・max_tokens・GASエンドポイント）
+│   │   ├── fill.md        ← 穴埋め（状態遷移・プロンプト設計意図・GASカラム）
+│   │   ├── summary.md     ← 要約
+│   │   ├── critique.md    ← 批判読み
+│   │   └── ame.md         ← 空雨傘
+│   └── thinking/
+│       ├── overview.md    ← 状態オブジェクト・問題オブジェクト・画面構成・定数一覧
+│       ├── steps.md       ← レベル別ステップフロー・80点ルール・90点ルール・振り返りUI
+│       ├── api.md         ← 全API呼び出し仕様（temperature・max_tokens・プロンプト設計意図）
+│       └── data.md        ← user_coreフロー・GASカラム・ENABLE_REFLECTION・残タスク
+│
+├── cursor-instructions/   ← Cursor向け作業指示書（実装単位で追加）
+├── setup/                 ← 環境構築ガイド
+├── PROJECT_CONTEXT.md     ← ビジョン・ロードマップ
+├── DEVELOPMENT_POLICY.md  ← 開発フロー・タスク分類・運用ルール
+├── architecture.md        ← フロントエンド構成・ディレクトリ設計
+├── gas-column-headers.md  ← GAS シートのカラム定義（コピペ用）
+├── dev-flow.md            ← 開発フロー詳細
+└── _index.md              ← このファイル
+```
 
 ---
 
-## ドキュメント一覧
+## 直近の変更
 
-| ファイル | 役割 | 行数目安 |
-|---------|------|---------|
-| `CLAUDE.md` | Claude・Cursor 共通ルール（索引更新チェック含む） | 184行 |
-| `docs/_index.md` | **このファイル**（索引） | — |
-| `docs/PROJECT_CONTEXT.md` | ビジョン・ミッション・ロードマップ | 233行 |
-| `docs/DEVELOPMENT_POLICY.md` | 開発フロー・タスク分類・運用ルール | 662行 |
-| `docs/requirements.md` | Logic Training 要件定義書 | 296行 |
-| `docs/specification.md` | Logic Training 仕様書 | 456行 |
-| `docs/requirements-thinking.md` | Thinking Training 要件定義書 | 699行 |
-| `docs/specification-thinking.md` | Thinking Training 仕様書 | 574行 |
-| `docs/architecture.md` | フロントエンド構成・ディレクトリ設計 | 64行 |
-| `docs/gas-column-headers.md` | GAS シートのカラム定義 | 97行 |
-| `docs/dev-flow.md` | 開発フロー詳細（Cursor・Claude の動き） | 157行 |
-| `docs/cursor-instructions/cursor_instruction_doc_index.md` | 索引作成・更新の Cursor 指示書（完了） | — |
-| `docs/setup/OBSIDIAN_SETUP.md` | Obsidian Vault 配置・フォルダ構成 | 485行 |
+| 日付 | 内容 |
+|---|---|
+| 2026-05-25 | ドキュメント構造を全面再編（単一ファイル → requirements/ + specification/ の階層構造へ） |
+| 2026-05-25 | 旧 requirements.md・requirements-thinking.md・specification.md・specification-thinking.md を分割 |
+| 2026-05-25 | 思考トレーニングの設計意図（Obsidianメモ06〜12）を仕様書に反映 |
+| 2026-05-25 | 状態遷移フロー・プロンプト設計意図を全タブの仕様書に追加 |
 
 ---
 
-## requirements.md セクション索引
+## 相談種別ごとの参照先
 
-| セクション | 内容 | こんな相談で参照 |
-|-----------|------|----------------|
-| §1 アプリの目的 | 3つの論理力（読む・判断する・伝える）の定義 | アプリ方向性・新機能の妥当性 |
-| §2 背景 | 開発者の課題感・書籍の限界・解決策 | コンセプトの議論 |
-| §3 対象ユーザー | ターゲット像・除外する像 | UX・難易度の議論 |
-| §4 論理力の定義 | 読む力(A)・判断する力(D)・伝える力(B) | 新タブ・設問設計 |
-| §6 タブ構成と学習目的 | 各タブが鍛える力の対応表（4タブ） | タブ間の役割分担 |
-| §7-1 共通機能要件 | テーマ・業界・難易度・ペルソナ等 | 全タブ共通UI変更 |
-| §7-2 タブ別固有機能 | 穴埋め/要約/批判読み/空雨傘 | 特定タブの仕様変更 |
-| §8 AI問題設計の方針 | ビジネス題材の原則・温度設定・仮説の連鎖 | プロンプト改善・採点基準 |
-| §10 ロードマップ | フェーズ1〜6の計画（積み上げタブは廃止済み） | 優先順位の議論 |
-| §11 開発・運用方針 | バージョン番号・ドキュメント管理 | 運用ルールの確認 |
+### 「このタブの仕様を変えたい」
+
+```
+1. requirements/logic/{tab}.md     ← 変更の目的・ユーザー体験への影響を確認
+2. specification/logic/{tab}.md    ← 変更対象の設計詳細・状態遷移を確認
+3. Cursor指示書を作成
+```
+
+### 「思考トレーニングの採点を変えたい」
+
+```
+1. requirements/thinking/scoring.md   ← 採点設計の意図・役割構成を確認
+2. specification/thinking/api.md      ← APIパラメータ・プロンプト設計意図を確認
+3. specification/thinking/steps.md    ← ステップフローへの影響を確認
+```
+
+### 「新しいタブを追加したい」
+
+```
+1. requirements/logic/overview.md §3  ← タブ構成への影響を確認
+2. requirements/common.md             ← 共通AI方針との整合を確認
+3. requirements/logic/{newtab}.md を新規作成
+4. specification/logic/{newtab}.md を新規作成
+5. Cursor指示書を作成
+```
+
+### 「AIの採点精度を上げたい」
+
+```
+1. requirements/common.md §5-3       ← temperatureの原則
+2. specification/logic/{tab}.md      ← タブ別プロンプト設計意図
+   または specification/thinking/api.md
+```
+
+### 「GASスキーマを変えたい」
+
+```
+1. specification/logic/{tab}.md §GASカラム または specification/thinking/data.md §2
+2. docs/gas-column-headers.md        ← コピペ用ヘッダーも更新
+3. gas-script-v3.js の *_COLS 定数を更新
+```
 
 ---
 
-## specification.md セクション索引
+## 廃止・非表示だがコード・仕様書に残るもの
 
-| セクション | 内容 | こんな相談で参照 |
-|-----------|------|----------------|
-| §1 ファイル構成 | ディレクトリとファイル一覧 | ファイル追加・構成変更 |
-| §2-1 タブ構成 | タブID・表示名（**logic.html 表示は4タブ**。kibari は表に残るが UI 非表示） | タブの追加・削除 |
-| §2-2 定数・設定 | GAS_URL・APIキー・localStorageキー | 設定まわりの変更 |
-| §2-3 テーマ選択UI | テーマ→業界→難易度→ボリュームの順序 | UI改善・選択項目追加 |
-| §2-4 API呼び出し共通 | callClaudeMsg・temperature・model | API関連の変更 |
-| §2-6 写真回答・過去問 | タブ別の写真対応状況 | 写真機能の拡張 |
-| §2-7 ヘッダー | 左右2カラムの構成 | ヘッダーUI変更 |
-| §3-1 穴埋め | 難易度別の文字数・穴抜き数・採点・GASカラム | 穴埋めタブの変更 |
-| §3-2 要約 | 難易度別の文字数・設問タイプ・GASカラム | 要約タブの変更 |
-| §3-3 批判読み | 問題形式(A/B)・設問タイプ・GASカラム | 批判読みタブの変更 |
-| §3-4 空雨傘 | テーマ領域・タイプ・回答UI・GASカラム | 空雨傘タブの変更 |
-| §3-5 気配り | 状況文・5W1H・往復・場面タイプ・GASカラム（UI非表示・コード残存） | 気配り関連の仕様確認 |
-| §4 バックエンド(GAS) | デプロイ設定・エンドポイント一覧 | GAS変更 |
-| §5 AI利用仕様 | model・temperature・max_tokens | Claude API変更 |
-| §6 変更履歴 | v1.0〜最新の全変更（**積み上げ廃止は v2.5**） | 過去の変更経緯の確認 |
-
----
-
-## gas-column-headers.md の活用
-
-| シート | 用途 | 備考 |
-|--------|------|------|
-| fill / summary / critique / ame | 論理トレーニング各タブ | 現行 |
-| kibari | 気配り（レガシー） | アプリ UI 非表示 |
-| thinking | 思考トレーニング | `thinking.html` |
-| ~~tsumiaage~~ | — | **廃止**（スプレッドシートに残っていてもアプリ未使用） |
-
----
-
-## architecture.md の活用
-
-| 変更内容 | 参照箇所 |
-|---------|---------|
-| 新しいJSファイルを追加する | ディレクトリ構成・shared/logic/thinking の分類 |
-| どのファイルを触ればいいか判断する | 「変更時の目安」表 |
-| アーキテクチャの方向性を議論する | 「将来の分岐」セクション |
-
----
-
-## 添付判断ガイド（Claude・Naoya 共通）
-
-### アイデア相談
-```
-添付: なし（Projectsに登録された索引で十分）
-→ 必要に応じてClaudeが追加資料を依頼する
-```
-
-### 仕様議論
-```
-添付: Claudeが索引から指定したセクション
-例: 「空雨傘の事実仕分けUIを改善したい」
-→ Claudeが「specification.mdの§3-4を添付してください」と依頼
-→ 該当セクションのみコピペ
-```
-
-### Cursor指示書作成
-```
-添付: 仕様書の該当セクション + 該当jsファイル
-例: 「空雨傘の事実仕分けを3欄にしたい」
-→ 「specification.md §3-4」と「js/logic/12-ame.js」を添付
-```
-
-### UIの見た目に関する相談
-```
-添付: スクリーンショット + 仕様書の該当UI部分
-```
+| 機能 | 状態 | 関連ファイル |
+|---|---|---|
+| 気配りタブ（kibari） | UI非表示・コード残存 | `js/logic/15-kibari.js`・GAS kibariシート |
+| 積み上げタブ（tsumiaage） | 完全廃止 | 削除済み |
 
 ---
 
 ## 更新ルール
 
-**このファイルは以下のタイミングで必ず更新すること：**
+このファイルは以下のタイミングで更新すること：
 
-- 新しいドキュメントファイルを追加したとき → ドキュメント一覧に追記
-- 既存ドキュメントにセクションを追加・削除したとき → 該当のセクション索引を更新
-- ドキュメントを分割・統合したとき → 一覧と索引を全体的に見直す
+- 新しいドキュメントファイルを追加したとき
+- 既存ドキュメントにセクションを追加・削除したとき
+- ドキュメントを分割・統合したとき
 
 **更新者**: Cursor（Claudeの指示書に従って実施）  
 **更新タイミング**: 仕様変更を伴うPRと同一PRで更新する
