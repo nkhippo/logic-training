@@ -1,3 +1,10 @@
 .DS_Store
 js/shared/01-config.local.js
 js/01-config.local.js
+
+# backend（Phase 1-3）
+backend/node_modules/
+backend/.env.local
+backend/.env
+backend/coverage/
+backend/.DS_Store

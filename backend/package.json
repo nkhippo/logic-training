@@ -1,12 +1,12 @@
 {
   "name": "thinkgrindai-backend",
   "version": "1.0.0",
-  "description": "thinkgrindai backend server",
+  "description": "BEサーバー基盤（Node.js Express + Claude API統合）",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
   },

@@ -41,7 +41,7 @@ Claudeは `docs/TERMS.md` を参照して具体的にどのファイル・どの
 ## 技術スタック
 
 - **フロントエンド**: Vanilla JS / HTML5 / CSS3（GitHub Pages）
-- **バックエンド**: Google Apps Script + Google Sheets
+- **バックエンド**: Node.js Express + Google Sheets（Phase 1-3 実装完了。`gas-script-v3.js` は Phase 4 まで並行）
 - **AI モデル**: claude-sonnet-4-6（generation: temp=0.9 / scoring: temp=0.3）
 - **ソース管理**: GitHub
 
@@ -53,13 +53,25 @@ thinkgrindai/
 ├── index.html
 ├── style.css
 ├── app.js
-├── gas-script-v3.js
+├── gas-script-v3.js                 ← Phase 4 で削除予定
 ├── js/
 │   ├── 01-fill.js                   ← 穴埋めタブ
 │   ├── 02-summary.js                ← 要約タブ
 │   ├── 03-critique.js               ← 批判読みタブ
 │   ├── 04-ame.js                    ← 空雨傘タブ
 │   └── 17-thinking.js               ← 思考トレーニング
+├── backend/                         ← BEサーバー（Phase 1-3）
+│   ├── package.json
+│   ├── src/
+│   │   ├── index.js
+│   │   ├── config/（constants.js, claude-config.js）
+│   │   ├── api/（generate-problem.js, score-answer.js）
+│   │   ├── services/（claude, validate, sheets）
+│   │   └── middleware/（error-handler.js）
+│   ├── tests/（generate, score, integration）
+│   ├── .env.example
+│   ├── .env.local                   ← .gitignore に含める
+│   └── README.md
 ├── docs/
 │   ├── TERMS.md                         ← プロジェクト用語定義（最優先で読む）
 │   ├── DOCUMENT_GUIDELINES.md           ← ドキュメント記載粒度ガイドライン（最優先で読む）
@@ -100,6 +112,11 @@ Phase 3: 仕様・Issue 草稿（Claude が担当）
   タイプ C: docs/requirements/ + docs/specification/ + cursor-instructions/ を作成
             → Issue 本文草稿も .md ファイルで出力
   → タイプ C は GitHub に docs を commit・push
+
+Phase 3-1: バックエンド実装（Cursor が担当）【Phase 1-3 / Issue #40】
+  - Node.js Express サーバー・Claude API（生成・採点）・Google Sheets（user_core）
+  - テスト実装・PR（Fixes #40）
+  - **Status**: 完了（2026-05-26）
 
 Phase 4: GitHub Issue 作成（Naoya が担当）
   Claude 出力の .md をコピペして Issue 作成
