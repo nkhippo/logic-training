@@ -22,10 +22,12 @@ function errorHandler(err, req, res, next) {
     });
   }
 
-  if (err.name === 'AnthropicError' || err.constructor?.name?.includes('Anthropic')) {
+  const status = err.status || err.statusCode;
+  if (err.name === 'AnthropicError' || err.constructor?.name?.includes('Anthropic') || status === 401 || status === 404 || status === 429) {
+    const apiMessage = err.error?.message || err.message;
     return res.status(503).json({
       error: 'claude_api_error',
-      message: 'Claude API is temporarily unavailable. Please try again.',
+      message: apiMessage || 'Claude API is temporarily unavailable. Please try again.',
       status: 503,
       timestamp: new Date().toISOString(),
     });
