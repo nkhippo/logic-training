@@ -1,82 +1,129 @@
-import { useState } from 'react';
 import { useAppContext } from '../../contexts/AppContext.jsx';
 import { useTranslation } from '../../hooks/useTranslation.js';
-import { THINKING_TYPES } from '../../domain/thinking-domain.js';
-import { gradeThinkingStep } from '../../logic/thinkingLogic.js';
-import { esc, formatFeedback100 } from '../../utils/markdown.js';
+import { ENABLE_REFLECTION } from '../../domain/constants.js';
+import {
+  getThinkingStepMode,
+  isLastAnswerStep,
+  generateThinkingFinalQuestion,
+  generateThinkingFinalFeedback,
+} from '../../logic/thinkingLogic.js';
+import { esc } from '../../utils/markdown.js';
+import StepView from './StepView.jsx';
+import FinalQuestionView from './FinalQuestionView.jsx';
+import FeedbackView from './FeedbackView.jsx';
+import ReflectionView from './ReflectionView.jsx';
 
 /**
- * @param {{ problem: object }} props
- * @returns {JSX.Element}
+ * @returns {JSX.Element|null}
  */
-export default function ProblemView({ problem }) {
-  const { dispatch } = useAppContext();
-  const { t, lang } = useTranslation();
-  const langKey = lang === 'en' ? 'en' : 'ja';
-  const [answers, setAnswers] = useState(problem.questions?.map(() => '') || []);
-  const [feedback, setFeedback] = useState(null);
-  const busy = false;
+export default function ProblemView() {
+  const { state, dispatch } = useAppContext();
+  const prob = state.thinking;
+  const { t } = useTranslation();
 
-  const handleSubmit = async () => {
-    const idx = 0;
-    const answer = answers.join('\n');
-    if (!answer.trim()) return;
-    dispatch({ type: 'SET_GRADE_BUSY', payload: 'thinking' });
-    try {
-      const fb = await gradeThinkingStep(problem, idx, answer);
-      setFeedback(fb);
-    } catch (e) {
-      dispatch({ type: 'SET_TOAST', payload: { message: e.message } });
-    } finally {
-      dispatch({ type: 'SET_GRADE_BUSY', payload: null });
+  if (!prob) return null;
+
+  const handleAdvance = async () => {
+    const current = state.thinking;
+    if (!current || current.done) return;
+    const stepIdx = current.currentStepIdx;
+    const mode = getThinkingStepMode(current.level, stepIdx);
+
+    if (isLastAnswerStep(current, stepIdx, mode)) {
+      dispatch({ type: 'SET_GRADE_BUSY', payload: 'thinking' });
+      try {
+        if (current.diff < 2) {
+          const fb = await generateThinkingFinalFeedback(current, null);
+          dispatch({
+            type: 'UPDATE_THINKING',
+            payload: {
+              feedback: fb,
+              done: true,
+              phase: ENABLE_REFLECTION ? 'reflection' : 'feedback',
+            },
+          });
+        } else {
+          const fq = await generateThinkingFinalQuestion(current);
+          dispatch({
+            type: 'UPDATE_THINKING',
+            payload: {
+              finalQuestion: fq,
+              phase: 'finalQuestion',
+              currentStepIdx: stepIdx,
+            },
+          });
+        }
+      } catch (e) {
+        dispatch({ type: 'SET_TOAST', payload: { message: e.message } });
+      } finally {
+        dispatch({ type: 'SET_GRADE_BUSY', payload: null });
+      }
+      return;
     }
+
+    dispatch({
+      type: 'UPDATE_THINKING',
+      payload: { currentStepIdx: stepIdx + 1 },
+    });
   };
+
+  const stepCount = currentStepCount(prob);
+  const phase = prob.phase || 'steps';
 
   return (
     <div id="thinking-result" className="card" style={{ marginTop: '1rem' }}>
       <p className="slabel">{t('thinkingSituationLbl')}</p>
       <div className="problem-box" id="thinking-situation">
-        {esc(problem.situation)}
+        {esc(prob.situation)}
       </div>
-      {problem.extraInfo && (
+      {prob.extraInfo && (
         <div className="problem-box" style={{ marginTop: '8px', borderStyle: 'dashed' }}>
-          {esc(problem.extraInfo)}
+          {esc(prob.extraInfo)}
         </div>
       )}
-      <div id="thinking-steps" style={{ marginTop: '1rem' }}>
-        {problem.questions?.map((q, i) => {
-          const typeObj = THINKING_TYPES[langKey].find((t) => t.id === q.typeId);
-          return (
-            <div key={i} className="ta-qa-block">
-              <p className="ta-q-lbl">
-                <strong>{typeObj?.label || ''}</strong>
-              </p>
-              <p className="ta-q-lbl">{esc(q.question)}</p>
-              <textarea
-                className="sum-ta"
-                value={answers[i] || ''}
-                onChange={(e) => {
-                  const next = [...answers];
-                  next[i] = e.target.value;
-                  setAnswers(next);
-                }}
-                style={{ minHeight: '120px', width: '100%' }}
+
+      {phase === 'steps' && (
+        <div id="thinking-steps" style={{ marginTop: '1rem' }}>
+          {Array.from({ length: stepCount }, (_, i) => {
+            if (i > prob.currentStepIdx) return null;
+            const mode = getThinkingStepMode(prob.level, i);
+            return (
+              <StepView
+                key={i}
+                stepIdx={i}
+                mode={mode}
+                isActive={i === prob.currentStepIdx}
+                onAdvance={handleAdvance}
               />
-            </div>
-          );
-        })}
-      </div>
-      <button type="button" className="btn" style={{ marginTop: '12px' }} onClick={handleSubmit} disabled={busy}>
-        {t('thinkingSubmitBtn') || t('submitBtn')}
-      </button>
-      {feedback && (
-        <div
-          id="thinking-feedback"
-          className="feedback-box"
-          style={{ marginTop: '1rem' }}
-          dangerouslySetInnerHTML={{ __html: formatFeedback100(feedback, problem.lang) }}
-        />
+            );
+          })}
+        </div>
+      )}
+
+      {phase === 'finalQuestion' && <FinalQuestionView onComplete={() => {}} />}
+
+      {(phase === 'feedback' || phase === 'reflection' || prob.feedback) && (
+        <FeedbackView feedback={prob.feedback} />
+      )}
+
+      {phase === 'reflection' && ENABLE_REFLECTION && prob.reflectionStep !== -1 && (
+        <ReflectionView feedback={prob.feedback} />
+      )}
+
+      {prob.done && phase === 'steps' && prob.steps?.some((s) => s?.closingFeedback) && (
+        <p className="slabel" style={{ marginTop: '1rem' }}>
+          {t('thinkingSessionDoneLbl') || 'セッション完了'}
+        </p>
       )}
     </div>
   );
+}
+
+/**
+ * @param {object} prob
+ * @returns {number}
+ */
+function currentStepCount(prob) {
+  if (prob.level === 1) return 1;
+  return 2;
 }

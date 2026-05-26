@@ -76,6 +76,29 @@ function appReducer(state, action) {
       return { ...state, ame: action.payload };
     case 'SET_THINKING_PROBLEM':
       return { ...state, thinking: action.payload };
+    case 'SET_THINKING_PHASE': {
+      if (!state.thinking) return state;
+      return {
+        ...state,
+        thinking: { ...state.thinking, phase: action.payload },
+      };
+    }
+    case 'SET_THINKING_STEP_RESULT': {
+      if (!state.thinking) return state;
+      const steps = [...(state.thinking.steps || [])];
+      steps[action.stepIdx] = { ...steps[action.stepIdx], ...action.payload };
+      return {
+        ...state,
+        thinking: { ...state.thinking, steps },
+      };
+    }
+    case 'UPDATE_THINKING': {
+      if (!state.thinking) return state;
+      return {
+        ...state,
+        thinking: { ...state.thinking, ...action.payload },
+      };
+    }
     case 'SET_PAST': {
       const pastKey = `${action.tab}Past`;
       return { ...state, [pastKey]: action.payload };
