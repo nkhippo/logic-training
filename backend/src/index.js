@@ -6,7 +6,6 @@ const generateProblemRoute = require('./api/generate-problem');
 const scoreAnswerRoute = require('./api/score-answer');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 const ALLOWED_ORIGINS = [
   'https://nkhippo.github.io',
@@ -52,9 +51,11 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  const PORT = process.env.PORT || 3000;
+
+  app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console -- startup message
-    console.log(`[thinkgrindai-be] Server running on port ${PORT}`);
+    console.log(`[app] Server running on port ${PORT}`);
   });
 }
 
