@@ -1,9 +1,44 @@
 require('dotenv').config();
 
-const express = require('express');
-const errorHandler = require('./middleware/error-handler');
-const generateProblemRoute = require('./api/generate-problem');
-const scoreAnswerRoute = require('./api/score-answer');
+// eslint-disable-next-line no-console -- startup diagnostic
+console.log('[app] === STARTUP DEBUG ===');
+// eslint-disable-next-line no-console -- startup diagnostic
+console.log('[app] NODE_ENV:', process.env.NODE_ENV);
+// eslint-disable-next-line no-console -- startup diagnostic
+console.log('[app] PORT:', process.env.PORT || '(default 3000)');
+// eslint-disable-next-line no-console -- startup diagnostic
+console.log('[app] CLAUDE_API_KEY:', process.env.CLAUDE_API_KEY ? '✓ SET' : '✗ NOT SET');
+
+let express;
+let errorHandler;
+let generateProblemRoute;
+let scoreAnswerRoute;
+
+try {
+  express = require('express');
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log('[app] ✓ express module loaded');
+
+  errorHandler = require('./middleware/error-handler');
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log('[app] ✓ error-handler middleware loaded');
+
+  generateProblemRoute = require('./api/generate-problem');
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log('[app] ✓ generate-problem route loaded');
+
+  scoreAnswerRoute = require('./api/score-answer');
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log('[app] ✓ score-answer route loaded');
+} catch (err) {
+  // eslint-disable-next-line no-console -- fatal error
+  console.error('[app] ✗ FATAL: Module loading failed');
+  // eslint-disable-next-line no-console -- fatal error
+  console.error('[app] Error message:', err.message);
+  // eslint-disable-next-line no-console -- fatal error
+  console.error('[app] Stack trace:', err.stack);
+  process.exit(1);
+}
 
 if (process.env.NODE_ENV !== 'production') {
   if (!process.env.CLAUDE_API_KEY) {
@@ -64,14 +99,21 @@ app.use(errorHandler);
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3000;
 
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log(`[app] Attempting to listen on port ${PORT}...`);
+
   const server = app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console -- startup message
-    console.log(`[app] Server running on port ${PORT}`);
+    console.log(`[app] ✓ Server running on port ${PORT}`);
+    // eslint-disable-next-line no-console -- startup message
+    console.log('[app] === STARTUP COMPLETE ===');
   });
 
   server.on('error', (err) => {
     // eslint-disable-next-line no-console -- error reporting
-    console.error(`[app] Server error: ${err.message}`);
+    console.error(`[app] ✗ Server error: ${err.message}`);
+    // eslint-disable-next-line no-console -- error reporting
+    console.error('[app] Stack:', err.stack);
     process.exit(1);
   });
 }
