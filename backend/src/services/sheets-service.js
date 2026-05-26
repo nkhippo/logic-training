@@ -184,4 +184,75 @@ async function updateUserScore(user_id, service, new_score) {
   }
 }
 
-module.exports = { getUserCore, updateUserScore, initializeAuth };
+/**
+ * user_core に新規ユーザーを追加する
+ * @param {string} user_id
+ * @returns {Promise<object>}
+ */
+async function createUserCore(user_id) {
+  try {
+    const sheets = getSheetsClient();
+    const now = new Date().toISOString();
+    const newRow = [
+      user_id,
+      'Anonymous',
+      now,
+      now,
+      0,
+      0,
+      0,
+      0,
+      1,
+      '{}',
+    ];
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: SPREADSHEET_ID,
+      range: `${SHEET_NAME}!A:J`,
+      valueInputOption: 'USER_ENTERED',
+      resource: { values: [newRow] },
+    });
+
+    // eslint-disable-next-line no-console -- user creation log
+    console.log(`[sheets-service] Created new user: ${user_id}`);
+    return {
+      user_id,
+      name: 'Anonymous',
+      created_at: now,
+      last_active: now,
+      logic_problems_solved: 0,
+      logic_avg_score: 0,
+      thinking_problems_solved: 0,
+      thinking_avg_score: 0,
+      current_level: 1,
+      preferences: {},
+    };
+  } catch (err) {
+    // eslint-disable-next-line no-console -- sheets error log
+    console.error('[sheets-service] createUserCore error:', err.message);
+    const error = new Error('Failed to create user in Google Sheets');
+    error.code = 'sheets_error';
+    error.status = 503;
+    throw error;
+  }
+}
+
+/**
+ * ユーザーが存在しなければ自動作成する
+ * @param {string} user_id
+ * @returns {Promise<object|null>}
+ */
+async function ensureUserCore(user_id) {
+  if (!user_id) return null;
+  const user = await getUserCore(user_id);
+  if (user) return user;
+  return createUserCore(user_id);
+}
+
+module.exports = {
+  getUserCore,
+  updateUserScore,
+  createUserCore,
+  ensureUserCore,
+  initializeAuth,
+};

@@ -142,13 +142,17 @@ async function generateCritique(){
   try{
     const genMaxTokens=isAForm?2000:1200;
     const personaNote=buildPersonaPromptNote(isEN);
-    const raw=await callClaude(prompt+personaNote,sys,genMaxTokens,0.9);
+    const beProblemHolder={};
+    const raw=await callClaude(prompt+personaNote,sys,genMaxTokens,0.9,{
+      mode:'generate',service:'logic',tab:'critique',theme:themeIn||'auto',
+      onProblemId:(id)=>{beProblemHolder.id=id;},
+    });
     if(!raw)return;
     const p=safeJSON(raw);
     if(!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
     const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||qTypes[i]||'本当にそう言える？の指摘',question:q.question||'',argument:q.argument||'',targetChars:parseInt(q.targetChars)||100}));
     st.critique={
-      id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
+      id:Date.now(),beProblemId:beProblemHolder.id||null,theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
       date:new Date().toISOString(),industry:genIndustrySnapshot(),text:p.text||null,questions,
       feedback:null,lang:st.lang,form:isAForm?'A':'B',
     };
@@ -202,7 +206,13 @@ async function gradeCritique(prob,userAnswers){
     ?`Grade each question on the following axes and provide feedback:\n- Accuracy of gap/condition/flow/stakeholder identification\n- Logical validity of the learner's reasoning in a business context\n- Quality of written response (clarity, conciseness, plain business language)\nProvide an improved example answer within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
     :`各設問を以下の軸で採点し、フィードバックしてください。\n- 論理の弱点・前提の欠如・立場による疑問の特定の正確さ\n- 学習者の推論の論理的妥当性（ビジネス文脈）\n- 記述の質（明確さ・簡潔さ・平易なビジネス表現）\n各設問の末尾に、文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
   const prompt=`${passageSection}${qSection}\n\n${gradeInst}`;
-  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
+  const original=prob.form==='A'&&prob.text?prob.text:JSON.stringify(prob.questions);
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3,{
+    mode:'score',service:'logic',problem_id:prob.beProblemId||null,
+    user_answer:userAnswers.join('\n---\n'),
+    context:{original_problem:original,tab:'critique'},
+    markdownResponse:true,
+  });
 }
 function buildCritiqueEntry(prob){
   const p=normCritiqueProb(prob);

@@ -1,7 +1,7 @@
 const express = require('express');
 const { validateScoreRequest } = require('../services/validate-service');
 const { scoreLogicAnswer, scoreThinkingAnswer } = require('../services/claude-service');
-const { updateUserScore } = require('../services/sheets-service');
+const { ensureUserCore, updateUserScore } = require('../services/sheets-service');
 const { MODEL } = require('../config/claude-config');
 
 const router = express.Router();
@@ -18,22 +18,56 @@ router.post('/', async (req, res, next) => {
       });
     }
 
-    const { service, user_answer, user_id, context } = req.body;
+    const {
+      service,
+      user_answer,
+      user_id,
+      context,
+      system_prompt,
+      user_prompt,
+      max_tokens,
+      temperature,
+    } = req.body;
     const { original_problem, tab, thinking_type, level } = context;
+
+    if (user_id) {
+      try {
+        await ensureUserCore(user_id);
+      } catch (e) {
+        // eslint-disable-next-line no-console -- non-fatal warning
+        console.warn('[score-answer] ensureUserCore failed, continuing:', e.message);
+      }
+    }
+
+    const useCustomPrompt = Boolean(system_prompt && user_prompt);
+    const scoreOpts = useCustomPrompt
+      ? {
+          systemPrompt: system_prompt,
+          userPrompt: user_prompt,
+          maxTokens: max_tokens,
+          temperature,
+        }
+      : {};
 
     let scoreResult;
     if (service === 'logic') {
-      scoreResult = await scoreLogicAnswer({ tab, original_problem, user_answer });
+      scoreResult = await scoreLogicAnswer({
+        tab,
+        original_problem,
+        user_answer,
+        ...scoreOpts,
+      });
     } else {
       scoreResult = await scoreThinkingAnswer({
         thinking_type,
         level: Number(level),
         original_problem,
         user_answer,
+        ...scoreOpts,
       });
     }
 
-    if (user_id) {
+    if (user_id && scoreResult.score > 0) {
       updateUserScore(user_id, service, scoreResult.score).catch((e) => {
         // eslint-disable-next-line no-console -- non-fatal error
         console.error('[score-answer] updateUserScore failed:', e.message);
@@ -45,11 +79,12 @@ router.post('/', async (req, res, next) => {
       score_detail: scoreResult.score_detail,
       feedback: scoreResult.feedback,
       suggestions: scoreResult.suggestions,
+      raw_text: scoreResult.raw_text || null,
       metadata: {
         evaluated_at: new Date().toISOString(),
         model: MODEL,
-        temperature: 0.3,
-        max_tokens: 1000,
+        temperature: temperature ?? 0.3,
+        max_tokens: max_tokens || 1000,
       },
     });
   } catch (err) {

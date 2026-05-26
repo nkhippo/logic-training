@@ -216,7 +216,12 @@ async function ppSummary(id){
   try{
     const diff=prob.diff||st.sDiff;
     const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||DEFAULT_S_VOLUME)].chars);
-    const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3);if(!res)return;
+    const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3,{
+      mode:'score',service:'logic',problem_id:prob.beProblemId||null,
+      user_answer:userTexts.join('\n---\n'),
+      context:{original_problem:prob.text,tab:'summary'},
+      markdownResponse:true,
+    });if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res,pLang)}</div>`;
     document.getElementById('pp-s2').className='step done';
     document.getElementById('pp-s3').className='step done';

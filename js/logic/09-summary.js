@@ -230,12 +230,16 @@ async function generateSummary(){
     const genMaxTokens=length<=500?1200:length<=2000?3000:6000;
     const formatNote=isEN?SUM_FORMAT_NOTE_EN:SUM_FORMAT_NOTE_JA;
     const personaNote=buildPersonaPromptNote(isEN);
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}\n${formatNote}${personaNote}`,sys,genMaxTokens,0.9);
+    const beProblemHolder={};
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${typeGuide}\n${jsonInst}\n${formatNote}${personaNote}`,sys,genMaxTokens,0.9,{
+      mode:'generate',service:'logic',tab:'summary',theme:themeIn||'auto',
+      onProblemId:(id)=>{beProblemHolder.id=id;},
+    });
     if(!raw)return;
     const p=safeJSON(raw);
     if(!p.text||!Array.isArray(p.questions)||p.questions.length===0)throw new Error('Invalid JSON structure');
     const questions=p.questions.map((q,i)=>({id:q.id||i+1,type:q.type||'主張のまとめ',question:q.question||'',targetChars:parseInt(q.targetChars)||50}));
-    st.summary={id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),industry:genIndustrySnapshot(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||DEFAULT_S_VOLUME):null,feedback:null,lang:st.lang};
+    st.summary={id:Date.now(),beProblemId:beProblemHolder.id||null,theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),industry:genIndustrySnapshot(),text:p.text,questions,ratio,length,sVolume:diff>=4?(st.sVolume||DEFAULT_S_VOLUME):null,feedback:null,lang:st.lang};
     renderSummary(st.summary);
     resetGenConditions();
     try{await syncPastOnGen('summary',st.summary);}
@@ -434,7 +438,12 @@ async function submitSummary(){
   try{
     const diff=prob.diff||st.sDiff;
     const length=prob.length||(diff<=3?S_LENGTH_FIXED[diff]:S_LENGTH_VARIABLE[(prob.sVolume||st.sVolume||DEFAULT_S_VOLUME)].chars);
-    const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3);if(!res)return;
+    const res=await callClaude(prompt,sys,gradeMaxTokensBySummaryLength(length),0.3,{
+      mode:'score',service:'logic',problem_id:prob.beProblemId||null,
+      user_answer:userTexts.join('\n---\n'),
+      context:{original_problem:prob.text,tab:'summary'},
+      markdownResponse:true,
+    });if(!res)return;
     fb.innerHTML=`<div class="feedback-box">${formatSummaryFeedback(res,prob.lang)}</div>`;
     prob.feedback=res;
     prob.answerMode='text';

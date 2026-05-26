@@ -11,21 +11,28 @@ const {
  * @param {{ tab: string; theme: string }} params
  * @returns {Promise<string>}
  */
-async function generateLogicProblem({ tab, theme }) {
+async function generateLogicProblem({
+  tab,
+  theme,
+  systemPrompt: systemOverride,
+  userPrompt: userOverride,
+  maxTokens,
+  temperature,
+}) {
   const client = getClaudeClient();
   const tabConfig = LOGIC_TAB_CONFIG[tab];
 
-  const systemPrompt = `あなたは論理トレーニングアプリの教育コンテンツ生成エージェントです。
+  const systemPrompt = systemOverride || `あなたは論理トレーニングアプリの教育コンテンツ生成エージェントです。
 ユーザーの学習に役立つ質の高い問題を作成してください。
 問題文のみを出力してください。余計な説明・前置き・解説は不要です。`;
 
-  const userPrompt = `テーマ: ${theme}
+  const userPrompt = userOverride || `テーマ: ${theme}
 タスク: ${tabConfig.prompt_instruction}`;
 
   const response = await client.messages.create({
     model: MODEL,
-    max_tokens: tabConfig.max_tokens,
-    temperature: TEMPERATURE.generation,
+    max_tokens: maxTokens || tabConfig.max_tokens,
+    temperature: temperature ?? TEMPERATURE.generation,
     system: systemPrompt,
     messages: [{ role: 'user', content: userPrompt }],
   });
@@ -38,24 +45,32 @@ async function generateLogicProblem({ tab, theme }) {
  * @param {{ thinking_type: string; level: number; theme: string }} params
  * @returns {Promise<string>}
  */
-async function generateThinkingProblem({ thinking_type, level, theme }) {
+async function generateThinkingProblem({
+  thinking_type,
+  level,
+  theme,
+  systemPrompt: systemOverride,
+  userPrompt: userOverride,
+  maxTokens,
+  temperature,
+}) {
   const client = getClaudeClient();
   const levelConfig = THINKING_LEVEL_CONFIG[level];
   const typeName = THINKING_TYPE_NAMES[thinking_type];
 
-  const systemPrompt = `あなたは思考トレーニングアプリの教育コンテンツ生成エージェントです。
+  const systemPrompt = systemOverride || `あなたは思考トレーニングアプリの教育コンテンツ生成エージェントです。
 指定された思考フレームワークと難易度レベルに合わせた問題を作成してください。
 問題文のみを出力してください。余計な説明・前置き・解説は不要です。`;
 
-  const userPrompt = `思考タイプ: ${typeName}
+  const userPrompt = userOverride || `思考タイプ: ${typeName}
 難易度: ${levelConfig.difficulty}
 テーマ: ${theme}
 タスク: ${levelConfig.prompt_instruction}`;
 
   const response = await client.messages.create({
     model: MODEL,
-    max_tokens: levelConfig.max_tokens,
-    temperature: TEMPERATURE.generation,
+    max_tokens: maxTokens || levelConfig.max_tokens,
+    temperature: temperature ?? TEMPERATURE.generation,
     system: systemPrompt,
     messages: [{ role: 'user', content: userPrompt }],
   });
@@ -68,7 +83,53 @@ async function generateThinkingProblem({ thinking_type, level, theme }) {
  * @param {{ tab: string; original_problem: string; user_answer: string }} params
  * @returns {Promise<object>}
  */
-async function scoreLogicAnswer({ tab, original_problem, user_answer }) {
+/**
+ * FE 互換のカスタムプロンプトで採点（マークダウン等をそのまま返す）
+ * @param {{ systemPrompt: string; userPrompt: string; maxTokens?: number; temperature?: number }} params
+ * @returns {Promise<string>}
+ */
+async function scoreWithCustomPrompt({
+  systemPrompt,
+  userPrompt,
+  maxTokens = 1000,
+  temperature = TEMPERATURE.scoring,
+}) {
+  const client = getClaudeClient();
+  const response = await client.messages.create({
+    model: MODEL,
+    max_tokens: maxTokens,
+    temperature,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: userPrompt }],
+  });
+  return response.content[0].text;
+}
+
+async function scoreLogicAnswer({
+  tab,
+  original_problem,
+  user_answer,
+  systemPrompt: systemOverride,
+  userPrompt: userOverride,
+  maxTokens,
+  temperature,
+}) {
+  if (systemOverride && userOverride) {
+    const text = await scoreWithCustomPrompt({
+      systemPrompt: systemOverride,
+      userPrompt: userOverride,
+      maxTokens,
+      temperature,
+    });
+    return {
+      score: 0,
+      score_detail: {},
+      feedback: text,
+      suggestions: [],
+      raw_text: text,
+    };
+  }
+
   const client = getClaudeClient();
 
   const systemPrompt = `あなたは論理トレーニングアプリの採点・フィードバック生成エージェントです。
@@ -118,7 +179,32 @@ async function scoreLogicAnswer({ tab, original_problem, user_answer }) {
  * @param {{ thinking_type: string; level: number; original_problem: string; user_answer: string }} params
  * @returns {Promise<object>}
  */
-async function scoreThinkingAnswer({ thinking_type, level, original_problem, user_answer }) {
+async function scoreThinkingAnswer({
+  thinking_type,
+  level,
+  original_problem,
+  user_answer,
+  systemPrompt: systemOverride,
+  userPrompt: userOverride,
+  maxTokens,
+  temperature,
+}) {
+  if (systemOverride && userOverride) {
+    const text = await scoreWithCustomPrompt({
+      systemPrompt: systemOverride,
+      userPrompt: userOverride,
+      maxTokens,
+      temperature,
+    });
+    return {
+      score: 0,
+      score_detail: {},
+      feedback: text,
+      suggestions: [],
+      raw_text: text,
+    };
+  }
+
   const client = getClaudeClient();
   const typeName = THINKING_TYPE_NAMES[thinking_type];
   const levelConfig = THINKING_LEVEL_CONFIG[level];
@@ -175,4 +261,5 @@ module.exports = {
   generateThinkingProblem,
   scoreLogicAnswer,
   scoreThinkingAnswer,
+  scoreWithCustomPrompt,
 };

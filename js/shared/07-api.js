@@ -26,8 +26,95 @@ function updateApiKeyUI(){
   }
 }
 
+// ── Backend API（Railway） ─────────────────────────────────
+function useBackendApi(){
+  return !!(window.CONFIG&&window.CONFIG.USE_BACKEND_API&&window.CONFIG.API_BASE_URL);
+}
+function backendUserId(){
+  if(typeof window.getCurrentUserId==='function')return window.getCurrentUserId();
+  if(typeof getUserId==='function')return getUserId();
+  return null;
+}
+async function beFetchJson(path,body){
+  const base=String(window.CONFIG.API_BASE_URL||'').replace(/\/$/,'');
+  const res=await fetch(`${base}${path}`,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(body),
+  });
+  let data={};
+  try{data=await res.json();}catch{data={};}
+  if(!res.ok){
+    const msg=data.message||data.error||`API error ${res.status}`;
+    throw new Error(msg);
+  }
+  return data;
+}
+/**
+ * BE: 問題生成
+ * @param {object} payload
+ * @returns {Promise<{problem_id:string,content:string}>}
+ */
+async function beGenerateProblem(payload){
+  return beFetchJson('/api/generate-problem',payload);
+}
+/**
+ * BE: 採点
+ * @param {object} payload
+ * @returns {Promise<object>}
+ */
+async function beScoreAnswer(payload){
+  return beFetchJson('/api/score-answer',payload);
+}
+
 // ── Claude API ────────────────────────────────────────────
-async function callClaude(prompt,sys,maxTok=2500,temperature=0.9){
+/**
+ * Claude 呼び出し（USE_BACKEND_API 時は BE 経由）
+ * @param {string} prompt
+ * @param {string} sys
+ * @param {number} [maxTok]
+ * @param {number} [temperature]
+ * @param {object|null} [beOpts] BE ルーティング用（mode: generate|score）
+ * @returns {Promise<string|null>}
+ */
+async function callClaude(prompt,sys,maxTok=2500,temperature=0.9,beOpts=null){
+  if(beOpts&&useBackendApi()){
+    if(beOpts.mode==='generate'){
+      const data=await beGenerateProblem({
+        service:beOpts.service,
+        tab:beOpts.tab,
+        thinking_type:beOpts.thinking_type,
+        level:beOpts.level,
+        theme:beOpts.theme||'auto',
+        user_id:backendUserId(),
+        system_prompt:sys,
+        user_prompt:prompt,
+        max_tokens:maxTok,
+        temperature,
+      });
+      if(typeof beOpts.onProblemId==='function'&&data.problem_id){
+        beOpts.onProblemId(data.problem_id);
+      }
+      return data.content||'';
+    }
+    if(beOpts.mode==='score'){
+      const data=await beScoreAnswer({
+        service:beOpts.service,
+        problem_id:beOpts.problem_id||null,
+        user_answer:beOpts.user_answer,
+        user_id:backendUserId(),
+        context:beOpts.context,
+        system_prompt:sys,
+        user_prompt:prompt,
+        max_tokens:maxTok,
+        temperature,
+      });
+      if(beOpts.markdownResponse||beOpts.jsonResponse){
+        return data.raw_text||data.feedback||'';
+      }
+      return data.feedback||'';
+    }
+  }
   return callClaudeMsg(sys,prompt,maxTok,temperature);
 }
 async function callClaudeMsg(sys,content,maxTok=2500,temperature=0.9){
