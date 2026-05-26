@@ -64,9 +64,15 @@ app.use(errorHandler);
 if (process.env.NODE_ENV !== 'test') {
   const PORT = process.env.PORT || 3000;
 
-  app.listen(PORT, '0.0.0.0', () => {
+  const server = app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console -- startup message
     console.log(`[app] Server running on port ${PORT}`);
+  });
+
+  server.on('error', (err) => {
+    // eslint-disable-next-line no-console -- error reporting
+    console.error(`[app] Server error: ${err.message}`);
+    process.exit(1);
   });
 }
 
