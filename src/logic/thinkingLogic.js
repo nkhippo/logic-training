@@ -29,7 +29,9 @@ export function getThinkingStepMode(level, stepIdx) {
  * @returns {number}
  */
 export function getThinkingStepCount(level) {
-  return level === 1 ? 1 : 2;
+  if (level === 1) return 1;
+  if (level === 4) return 3;
+  return 2;
 }
 
 /**
@@ -490,6 +492,21 @@ ${
 }`;
 
   return callClaude(prompt, sys, 500, 0.7, { markdownResponse: true });
+}
+
+/**
+ * @param {string} feedback
+ * @param {string} lang
+ * @returns {string}
+ */
+export function extractReflectionPrompt(feedback, lang) {
+  if (!feedback) return '';
+  const isEN = lang === 'en';
+  const pattern = isEN
+    ? /##\s*Reflection[^\n]*\n([\s\S]*?)(?=\n##|$)/i
+    : /##\s*振り返り[^\n]*\n([\s\S]*?)(?=\n##|$)/i;
+  const match = feedback.match(pattern);
+  return match ? match[1].trim() : '';
 }
 
 export function buildThinkingPastEntry(prob) {
