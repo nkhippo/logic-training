@@ -132,6 +132,16 @@ function updateGenStatusUI(mode){
     if(title)title.textContent=st.genPhase==='llm'?l.genPhaseLlm:l.genPhaseProcess;
   }
 }
+/** @returns {boolean} 問題生成または採点処理中か */
+function isBusy(){
+  return !!(st.genBusy||st.gradeBusy);
+}
+/** 処理中は .app に is-busy を付与（スタイル用） */
+function setAppBusyClass(){
+  const app=document.querySelector('.app');
+  if(app)app.classList.toggle('is-busy',!!isBusy());
+}
+
 function setGenPhase(mode,phase){
   st.genPhase=phase;
   const order=['llm','process'];
