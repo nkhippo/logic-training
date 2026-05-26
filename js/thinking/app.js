@@ -180,10 +180,7 @@ async function generateThinking() {
     showAppToast('thinking-toast',L[thinkingSt.lang].diffRequired || '難易度を選択してください');
     return;
   }
-  if (!useBackendApi()) {
-    const key = getKey();
-    if (!key) return;
-  }
+  if (!hasApiKey()) return;
 
   thinkingSt.busy = true;
   document.getElementById('thinking-gen-btn').disabled = true;
@@ -444,8 +441,7 @@ async function submitThinkingStep(stepIdx, mode) {
   if (thinkingSt.busy) return;
   const prob = thinkingSt.problem;
   if (!prob) return;
-  const key = getKey();
-  if (!key) return;
+  if (!hasApiKey()) return;
 
   const btn = document.getElementById(`th-step-btn-${stepIdx}`);
   if (btn) btn.style.display = 'none';
@@ -836,8 +832,7 @@ async function submitThinkingFinalAnswer() {
   if (thinkingSt.busy) return;
   const prob = thinkingSt.problem;
   if (!prob) return;
-  const key = getKey();
-  if (!key) return;
+  if (!hasApiKey()) return;
 
   const finalAns = document.getElementById('th-final-ans')?.value.trim() || '';
   if (!finalAns) {
@@ -1058,8 +1053,7 @@ async function submitThinkingReflection(round) {
   if (thinkingSt.busy) return;
   const prob = thinkingSt.problem;
   if (!prob || prob.reflectionStep === -1) return;
-  const key = getKey();
-  if (!key) return;
+  if (!hasApiKey()) return;
 
   const ans = document.getElementById(`reflection-ans-${round}`)?.value.trim() || '';
   if (!ans) return;

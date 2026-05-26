@@ -15,6 +15,7 @@ jest.mock('../src/services/claude-service', () => ({
     feedback: '丁寧な分析です',
     suggestions: ['もう一段深掘りすると良い'],
   }),
+  completeWithPrompt: jest.fn().mockResolvedValue('generic completion'),
 }));
 jest.mock('../src/services/sheets-service', () => ({
   getUserCore: jest.fn().mockResolvedValue(null),

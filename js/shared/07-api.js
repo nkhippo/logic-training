@@ -1,6 +1,8 @@
 /* API */
 // ── APIキー（組み込み） ─────────────────────────────────────
-function hasApiKey(){return !!getKey();}
+function hasApiKey(){
+  return useBackendApi()||!!getKey();
+}
 function getKey(){return CLAUDE_API_KEY||'';}
 function updateApiKeyUI(){
   const l=L[st.lang],busy=isBusy();
@@ -66,6 +68,14 @@ async function beGenerateProblem(payload){
 async function beScoreAnswer(payload){
   return beFetchJson('/api/score-answer',payload);
 }
+/**
+ * BE: 汎用 Claude 完了（フォローアップ・写真採点など）
+ * @param {object} payload
+ * @returns {Promise<{content:string}>}
+ */
+async function beComplete(payload){
+  return beFetchJson('/api/complete',payload);
+}
 
 // ── Claude API ────────────────────────────────────────────
 /**
@@ -115,9 +125,35 @@ async function callClaude(prompt,sys,maxTok=2500,temperature=0.9,beOpts=null){
       return data.feedback||'';
     }
   }
+  if(useBackendApi()){
+    const data=await beComplete({
+      system_prompt:sys,
+      user_prompt:prompt,
+      max_tokens:maxTok,
+      temperature,
+      user_id:backendUserId(),
+    });
+    return data.content||'';
+  }
   return callClaudeMsg(sys,prompt,maxTok,temperature);
 }
 async function callClaudeMsg(sys,content,maxTok=2500,temperature=0.9){
+  if(useBackendApi()){
+    const userContent=Array.isArray(content)?content:content;
+    const payload={
+      system_prompt:sys,
+      max_tokens:maxTok,
+      temperature,
+      user_id:backendUserId(),
+    };
+    if(Array.isArray(content)){
+      payload.user_content=userContent;
+    }else{
+      payload.user_prompt=String(content||'');
+    }
+    const data=await beComplete(payload);
+    return data.content||'';
+  }
   const key=getKey();if(!key)return null;
   const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',
     headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},

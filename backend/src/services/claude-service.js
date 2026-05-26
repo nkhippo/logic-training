@@ -94,13 +94,37 @@ async function scoreWithCustomPrompt({
   maxTokens = 1000,
   temperature = TEMPERATURE.scoring,
 }) {
+  return completeWithPrompt({
+    systemPrompt,
+    userPrompt,
+    maxTokens,
+    temperature,
+  });
+}
+
+/**
+ * カスタム system / user プロンプト（テキストまたはマルチモーダル）で Claude を呼ぶ
+ * @param {{ systemPrompt: string; userPrompt?: string; userContent?: unknown; maxTokens?: number; temperature?: number }} params
+ * @returns {Promise<string>}
+ */
+async function completeWithPrompt({
+  systemPrompt,
+  userPrompt,
+  userContent,
+  maxTokens = 2500,
+  temperature = TEMPERATURE.generation,
+}) {
   const client = getClaudeClient();
+  let messageContent = userPrompt;
+  if (userContent !== undefined && userContent !== null) {
+    messageContent = userContent;
+  }
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: maxTokens,
     temperature,
     system: systemPrompt,
-    messages: [{ role: 'user', content: userPrompt }],
+    messages: [{ role: 'user', content: messageContent }],
   });
   return response.content[0].text;
 }
@@ -262,4 +286,5 @@ module.exports = {
   scoreLogicAnswer,
   scoreThinkingAnswer,
   scoreWithCustomPrompt,
+  completeWithPrompt,
 };
