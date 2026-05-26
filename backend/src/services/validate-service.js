@@ -86,4 +86,33 @@ function validateScoreRequest(body) {
   return errors;
 }
 
-module.exports = { validateGenerateRequest, validateScoreRequest };
+/**
+ * /api/complete のリクエスト検証
+ * @param {object} body
+ * @returns {string[]}
+ */
+function validateCompleteRequest(body) {
+  const errors = [];
+
+  if (!body.system_prompt || typeof body.system_prompt !== 'string' || body.system_prompt.trim() === '') {
+    errors.push('system_prompt is required');
+  }
+
+  const hasPrompt = typeof body.user_prompt === 'string' && body.user_prompt.trim() !== '';
+  const hasContent = Array.isArray(body.user_content) && body.user_content.length > 0;
+
+  if (!hasPrompt && !hasContent) {
+    errors.push('user_prompt or user_content is required');
+  }
+  if (hasPrompt && hasContent) {
+    errors.push('provide either user_prompt or user_content, not both');
+  }
+
+  return errors;
+}
+
+module.exports = {
+  validateGenerateRequest,
+  validateScoreRequest,
+  validateCompleteRequest,
+};

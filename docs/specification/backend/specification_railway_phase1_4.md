@@ -1,8 +1,8 @@
 # 仕様書：Railway デプロイ・CI/CD・FE統合（Phase 1-4）
 
 **最終更新**: 2026-05-26
-**バージョン**: 1.0
-**関連Issue**: #XXX（Phase 1-4）
+**バージョン**: 1.1
+**関連Issue**: #43（Phase 1-4）・#45（Phase 2-1 FE API統合）・#46（/api/complete）
 
 ---
 
@@ -106,18 +106,24 @@ Railway: /health へのリクエストで起動確認
 
 ### 4-1. 概要
 
-現在の FE は GAS エンドポイントを直接呼び出している。これを Railway の BE URL に切り替える。
+Claude 呼び出し（生成・採点・フォローアップ・写真採点）は Railway BE 経由。GAS は**過去問題同期のみ**。
 
-### 4-2. 変更対象ファイル
+本番 BE URL: `https://thinkgrindai-production.up.railway.app`  
+Public Networking Port: **8080**（`PORT` と一致）
+
+詳細仕様: `docs/specification/frontend/frontend-api-integration.md`
+
+### 4-2. 変更対象ファイル（実装済み）
 
 | ファイル | 変更内容 |
 |---|---|
-| `js/01-fill.js` | API エンドポイントを Railway URL に変更 |
-| `js/02-summary.js` | 同上 |
-| `js/03-critique.js` | 同上 |
-| `js/04-ame.js` | 同上 |
-| `js/17-thinking.js` | 同上 |
-| `app.js` | 共通 API 設定を Railway URL に変更（もし集約されていれば） |
+| `js/config.js` | `API_BASE_URL`・`USE_BACKEND_API`・`ENDPOINTS` |
+| `app.js` | `getUserId()` |
+| `js/shared/07-api.js` | `beFetchJson`・`callClaude`・`callClaudeMsg` |
+| `js/logic/08-fill.js` 等 | `callClaude(..., beOpts)` |
+| `js/thinking/app.js` | 同上 + `hasApiKey()` |
+| `backend/src/api/complete.js` | 汎用 Claude 完了（PR #46） |
+| `.github/workflows/deploy-pages.yml` | API キー注入ステップ削除 |
 
 ### 4-3. API URL の管理方法
 
@@ -129,7 +135,7 @@ Railway: /health へのリクエストで起動確認
 // API 設定
 const CONFIG = {
   // 本番環境（Railway）
-  API_BASE_URL: 'https://thinkgrindai-be-production.up.railway.app',
+  API_BASE_URL: 'https://thinkgrindai-production.up.railway.app',
 
   // ローカル開発環境
   // API_BASE_URL: 'http://localhost:3000',
@@ -326,7 +332,7 @@ try {
 デプロイ後に以下のコマンドで確認：
 
 ```bash
-curl https://thinkgrindai-be-production.up.railway.app/health
+curl https://thinkgrindai-production.up.railway.app/health
 ```
 
 期待される レスポンス:
@@ -348,6 +354,24 @@ curl https://thinkgrindai-be-production.up.railway.app/health
 | `GET /health` | < 500ms |
 | `POST /api/generate-problem` | < 40秒（Claude API 待ち含む） |
 | `POST /api/score-answer` | < 40秒（Claude API 待ち含む） |
+| `POST /api/complete` | < 40秒（フォローアップ・マルチモーダル採点） |
+
+### 7-1. `POST /api/complete`（Phase 2-1 / PR #46）
+
+汎用 Claude 完了。リクエスト例:
+
+```json
+{
+  "system_prompt": "...",
+  "user_prompt": "テキストのみの場合",
+  "user_content": [{ "type": "image", "source": { "type": "base64", "media_type": "image/jpeg", "data": "..." } }],
+  "max_tokens": 2500,
+  "temperature": 0.3,
+  "user_id": "uuid"
+}
+```
+
+`user_prompt` と `user_content` は排他。レスポンス: `{ "content": "...", "metadata": { ... } }`
 
 ---
 
@@ -361,7 +385,8 @@ curl https://thinkgrindai-be-production.up.railway.app/health
 - [ ] CI/CD：main ブランチ push で自動デプロイ確認
 - [ ] 本番環境で `/api/generate-problem` が正常動作
 - [ ] 本番環境で `/api/score-answer` が正常動作
-- [ ] FE（GitHub Pages）から BE（Railway）を呼び出し確認
+- [ ] 本番環境で `/api/complete` が正常動作
+- [ ] FE（GitHub Pages）から BE（Railway）を呼び出し確認（API キー注入なし）
 - [ ] user_id 自動生成・自動登録が動作
 - [ ] Railway ダッシュボードでメトリクス確認
 

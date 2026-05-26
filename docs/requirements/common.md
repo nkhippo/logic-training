@@ -218,7 +218,7 @@ AIが採点者として振る舞うと、ユーザーは「正解を覚える」
 | 項目 | 内容 |
 |---|---|
 | パフォーマンス | 問題生成：通常30秒以内（API依存） |
-| セキュリティ | Claude APIキーはリポジトリにコミットしない。ローカルは `js/shared/01-config.local.js`、本番は GitHub Actions の `CLAUDE_API_KEY` Secret で注入 |
+| セキュリティ | Claude APIキーはリポジトリにコミットしない。本番は Railway Variables のみ。FE（Pages）は `USE_BACKEND_API` 時キー不要。ローカルは `backend/.env.local` または BE オフ時 `01-config.local.js` |
 | 可用性 | GitHub Pages・GAS・Claude APIの稼働率に依存 |
 | データ保持 | Google Spreadsheetに蓄積。削除操作で消去 |
 | アクセス制限 | なし（URLを知っている人が利用可能） |

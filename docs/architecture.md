@@ -12,13 +12,15 @@ GitHub Pages 向けの**ビルドなし**構成。エントリポイントは HT
 
 ```
 js/
+  config.js        # Railway API 設定（logic/thinking より先に読込）
+app.js             # getUserId()
   shared/          # 両アプリ共通（script 順序どおり）
     01-config.js
     02-i18n.js     # L（logic + thinking の文言）
     03-state.js    # 論理用 st（thinking は thinkingSt を app 内で保持）
     04-industry-persona.js
     06-utils-md.js
-    07-api.js      # Claude / GAS
+    07-api.js      # Claude（BE経由）/ GAS 過去問
     08-migrate.js
     09-persona.js
     10-preset-ui.js
@@ -59,6 +61,7 @@ cp js/shared/01-config.local.js.example js/shared/01-config.local.js
 | **現状維持（2 HTML + shared）** | 画面が独立したまま、ビルドなしで運用したい |
 | **i18n を logic/thinking に分割** | 文言ファイルがさらに肥大化したとき |
 | **SPA 化（1 HTML）** | ヘッダー・ペルソナ・言語を完全共通化したい |
+| **React + Vercel** | Phase 2-2〜（`docs/specification/frontend/frontend-react.md`） |
 | **バンドラ導入** | ファイル数・依存関係の管理を自動化したい |
 
-現時点では **2 HTML + `js/shared`** を採用（変更コストと Pages 運用のバランス）。
+現時点では **2 HTML + `js/shared` + Railway BE** を採用。React 化は Phase 2-2 以降。
