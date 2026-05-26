@@ -1,0 +1,9 @@
+# Railway / Nixpacks: Node 20 で backend をビルド・起動
+[phases.setup]
+nixPkgs = ["nodejs_20", "npm-9_x"]
+
+[phases.install]
+cmds = ["npm ci --omit=dev"]
+
+[start]
+cmd = "node src/index.js"

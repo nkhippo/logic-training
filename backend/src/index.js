@@ -120,8 +120,21 @@ process.on('unhandledRejection', (reason) => {
   process.exit(1);
 });
 
+/**
+ * Railway は PORT を自動注入する。未設定時のみ 3000（ローカル用）。
+ * @returns {number}
+ */
+function resolveListenPort() {
+  const raw = process.env.PORT;
+  if (raw !== undefined && raw !== '') {
+    const n = Number(raw);
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return 3000;
+}
+
 if (process.env.NODE_ENV !== 'test') {
-  const PORT = Number.parseInt(process.env.PORT, 10) || 3000;
+  const PORT = resolveListenPort();
 
   // eslint-disable-next-line no-console -- startup diagnostic
   console.log(`[app] Attempting to listen on 0.0.0.0:${PORT} (Railway: ${isRailway})...`);
