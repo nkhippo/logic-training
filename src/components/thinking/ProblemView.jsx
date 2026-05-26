@@ -3,6 +3,7 @@ import { useTranslation } from '../../hooks/useTranslation.js';
 import { ENABLE_REFLECTION } from '../../domain/constants.js';
 import {
   getThinkingStepMode,
+  getThinkingStepCount,
   isLastAnswerStep,
   generateThinkingFinalQuestion,
   generateThinkingFinalFeedback,
@@ -67,7 +68,7 @@ export default function ProblemView() {
     });
   };
 
-  const stepCount = currentStepCount(prob);
+  const stepCount = getThinkingStepCount(prob.level);
   const phase = prob.phase || 'steps';
 
   return (
@@ -117,13 +118,4 @@ export default function ProblemView() {
       )}
     </div>
   );
-}
-
-/**
- * @param {object} prob
- * @returns {number}
- */
-function currentStepCount(prob) {
-  if (prob.level === 1) return 1;
-  return 2;
 }

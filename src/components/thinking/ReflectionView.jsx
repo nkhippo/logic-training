@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useAppContext } from '../../contexts/AppContext.jsx';
 import { useTranslation } from '../../hooks/useTranslation.js';
-import { generateThinkingReflectionFeedback } from '../../logic/thinkingLogic.js';
+import {
+  generateThinkingReflectionFeedback,
+  extractReflectionPrompt,
+} from '../../logic/thinkingLogic.js';
 import { md2h } from '../../utils/markdown.js';
 
 /**
@@ -21,6 +24,8 @@ export default function ReflectionView({ feedback }) {
   const [submitting, setSubmitting] = useState(false);
 
   if (!prob || prob.reflectionStep === -1) return null;
+
+  const d1Prompt = extractReflectionPrompt(feedback, prob.lang);
 
   const handleSkip = () => {
     dispatch({ type: 'UPDATE_THINKING', payload: { reflectionStep: -1, phase: 'feedback' } });
@@ -65,6 +70,13 @@ export default function ReflectionView({ feedback }) {
       <p style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '12px' }}>
         {t('thinkingReflectDesc') || '以下の問いかけは任意です。'}
       </p>
+      {round === 0 && d1Prompt && (
+        <div
+          className="problem-box"
+          style={{ marginBottom: '12px', background: 'var(--bg2)' }}
+          dangerouslySetInnerHTML={{ __html: md2h(d1Prompt) }}
+        />
+      )}
       {round === 0 && (
         <>
           <textarea
@@ -121,12 +133,6 @@ export default function ReflectionView({ feedback }) {
         <p className="slabel" style={{ marginTop: '1rem' }}>
           {t('thinkingSessionDoneLbl') || 'セッション完了'}
         </p>
-      )}
-      {feedback && round === 0 && (
-        <details style={{ marginTop: '12px', fontSize: '13px' }}>
-          <summary>{t('thinkingFinalFbLbl')}</summary>
-          <div dangerouslySetInnerHTML={{ __html: md2h(feedback) }} />
-        </details>
       )}
     </div>
   );

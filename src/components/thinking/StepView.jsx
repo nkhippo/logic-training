@@ -64,6 +64,7 @@ export default function StepView({ stepIdx, mode, isActive, onAdvance }) {
         logicIssues: result.logicIssues || [],
         reason: result.reason || '',
         revised: saved?.revised || false,
+        retryCount: saved?.retryCount || 0,
       };
       dispatch({ type: 'SET_THINKING_STEP_RESULT', stepIdx, payload: stepPatch });
 
@@ -97,8 +98,8 @@ export default function StepView({ stepIdx, mode, isActive, onAdvance }) {
         return;
       }
 
-      const wasRevised = saved?.revised || false;
-      if (wasRevised) {
+      const retryCount = saved?.retryCount || 0;
+      if (retryCount >= 1) {
         const closing = await generateThinkingClosingFeedback(prob, stepIdx);
         dispatch({
           type: 'SET_THINKING_STEP_RESULT',
@@ -119,7 +120,7 @@ export default function StepView({ stepIdx, mode, isActive, onAdvance }) {
       dispatch({
         type: 'SET_THINKING_STEP_RESULT',
         stepIdx,
-        payload: { followup: fu, revised: true },
+        payload: { followup: fu, revised: true, retryCount: 1 },
       });
       setFollowup(fu);
       setActionKind('revise-only');
