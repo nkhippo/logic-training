@@ -1,67 +1,129 @@
 # thinkgrindai — フロントエンド構成
 
-GitHub Pages 向けの**ビルドなし**構成。エントリポイントは HTML が2つ。
+Vite + React 18 の SPA 構成。ホスティングは Vercel。
 
-| ページ | 役割 |
+| URL パス | 役割 |
 |---|---|
-| `index.html` | ルート → `logic.html` へリダイレクト |
-| `logic.html` | 論理トレーニング（穴埋め・要約・批判読み・空雨傘） |
-| `thinking.html` | 思考トレーニング |
+| `/` | `/logic` へリダイレクト |
+| `/logic` | 論理トレーニング（穴埋め・要約・批判読み・空雨傘） |
+| `/thinking` | 思考トレーニング |
 
-## ディレクトリ
+---
+
+## ディレクトリ構成
 
 ```
-js/
-  config.js        # Railway API 設定（logic/thinking より先に読込）
-app.js             # getUserId()
-  shared/          # 両アプリ共通（script 順序どおり）
-    01-config.js
-    02-i18n.js     # L（logic + thinking の文言）
-    03-state.js    # 論理用 st（thinking は thinkingSt を app 内で保持）
-    04-industry-persona.js
-    06-utils-md.js
-    07-api.js      # Claude（BE経由）/ GAS 過去問
-    08-migrate.js
-    09-persona.js
-    10-preset-ui.js
-    11-gas-past.js
-    12-lang.js
-  logic/           # logic.html のみ
-    04-domain.js
-    05-core-ui.js
-    08-fill.js … 13-past.js, 14-guide.js
-    16-init.js
-  thinking/        # thinking.html のみ
-    domain.js      # THINKING_* 定数
-    app.js           # UI・生成・採点フロー
+src/
+  App.jsx                # ルーティング（BrowserRouter + Routes）
+  main.jsx               # ReactDOM.createRoot エントリ
+  contexts/
+    AppContext.jsx        # グローバル状態（useReducer）+ AppProvider
+  hooks/
+    useAPI.js            # Railway API ラッパー（ローディング状態を Context に反映）
+    useTranslation.js    # i18n フック（t / lang / setLang）
+    usePersona.js        # ペルソナ読み書き
+    useLocalStorage.js   # localStorage 汎用フック
+  services/
+    api.js               # fetch ラッパー・callClaude・JSON パーサ
+    config.js            # Railway URL・エンドポイント定数
+    i18n.js              # 文言マップ（ja / en）
+    pastStorage.js       # 過去問 localStorage 読み書き
+    persona.js           # ペルソナ localStorage 読み書き・プロンプト生成
+    user.js              # userId 生成（localStorage）
+  components/
+    layout/
+      Header.jsx         # ヘッダー（言語・ペルソナ・サービス切替）
+      SubTabs.jsx        # 新規 / 過去問 サブタブ
+      BusyOverlay.jsx    # ローディングオーバーレイ
+      Toast.jsx          # トースト通知
+    logic/
+      LogicPage.jsx      # 論理トレーニングメインページ（タブ管理）
+      tabs/
+        FillTab.jsx      # 穴埋めタブ
+        SummaryTab.jsx   # 要約タブ
+        CritiqueTab.jsx  # 批判読みタブ
+        AmeTab.jsx       # 空雨傘タブ
+      past/
+        PastList.jsx     # 過去問一覧・詳細
+    thinking/
+      ThinkingPage.jsx   # 思考トレーニングメインページ
+      GenerateForm.jsx   # 問題設定フォーム（核心・業界・難易度・レベル）
+      ProblemView.jsx    # 問題表示・ステップ回答
+      FeedbackView.jsx   # 最終フィードバック表示
+      ReflectionView.jsx # 振り返り対話（D1/D2/D3）
+    shared/
+      DiffSelector.jsx   # 難易度選択
+      PresetRow.jsx      # テーマプリセット行
+      IndustrySelector.jsx # 業界選択
+      PersonaModal.jsx   # ペルソナ設定モーダル
+      LangModal.jsx      # 言語切替モーダル
+      ProblemMeta.jsx    # 問題のメタ情報表示
+  domain/
+    constants.js         # LANG_KEY・PERSONA_KEY 等の定数
+    industry-persona.js  # 業界・職種・勤続年数のプリセット
+    logic-domain.js      # 論理タブのドメイン定数
+    thinking-domain.js   # 思考タブのドメイン定数（6タイプ・4レベル・採点基準等）
+  logic/
+    fillLogic.js         # 穴埋め：問題生成・採点・過去問エントリ構築
+    summaryLogic.js      # 要約：問題生成・採点・過去問エントリ構築
+    critiqueLogic.js     # 批判読み：問題生成・採点・過去問エントリ構築
+    ameLogic.js          # 空雨傘：問題生成・採点・過去問エントリ構築
+    thinkingLogic.js     # 思考：問題生成・採点・振り返り
+    themeHelpers.js      # テーマ選択バリデーション共通関数
+  utils/
+    markdown.js          # HTML エスケープ・Markdown フォーマット・日付フォーマット
+    migrate.js           # localStorage キー移行
+  styles/
+    App.css              # 全コンポーネント共通スタイル
 ```
+
+---
 
 ## 変更時の目安
 
 | 変更内容 | 触る場所 |
 |---|---|
-| 文言（日英） | `js/shared/02-i18n.js` |
-| 業界・ペルソナ | `js/shared/04-industry-persona.js` + 論理 UI は `logic/05-core-ui.js` |
-| GAS 列 | `gas-script-v3.js` + `docs/gas-column-headers.md` |
-| 論理タブの挙動 | `js/logic/` 配下の該当ファイル |
-| 思考トレーニング | `js/thinking/` + `thinking.html` |
-| 両方の API・過去問取得 | `js/shared/07-api.js` / `11-gas-past.js` |
+| 文言（日英） | `src/services/i18n.js` |
+| 業界・ペルソナ | `src/domain/industry-persona.js` + `src/services/persona.js` |
+| 論理タブの挙動 | `src/logic/{tab}Logic.js` + `src/components/logic/tabs/{Tab}Tab.jsx` |
+| 思考トレーニング | `src/logic/thinkingLogic.js` + `src/components/thinking/` |
+| API 呼び出し共通 | `src/services/api.js` |
+| グローバル状態 | `src/contexts/AppContext.jsx` |
+| BE API 仕様 | `backend/src/api/` |
+
+---
 
 ## ローカル開発
 
 ```bash
-cp js/shared/01-config.local.js.example js/shared/01-config.local.js
-# キーを記入して logic.html または thinking.html を開く
+# フロントエンド
+cp .env.example .env.local
+# VITE_API_BASE_URL に Railway URL を記入
+npm install
+npm run dev
+
+# バックエンド（別ターミナル）
+cd backend
+cp .env.example .env.local
+# CLAUDE_API_KEY / GOOGLE_SHEETS_CREDENTIALS を記入
+npm install
+npm run dev
 ```
+
+---
+
+## Vercel デプロイ
+
+- Vercel プロジェクト設定 → Environment Variables に `VITE_API_BASE_URL` を設定
+- `main` へのマージで自動デプロイ（vercel.json で SPA ルーティング設定済み）
+
+---
 
 ## 将来の分岐（判断ポイント）
 
 | 方針 | 向いているとき |
 |---|---|
-| **現状維持（2 HTML + shared）** | 画面が独立したまま、ビルドなしで運用したい |
-| **i18n を logic/thinking に分割** | 文言ファイルがさらに肥大化したとき |
-| **SPA 化（1 HTML）** | ヘッダー・ペルソナ・言語を完全共通化したい |
-| **React + Vercel** | Phase 2-2〜（`docs/specification/frontend/frontend-react.md`） |
-| **バンドラ導入** | ファイル数・依存関係の管理を自動化したい |
-
-現時点では **2 HTML + `js/shared` + Railway BE** を採用。React 化は Phase 2-2 以降。
+| **現状維持（React SPA + Railway）** | 機能追加・SaaS化の基盤として十分 |
+| **バックエンドスケールアップ** | ユーザー数が増えて Railway の制限に当たったとき |
+| **認証追加** | Phase 5（マルチユーザー対応）のタイミング |
+| **React Native 化** | モバイルアプリ化の需要が出たとき |

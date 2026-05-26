@@ -1,7 +1,7 @@
 # Project Context: thinkgrindai
 
 **最終更新**: 2026-05-26  
-**バージョン**: 1.1
+**バージョン**: 1.2
 
 ---
 
@@ -29,21 +29,22 @@
 
 ---
 
-## 3. 現在の状態（2026-05-26 時点）
+## 3. 現在の状態（2026-05-27 時点）
 
 ### サービス
 - **Logic Training App**
   - バージョン: Ver.3.2
   - 実装済みタブ: 穴埋め・要約・批判読み・空雨傘（4タブ）
-  - フロントエンド: GitHub Pages（Vanilla JS / HTML5 / CSS3）
-  - バックエンド: Node.js Express + Google Sheets（Phase 1-3 完了。GAS は Phase 4 まで並行）
-  - ステータス: 機能基盤完成、BEサーバー実装完了
+  - フロントエンド: Vite + React 18（Vercel ホスト）
+  - バックエンド: Node.js Express + Railway + Google Sheets
+  - ステータス: React 移行完了（Phase 2-2）、論理4タブ実装済み
 
-- **Thinking Training**（準備中）
-  - バージョン: Ver.1.0（仕様書作成完了）
+- **Thinking Training**
+  - バージョン: Ver.1.0
   - 設計: 6タイプ × 4レベル
-  - バックエンド: Node.js Express で統合対応（Phase 1-3 API 対応済み）
-  - ステータス: 要件定義・仕様書完成、フロントエンド実装待機中
+  - フロントエンド: React（`/thinking`）— 簡易版実装済み、フル機能は Phase 2-3 で拡張中
+  - バックエンド: Node.js Express + Railway（Phase 1-3 API 対応済み）
+  - ステータス: 要件定義・仕様書完成、React フル実装進行中
 
 ### 開発体制
 - **Naoya**: 要件検討・テスト・全体統括

@@ -1,6 +1,6 @@
 # thinkgrindai — 共通要件定義
 
-**対象**: logic.html（論理トレーニング）/ thinking.html（思考トレーニング）  
+**対象**: `/logic`（論理トレーニング）/ `/thinking`（思考トレーニング）  
 **バージョン**: 1.0  
 **作成日**: 2026-05-25  
 **作成者**: Claude（Naoya確認済み）
@@ -98,12 +98,12 @@
 ## 4. 両サービスの位置づけと関係
 
 ```
-論理トレーニング（logic.html）
+論理トレーニング（/logic）
   └ 与えられた情報を正確に処理する力を鍛える（読む・整理する・構造を把握する）
   └ 1問5〜10分で完結するトレーニング
   └「思考トレーニングへ →」のリンクを設置
 
-思考トレーニング（thinking.html）
+思考トレーニング（/thinking）
   └ 処理した情報から判断を導き、問いを立てる力を鍛える
   └ 1セッション15〜60分の深いトレーニング
   └「論理トレーニングへ ←」のリンクを設置
@@ -111,8 +111,8 @@
 共有するもの：
   └ ペルソナ設定（localStorage）
   └ 言語設定（localStorage）
-  └ GASのスプレッドシート（別シートで管理）
-  └ 共通JS（js/shared/）
+  └ 過去問データ（localStorage）
+  └ 共通 React コンポーネント・サービス層（src/）
 ```
 
 論理トレーニングは思考トレーニングの前提として推奨されるが、強制はしない。
@@ -123,8 +123,8 @@
 
 | 項目 | 内容 |
 |---|---|
-| ホスティング | GitHub Pages（静的サイト） |
-| バックエンド | Google Apps Script（GAS）＋ Google Spreadsheet |
+| ホスティング | Vercel（React SPA） |
+| バックエンド | Node.js Express（Railway）＋ Google Sheets |
 | AI | Claude API（claude-sonnet-4-6） |
 | 対応言語 | 日本語・英語（i18n対応済み） |
 | 対応デバイス | PC・スマートフォン（レスポンシブ対応） |
@@ -218,7 +218,7 @@ AIが採点者として振る舞うと、ユーザーは「正解を覚える」
 | 項目 | 内容 |
 |---|---|
 | パフォーマンス | 問題生成：通常30秒以内（API依存） |
-| セキュリティ | Claude APIキーはリポジトリにコミットしない。本番は Railway Variables のみ。FE（Pages）は `USE_BACKEND_API` 時キー不要。ローカルは `backend/.env.local` または BE オフ時 `01-config.local.js` |
-| 可用性 | GitHub Pages・GAS・Claude APIの稼働率に依存 |
-| データ保持 | Google Spreadsheetに蓄積。削除操作で消去 |
+| セキュリティ | Claude APIキーはリポジトリにコミットしない。本番は Railway Variables のみ。FE は `.env.local` で設定（`.gitignore` 除外済み） |
+| 可用性 | Vercel・Railway・Claude APIの稼働率に依存 |
+| データ保持 | 過去問は localStorage に保存。Google Sheets はユーザーコア管理（BE 経由） |
 | アクセス制限 | なし（URLを知っている人が利用可能） |
