@@ -1,7 +1,6 @@
 require('dotenv').config({ path: '.env.local' });
 
 const express = require('express');
-const cors = require('cors');
 const errorHandler = require('./middleware/error-handler');
 const generateProblemRoute = require('./api/generate-problem');
 const scoreAnswerRoute = require('./api/score-answer');
@@ -9,20 +8,37 @@ const scoreAnswerRoute = require('./api/score-answer');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const ALLOWED_ORIGINS = [
+  'https://nkhippo.github.io',
+  'http://localhost:5500',
+  'http://localhost:3000',
+  'http://127.0.0.1:5500',
+];
+
 app.use(express.json());
-app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? 'https://thinkgrindai.vercel.app'
-    : '*',
-  methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type'],
-}));
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     version: '1.0.0',
     railway_app: 'thinkgrindai-be',
+    timestamp: new Date().toISOString(),
   });
 });
 

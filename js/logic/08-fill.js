@@ -252,7 +252,11 @@ async function generateFill(){
     const genMaxTokens=1200;
     const formatNote=isEN?FILL_FORMAT_NOTE_EN:FILL_FORMAT_NOTE_JA;
     const personaNote=buildPersonaPromptNote(isEN);
-    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}\n${formatNote}${personaNote}`,sys,genMaxTokens,0.9);
+    const beProblemHolder={};
+    const raw=await callClaude(`${themeInst}\n${diffPrompt}\n${jsonInst}\n${formatNote}${personaNote}`,sys,genMaxTokens,0.9,{
+      mode:'generate',service:'logic',tab:'fill',theme:themeIn||'auto',
+      onProblemId:(id)=>{beProblemHolder.id=id;},
+    });
     if(!raw)return;
     const p=normalizeFillFromModel(parseModelJSON(raw));
     if(!p.text||!Array.isArray(p.answers)||p.answers.length===0)throw new Error('Invalid JSON structure: missing text or answers');
@@ -262,7 +266,7 @@ async function generateFill(){
       p.text=t;
     }
     if(diff>=3) p.hints=(p.answers||[]).map(()=>'');
-    st.fill={...p,id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),industry:genIndustrySnapshot(),blanks,feedback:null,userAnswers:null,lang:st.lang};
+    st.fill={...p,id:Date.now(),beProblemId:beProblemHolder.id||null,theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,date:new Date().toISOString(),industry:genIndustrySnapshot(),blanks,feedback:null,userAnswers:null,lang:st.lang};
     renderFill(st.fill);
     resetGenConditions();
     try{await syncPastOnGen('fill',st.fill);}
@@ -366,7 +370,12 @@ At the end of each question's explanation, provide the following two items:
 各設問の解説の末尾に以下の2つを示してください。
 ① 正解の接続詞を使った日常的な文脈の例文を1つ（20字以内・平易な内容）
 ② この問題文において、正解の接続詞の代わりに別の接続詞を使った場合に論旨がどう変わるかを1つ示し、なぜ正解の接続詞でなければならないかを説明してください。`;
-  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3,{
+    mode:'score',service:'logic',problem_id:prob.beProblemId||null,
+    user_answer:ua.join('\n'),
+    context:{original_problem:ct,tab:'fill'},
+    markdownResponse:true,
+  });
 }
 
 function buildFillEntry(prob){

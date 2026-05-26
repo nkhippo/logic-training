@@ -8,6 +8,8 @@ jest.mock('../src/services/claude-service', () => ({
 }));
 jest.mock('../src/services/sheets-service', () => ({
   getUserCore: jest.fn().mockResolvedValue(null),
+  ensureUserCore: jest.fn().mockResolvedValue({ user_id: 'test-user' }),
+  createUserCore: jest.fn().mockResolvedValue({ user_id: 'test-user' }),
   updateUserScore: jest.fn().mockResolvedValue(undefined),
 }));
 

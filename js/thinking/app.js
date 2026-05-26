@@ -180,8 +180,10 @@ async function generateThinking() {
     showAppToast('thinking-toast',L[thinkingSt.lang].diffRequired || '難易度を選択してください');
     return;
   }
-  const key = getKey();
-  if (!key) return;
+  if (!useBackendApi()) {
+    const key = getKey();
+    if (!key) return;
+  }
 
   thinkingSt.busy = true;
   document.getElementById('thinking-gen-btn').disabled = true;
@@ -269,13 +271,22 @@ ${level >= 2 ? 'レベル2以上では、各タイプへのシンプルな問い
 }`;
 
   try {
-    const raw = await callClaude(prompt, sys, 2000, 0.9);
+    const beProblemHolder = {};
+    const raw = await callClaude(prompt, sys, 2000, 0.9, {
+      mode: 'generate',
+      service: 'thinking',
+      thinking_type: 'type1',
+      level,
+      theme: coreObj.label,
+      onProblemId: (id) => { beProblemHolder.id = id; },
+    });
     if (!raw) throw new Error('empty response');
     const p = safeJSON(raw);
     if (!p.situation) throw new Error('invalid JSON');
 
     thinkingSt.problem = {
       id: Date.now(),
+      beProblemId: beProblemHolder.id || null,
       core: coreValue,
       diff,
       level,
@@ -599,7 +610,20 @@ ${mode === 'typeselect' ? '選択したタイプと順序が問いの核心に�
   "userCore": ""
 }`;
 
-  const raw = await callClaude(prompt, sys, 600, 0.3);
+  const raw = await callClaude(prompt, sys, 600, 0.3, {
+    mode: 'score',
+    service: 'thinking',
+    problem_id: prob.beProblemId || null,
+    thinking_type: 'type1',
+    level,
+    user_answer: answer,
+    context: {
+      original_problem: prob.situation,
+      thinking_type: 'type1',
+      level,
+    },
+    jsonResponse: true,
+  });
   return safeJSON(raw);
 }
 

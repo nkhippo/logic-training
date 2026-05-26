@@ -204,13 +204,17 @@ async function generateAme(){
   const prompt=`${themeInst}\n${diffPrompt}${typeNote}${qTypesNote}${constraintNote}\n${jsonSchema}${personaNote}`;
   try{
     const genMaxTokens=diff<=3?2200:2500;
-    const raw=await callClaude(prompt,sys,genMaxTokens,0.9);
+    const beProblemHolder={};
+    const raw=await callClaude(prompt,sys,genMaxTokens,0.9,{
+      mode:'generate',service:'logic',tab:'ame',theme:themeIn||'auto',
+      onProblemId:(id)=>{beProblemHolder.id=id;},
+    });
     if(!raw)return;
     const p=normalizeAmeFromModel(parseModelJSON(raw));
     if(!p.article)throw new Error('Invalid JSON structure: missing article (keys: '+Object.keys(p).join(', ')+')');
     if(!p.questions.length)throw new Error('Invalid JSON structure: missing questions');
     st.ame={
-      id:Date.now(),theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
+      id:Date.now(),beProblemId:beProblemHolder.id||null,theme:p.theme||(themeIn?themeIn.slice(0,20):''),diff,
       date:new Date().toISOString(),industry:genIndustrySnapshot(),law:p.law||null,article:p.article,
       constraint:p.constraint||null,questions:p.questions,
       form:p.form||(isDeductive?'deductive':'inductive'),feedback:null,lang:st.lang,
@@ -268,7 +272,12 @@ async function gradeAme(prob,userAnswers){
     ?`Grade each answer on the following axes:\n- Factual grounding: Is the interpretation/action logically derived from the business data?\n- Logical gap: Is there a jump between data → interpretation or interpretation → action?\n- Constraint compliance: Does the Umbrella action respect any stated constraints?\n- Alternative interpretation: Show one other valid interpretation from the same data.\nProvide an improved example within the character limit for each question.\n\n## Per-Question Feedback\n## Overall Feedback`
     :`各設問を以下の軸で採点してください。\n- 事実との整合性：読み取り・行動がビジネスデータから論理的に導けているか\n- 飛躍の指摘：データ→読み取り、読み取り→行動の間に飛躍がないか\n- 制約条件の遵守：傘（行動）が制約条件を守っているか\n- 別解の提示：同じデータから導ける別の読み取りを1つ示す\n各設問の末尾に文字数以内の改善例を示してください。\n\n## 設問別フィードバック\n## 総合講評`;
   const prompt=`${lawSection}${articleSection}${constraintSection}${qSection}\n\n${gradeInst}`;
-  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3);
+  return callClaude(prompt,sys,gradeMaxTokensByDiff(prob.diff),0.3,{
+    mode:'score',service:'logic',problem_id:prob.beProblemId||null,
+    user_answer:userAnswers.join('\n---\n'),
+    context:{original_problem:prob.article,tab:'ame'},
+    markdownResponse:true,
+  });
 }
 async function syncAmePast(prob){
   if(!await ensureGasV3())return;
