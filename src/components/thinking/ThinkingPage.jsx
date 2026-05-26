@@ -24,7 +24,7 @@ export default function ThinkingPage() {
       {subMode === 'new' ? (
         <div id="thinking-new-area">
           <GenerateForm />
-          {state.thinking && <ProblemView problem={state.thinking} />}
+          {state.thinking && <ProblemView />}
         </div>
       ) : (
         <ThinkingPastList />
