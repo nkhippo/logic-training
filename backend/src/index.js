@@ -1,4 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+
+// 本番（Railway）: process.env のみ。ローカル: .env → .env.local の順で読み込む
 require('dotenv').config();
+const envLocalPath = path.resolve(__dirname, '../.env.local');
+if (fs.existsSync(envLocalPath)) {
+  require('dotenv').config({ path: envLocalPath, override: false });
+}
 
 // eslint-disable-next-line no-console -- startup diagnostic
 console.log('[app] === STARTUP DEBUG ===');
