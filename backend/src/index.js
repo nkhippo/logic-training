@@ -1,9 +1,20 @@
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config();
 
 const express = require('express');
 const errorHandler = require('./middleware/error-handler');
 const generateProblemRoute = require('./api/generate-problem');
 const scoreAnswerRoute = require('./api/score-answer');
+
+if (process.env.NODE_ENV !== 'production') {
+  if (!process.env.CLAUDE_API_KEY) {
+    // eslint-disable-next-line no-console -- local dev warning
+    console.warn('[app] WARNING: CLAUDE_API_KEY is not set');
+  }
+  if (!process.env.GOOGLE_SHEETS_API_KEY && !process.env.GOOGLE_SHEETS_CREDENTIALS) {
+    // eslint-disable-next-line no-console -- local dev warning
+    console.warn('[app] WARNING: GOOGLE_SHEETS_API_KEY is not set');
+  }
+}
 
 const app = express();
 
