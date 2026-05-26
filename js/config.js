@@ -4,7 +4,7 @@
  */
 const CONFIG = {
   /** Railway 本番 URL（デプロイ後に実際の URL に合わせて更新） */
-  API_BASE_URL: 'https://thinkgrindai-be-production.up.railway.app',
+  API_BASE_URL: 'https://thinkgrindai-production.up.railway.app',
 
   /** true のとき問題生成・採点を BE API 経由で実行（false ならブラウザ直叩き） */
   USE_BACKEND_API: true,
