@@ -13,3 +13,6 @@ backend/.env.local
 backend/.env
 backend/coverage/
 backend/.DS_Store
+
+# iCloud/Dropbox sync conflicts (e.g. "file 2.js", "file 3.md")
+*\ [0-9].*

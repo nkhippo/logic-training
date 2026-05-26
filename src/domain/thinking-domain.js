@@ -503,23 +503,3 @@ export const THINKING_SITUATION_PARAMS = {
   4: { minChars: 450, maxChars: 580, ambiguity: 'high',   extraInfo: true,  numTypes: 4 },
   5: { minChars: 500, maxChars: 650, ambiguity: 'very_high', extraInfo: true, numTypes: '4-5' },
 };
-
-// ── GASカラム定義 ─────────────────────────────────────
-export const THINKING_COLS = [
-  'id', 'core', 'diff', 'level', 'date', 'industry',
-  'situation', 'questions', 'user_core', 'theme',
-  'persona_snapshot', 'lang'
-];
-
-export const THINKING_COLS_LEGACY = [
-  'id', 'core', 'diff', 'level', 'date', 'industry',
-  'situation', 'questions', 'lang'
-];
-
-function mapThinkingPastRow(row) {
-  if (!Array.isArray(row)) return row;
-  const cols = row.length >= THINKING_COLS.length ? THINKING_COLS : THINKING_COLS_LEGACY;
-  const obj = {};
-  cols.forEach((col, i) => { obj[col] = row[i] ?? ''; });
-  return obj;
-}
