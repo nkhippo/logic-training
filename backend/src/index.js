@@ -59,6 +59,23 @@ if (process.env.NODE_ENV !== 'production') {
   }
 }
 
+const isRailway = Boolean(
+  process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID
+);
+
+/**
+ * Railway は PORT を自動注入する。未設定時のみ 3000（ローカル用）。
+ * @returns {number}
+ */
+function resolveListenPort() {
+  const raw = process.env.PORT;
+  if (raw !== undefined && raw !== '') {
+    const n = Number(raw);
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return 3000;
+}
+
 const app = express();
 
 const ALLOWED_ORIGINS = [
@@ -86,12 +103,18 @@ app.use((req, res, next) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', service: 'thinkgrindai-be' });
+});
+
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     version: '1.0.0',
     railway_app: 'thinkgrindai-be',
     timestamp: new Date().toISOString(),
+    port: resolveListenPort(),
+    railway: isRailway,
   });
 });
 
@@ -103,10 +126,6 @@ app.use((req, res) => {
 });
 
 app.use(errorHandler);
-
-const isRailway = Boolean(
-  process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID
-);
 
 if (process.env.NODE_ENV === 'test' && isRailway) {
   // eslint-disable-next-line no-console -- fatal misconfiguration
@@ -127,19 +146,6 @@ process.on('unhandledRejection', (reason) => {
   console.error('[app] ✗ unhandledRejection:', reason);
   process.exit(1);
 });
-
-/**
- * Railway は PORT を自動注入する。未設定時のみ 3000（ローカル用）。
- * @returns {number}
- */
-function resolveListenPort() {
-  const raw = process.env.PORT;
-  if (raw !== undefined && raw !== '') {
-    const n = Number(raw);
-    if (Number.isFinite(n) && n > 0) return n;
-  }
-  return 3000;
-}
 
 if (process.env.NODE_ENV !== 'test') {
   const PORT = resolveListenPort();
@@ -167,6 +173,13 @@ if (process.env.NODE_ENV !== 'test') {
     console.log('[app] SIGTERM received, shutting down...');
     server.close(() => process.exit(0));
   });
+
+  if (isRailway) {
+    setInterval(() => {
+      // eslint-disable-next-line no-console -- keep-alive diagnostic for Railway 502
+      console.log(`[app] heartbeat pid=${process.pid} port=${PORT}`);
+    }, 60000);
+  }
 } else if (isRailway) {
   // eslint-disable-next-line no-console -- fatal misconfiguration
   console.error('[app] ✗ FATAL: listen skipped (NODE_ENV=test). Cannot serve traffic.');
