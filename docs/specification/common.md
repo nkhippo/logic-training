@@ -18,9 +18,11 @@ thinkgrindai/
 ├── thinking.html           # 思考トレーニング
 ├── style.css               # 全タブ共通スタイル
 ├── gas-script-v3.js        # GAS（論理・思考共通）
+├── app.js                  # getUserId()
 ├── js/
+│   ├── config.js           # Railway URL・USE_BACKEND_API・ENDPOINTS（HTML で先に読込）
 │   ├── shared/             # 両アプリ共通（読み込み順に依存）
-│   │   ├── 01-config.js        # GAS_URL・CLAUDE_API_KEY・LANG_KEY・ENABLE_REFLECTION
+│   │   ├── 01-config.js        # GAS_URL・CLAUDE_API_KEY（空）・LANG_KEY
 │   │   ├── 02-i18n.js          # L.ja / L.en（logic + thinking 両方の文言）
 │   │   ├── 03-state.js         # 論理用 st（thinking は thinkingSt を app 内で保持）
 │   │   ├── 04-industry-persona.js  # INDUSTRY_PRESETS・JOB_PRESETS
@@ -45,18 +47,33 @@ thinkgrindai/
 
 ## 2. API呼び出し共通仕様
 
-```javascript
-// callClaudeMsg(messages, systemPrompt, temperature, maxTokens)
-// model: claude-sonnet-4-6（js/shared/07-api.js 内で固定）
-// APIキー: CLAUDE_API_KEY（js/shared/01-config.js）のみ
-//          本番: GitHub Actions が secrets.CLAUDE_API_KEY を注入
-//          ローカル: js/shared/01-config.local.js（gitignore）
-//          設定UI・localStorage は使わない
-```
+### 2-1. 構成（Phase 2-1 以降）
 
-**現行モデル**：`claude-sonnet-4-6`  
-**モデル変更時の手順**：`js/shared/07-api.js` の `callClaude`・`callClaudeMsg` 内の `model` 文字列を編集する。
-モデルが変わると採点品質・問題生成品質に影響するため、必ず全タブ・全シナリオでの動作確認を実施すること。
+| 層 | ファイル | 役割 |
+|---|---|---|
+| 設定 | `js/config.js` | `API_BASE_URL`・`USE_BACKEND_API`・`ENDPOINTS` |
+| ユーザー ID | `app.js` | `getUserId()` → `thinkgrindai_user_id` |
+| 呼び出し | `js/shared/07-api.js` | `callClaude` / `callClaudeMsg` / GAS |
+| BE | Railway | `/api/generate-problem`・`/api/score-answer`・`/api/complete` |
+
+詳細: `docs/specification/frontend/frontend-api-integration.md`
+
+### 2-2. Claude モデル
+
+**BE 本番**: `backend/src/config/claude-config.js` で `claude-sonnet-4-6` を固定。  
+**ブラウザ直叩き**（`USE_BACKEND_API=false` のみ）: `js/shared/07-api.js` 内の `model` 文字列。
+
+モデル変更時は BE と FE 直叩きの両方を確認すること。
+
+### 2-3. API キー
+
+| 環境 | キーの置き場所 |
+|---|---|
+| 本番 Pages + `USE_BACKEND_API=true` | **不要**（Railway Variables のみ） |
+| ローカル + BE | `backend/.env.local` |
+| ローカル + BE オフ | `js/shared/01-config.local.js`（gitignore） |
+
+GitHub Pages デプロイでの `CLAUDE_API_KEY` 注入は **廃止**（2026-05-26）。
 
 | 用途 | temperature | 備考 |
 |---|---|---|
