@@ -10,7 +10,7 @@
 
 | ブランチ | 役割 |
 |---|---|
-| `main` | 本番相当。GitHub Pages の公開元。マージは PR 経由 |
+| `main` | 本番相当。Vercel の公開元。マージは PR 経由 |
 | `develop` | 開発の統合ブランチ。**常に `main` の最新を含む** |
 | `feature/*` | 機能開発。**必ず `develop` から作成**（例: `feature/4`） |
 
@@ -68,12 +68,12 @@ git push -u origin feature/5
 git checkout develop && git pull origin main && git push origin develop
 ```
 
-### API キー（Cursor ローカル / GitHub Pages）
+### API キー（Cursor ローカル / Vercel 本番）
 
 | 環境 | 手順 |
 |---|---|
-| **Cursor でローカル確認** | `cp js/shared/01-config.local.js.example js/shared/01-config.local.js` → キーを記入。`logic.html` または `thinking.html` を開く |
-| **GitHub Pages 本番** | Pages の Source を **GitHub Actions** にする。`USE_BACKEND_API=true` 時は FE に API キー不要（2026-05-26〜）。Claude キーは Railway Variables のみ |
+| **Cursor でローカル確認** | `cp .env.example .env.local` → `VITE_API_BASE_URL` に Railway URL を記入。`npm run dev` で起動 |
+| **Vercel 本番** | Vercel Environment Variables に `VITE_API_BASE_URL` を設定。FE に Claude API キーは不要。Claude キーは Railway Variables のみ |
 
 ---
 
@@ -90,7 +90,7 @@ STEP 4: Claudeで「Cursor作業指示プロンプト」を生成
          ↓
 STEP 5: CursorにSTEP4のプロンプト + 仕様書を渡してコード修正
          ↓
-STEP 6: 動作確認 → git push → GitHub Pages反映
+STEP 6: 動作確認 → git push → Vercel 自動デプロイ
 ```
 
 ---

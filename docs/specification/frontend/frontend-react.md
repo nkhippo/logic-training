@@ -1,7 +1,7 @@
 # 仕様書（計画）：フロントエンド React 化（Phase 2-2〜2-4）
 
-**最終更新**: 2026-05-26  
-**ステータス**: 計画・未実装  
+**最終更新**: 2026-05-27  
+**ステータス**: 実装済み（Phase 2-2 完了、2026-05-26）  
 **関連**: Issue #45 完了後の次フェーズ
 
 > Phase 2-1（Vanilla JS + Railway API）が完了してから実装に着手する。  
@@ -12,7 +12,7 @@
 ## 1. 目的
 
 - Vanilla JS（2 HTML）を **React SPA** に移行
-- ホスティングを **GitHub Pages → Vercel** に移行（予定）
+- ホスティングを **GitHub Pages → Vercel** に移行（完了）
 - BE（Railway）は現行 API をそのまま利用
 
 ---
@@ -28,36 +28,23 @@
 
 ---
 
-## 3. 設計上の未決定事項（Phase 2-2 で確定）
+## 3. 確定した設計事項（Phase 2-2 実装済み）
 
-1. **ビルド**: Vite vs Create React App（**Vite 推奨**）
-2. **状態管理**: Context API のみ vs Redux
-3. **スタイル**: 既存 `style.css` 流用 vs Tailwind 導入
-4. **移行方式**: パターン A（一括リフレッシュ）推奨 vs 段階的
-5. **API 層**: `useAPI` カスタムフック + `services/api-service.js`
+| 項目 | 決定内容 |
+|---|---|
+| ビルド | Vite 6 |
+| 状態管理 | Context API + useReducer（Redux 不使用） |
+| スタイル | 旧 `style.css` を `src/styles/App.css` にコピー |
+| 移行方式 | パターンA（一括書き換え） |
+| API 層 | `src/services/api.js` + `src/hooks/useAPI.js` |
+| ディレクトリ | `src/` をプロジェクトルート直下に配置（`frontend/` サブディレクトリではない） |
+| ホスティング | Vercel（`vercel.json` で SPA ルーティング設定済み） |
 
 ---
 
-## 4. 目標ディレクトリ（案）
+## 4. 実装済みディレクトリ構成
 
-```
-thinkgrindai/
-├── frontend/                 # 新規 React アプリ（案）
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── components/
-│   │   │   ├── LogicTraining/
-│   │   │   └── ThinkingTraining/
-│   │   ├── hooks/
-│   │   │   ├── useAPI.js
-│   │   │   └── useUser.js
-│   │   └── services/
-│   │       └── api-service.js
-│   ├── package.json
-│   └── vite.config.js
-├── js/                       # Phase 2-3 完了まで共存
-└── backend/                  # 変更なし
-```
+詳細は `docs/architecture.md` を参照。
 
 ---
 
@@ -77,16 +64,17 @@ export async function generateProblem(payload) {
 
 ---
 
-## 6. 完了定義（Phase 2-3）
+## 6. 完了定義（Phase 2-2 時点）
 
-- [ ] 論理 4 タブ + 思考トレーニングが React で動作
-- [ ] Railway BE 経由で生成・採点・complete
-- [ ] GAS 過去問同期が動作
-- [ ] Vercel プレビューで Naoya テスト完了
+- [x] 論理 4 タブが React で動作
+- [x] Railway BE 経由で生成・採点・complete が動作
+- [x] Vercel デプロイ確認
+- [ ] 思考トレーニングのステップ制採点（役割A〜D3）→ Phase 2-3 で対応
+- [ ] 過去問フィルタ UI（難易度別） → Phase 2-3 または別 Issue で対応
 
 ---
 
 ## 7. 参考
 
 - `docs/specification/frontend/frontend-api-integration.md`
-- `docs/architecture.md`（現行 Vanilla 構成）
+- `docs/architecture.md`（React SPA 構成）

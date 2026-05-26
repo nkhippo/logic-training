@@ -40,8 +40,9 @@ Claudeは `docs/TERMS.md` を参照して具体的にどのファイル・どの
 
 ## 技術スタック
 
-- **フロントエンド**: Vanilla JS / HTML5 / CSS3（GitHub Pages）
-- **バックエンド**: Node.js Express + Google Sheets（Phase 1-3 実装完了。`gas-script-v3.js` は Phase 4 まで並行）
+- **フロントエンド**: Vite + React 18（Vercel ホスト）
+- **バックエンド**: Node.js Express（`backend/`）+ Railway
+- **データ**: Google Sheets（BE API 経由）
 - **AI モデル**: claude-sonnet-4-6（generation: temp=0.9 / scoring: temp=0.3）
 - **ソース管理**: GitHub
 
@@ -50,49 +51,39 @@ Claudeは `docs/TERMS.md` を参照して具体的にどのファイル・どの
 ```
 thinkgrindai/
 ├── CLAUDE.md                        ← このファイル（共通ルール）
-├── index.html
-├── style.css
-├── app.js
-├── gas-script-v3.js                 ← Phase 4 で削除予定
-├── js/
-│   ├── 01-fill.js                   ← 穴埋めタブ
-│   ├── 02-summary.js                ← 要約タブ
-│   ├── 03-critique.js               ← 批判読みタブ
-│   ├── 04-ame.js                    ← 空雨傘タブ
-│   └── 17-thinking.js               ← 思考トレーニング
-├── backend/                         ← BEサーバー（Phase 1-3）
-│   ├── package.json
+├── index.html                       ← Vite エントリ（SPA）
+├── vite.config.js
+├── package.json
+├── vercel.json
+├── .env.example                     ← ローカル開発用設定例
+├── src/
+│   ├── main.jsx                     ← React エントリポイント
+│   ├── App.jsx                      ← ルーティング（/logic / /thinking）
+│   ├── contexts/AppContext.jsx      ← グローバル状態（useReducer）
+│   ├── hooks/                       ← useAPI / useTranslation / usePersona
+│   ├── services/                    ← api.js / config.js / i18n.js / persona.js / user.js
+│   ├── components/
+│   │   ├── layout/                  ← Header / SubTabs / BusyOverlay / Toast
+│   │   ├── logic/                   ← LogicPage / tabs（fill/summary/critique/ame）/ past
+│   │   ├── thinking/                ← ThinkingPage / GenerateForm / ProblemView（指示書3で拡張）
+│   │   └── shared/                  ← DiffSelector / PresetRow / IndustrySelector 等
+│   ├── domain/                      ← constants / industry-persona / logic-domain / thinking-domain
+│   ├── logic/                       ← fillLogic / summaryLogic / critiqueLogic / ameLogic / thinkingLogic
+│   ├── utils/                       ← markdown.js / migrate.js
+│   └── styles/                      ← App.css
+├── backend/                         ← BEサーバー（Node.js Express + Railway）
 │   ├── src/
 │   │   ├── index.js
-│   │   ├── config/（constants.js, claude-config.js）
-│   │   ├── api/（generate-problem.js, score-answer.js）
-│   │   ├── services/（claude, validate, sheets）
-│   │   └── middleware/（error-handler.js）
-│   ├── tests/（generate, score, integration）
-│   ├── .env.example
-│   ├── .env.local                   ← .gitignore に含める
-│   └── README.md
+│   │   ├── api/（generate-problem / score-answer / complete）
+│   │   ├── services/（claude-service / sheets-service / validate-service）
+│   │   └── config/
+│   └── package.json
+├── legacy/                          ← 旧 Vanilla JS（参照用アーカイブ、本番使用しない）
 ├── docs/
-│   ├── TERMS.md                         ← プロジェクト用語定義（最優先で読む）
-│   ├── DOCUMENT_GUIDELINES.md           ← ドキュメント記載粒度ガイドライン（最優先で読む）
-│   ├── PROJECT_CONTEXT.md               ← ビジョン・ロードマップ
-│   ├── DEVELOPMENT_POLICY.md            ← 開発フロー・タスク分類
-│   ├── DESIGN_DECISION_HISTORY.md       ← 設計判断の経緯メモ
-│   ├── _index.md                        ← ドキュメント索引
-│   ├── architecture.md                  ← フロントエンド構成
-│   ├── gas-column-headers.md            ← GAS スキーマ
-│   ├── dev-flow.md                      ← 開発フロー詳細
+│   ├── TERMS.md / DOCUMENT_GUIDELINES.md / PROJECT_CONTEXT.md 等
 │   ├── requirements/
-│   │   ├── common.md
-│   │   ├── logic/（overview・fill・summary・critique・ame）
-│   │   └── thinking/（overview・scoring）
 │   ├── specification/
-│   │   ├── common.md
-│   │   ├── logic/（common・fill・summary・critique・ame）
-│   │   └── thinking/（overview・steps・api・data）
-│   ├── cursor-instructions/             ← Cursor向け作業指示書（タイプCのみ）
-│   └── setup/                           ← セットアップガイド
-├── guide/
+│   └── cursor-instructions/
 └── .cursor/rules/dev-flow.mdc       ← Cursor 専用ルール
 ```
 
