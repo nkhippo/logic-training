@@ -96,11 +96,35 @@ app.use((req, res) => {
 
 app.use(errorHandler);
 
+const isRailway = Boolean(
+  process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_PROJECT_ID || process.env.RAILWAY_SERVICE_ID
+);
+
+if (process.env.NODE_ENV === 'test' && isRailway) {
+  // eslint-disable-next-line no-console -- fatal misconfiguration
+  console.error('[app] ✗ FATAL: NODE_ENV=test on Railway — server will not listen. Set NODE_ENV=production');
+  process.exit(1);
+}
+
+process.on('uncaughtException', (err) => {
+  // eslint-disable-next-line no-console -- fatal error
+  console.error('[app] ✗ uncaughtException:', err.message);
+  // eslint-disable-next-line no-console -- fatal error
+  console.error(err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  // eslint-disable-next-line no-console -- fatal error
+  console.error('[app] ✗ unhandledRejection:', reason);
+  process.exit(1);
+});
+
 if (process.env.NODE_ENV !== 'test') {
-  const PORT = process.env.PORT || 3000;
+  const PORT = Number.parseInt(process.env.PORT, 10) || 3000;
 
   // eslint-disable-next-line no-console -- startup diagnostic
-  console.log(`[app] Attempting to listen on port ${PORT}...`);
+  console.log(`[app] Attempting to listen on 0.0.0.0:${PORT} (Railway: ${isRailway})...`);
 
   const server = app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console -- startup message
@@ -116,6 +140,16 @@ if (process.env.NODE_ENV !== 'test') {
     console.error('[app] Stack:', err.stack);
     process.exit(1);
   });
+
+  process.on('SIGTERM', () => {
+    // eslint-disable-next-line no-console -- shutdown log
+    console.log('[app] SIGTERM received, shutting down...');
+    server.close(() => process.exit(0));
+  });
+} else if (isRailway) {
+  // eslint-disable-next-line no-console -- fatal misconfiguration
+  console.error('[app] ✗ FATAL: listen skipped (NODE_ENV=test). Cannot serve traffic.');
+  process.exit(1);
 }
 
 module.exports = app;
