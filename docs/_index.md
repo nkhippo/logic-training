@@ -1,6 +1,6 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-26（Phase 1-3 BEサーバー基盤実装完了）  
+**最終更新**: 2026-05-26（Phase 1-4 Railway 仕様書・Cursor指示書追加）  
 **対応バージョン**: Ver.3.3
 
 > このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
@@ -36,6 +36,8 @@ docs/
 │   │   ├── summary.md     ← 要約
 │   │   ├── critique.md    ← 批判読み
 │   │   └── ame.md         ← 空雨傘
+│   ├── backend/
+│   │   └── specification_railway_phase1_4.md  ← Railway デプロイ・CI/CD・FE統合（Phase 1-4）
 │   └── thinking/
 │       ├── overview.md    ← 状態オブジェクト・問題オブジェクト・画面構成・定数一覧
 │       ├── steps.md       ← レベル別ステップフロー・80点ルール・90点ルール・振り返りUI
@@ -44,7 +46,8 @@ docs/
 │
 ├── cursor-instructions/   ← Cursor向け作業指示書（タイプ C・大規模案件のみ）
 │   ├── cursor_instruction_backend_phase1_3.md      ← BEサーバー Phase 1-3（Issue #40）
-│   └── cursor_instruction_phase1-3_backend_base.md
+│   ├── cursor_instruction_phase1-3_backend_base.md
+│   └── cursor_instruction_railway_phase1_4.md        ← Railway デプロイ Phase 1-4
 ├── setup/                 ← 環境構築ガイド
 ├── PROJECT_CONTEXT.md     ← ビジョン・ロードマップ
 ├── DEVELOPMENT_POLICY.md  ← 開発フロー・タスク分類・運用ルール
@@ -60,6 +63,7 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-26 | Phase 1-4：Railway デプロイ・CI/CD・FE統合の仕様書・Cursor指示書を追加 |
 | 2026-05-26 | Phase 1-3：BEサーバー基盤実装完了、全テスト PASS、Google Sheets 連携動作確認 |
 | 2026-05-25 | 整合性修正：requirements/common.md §4欠番・thinking/overview.md §3-3重複・crossref全体を修正 |
 | 2026-05-25 | 粒度修正：各タブ要件定義書の難易度別パラメータを「学習体験」記述に統一、実装値は仕様書に集約 |
