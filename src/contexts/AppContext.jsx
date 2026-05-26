@@ -34,8 +34,6 @@ const initialState = {
   industry: '',
   personas: [],
   tenure: '',
-  answerMode: 'text',
-  answerScope: 's',
   genBusy: null,
   genPhase: null,
   gradeBusy: null,
