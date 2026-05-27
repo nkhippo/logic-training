@@ -1,6 +1,6 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-26（Phase 2-1 FE API統合仕様・React計画・#46）  
+**最終更新**: 2026-05-28（OAuth MCP 連携セットアップガイド・#85）  
 **対応バージョン**: Ver.3.3
 
 > このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
@@ -53,6 +53,7 @@ docs/
 │   ├── cursor_instruction_railway_phase1_4.md        ← Railway デプロイ Phase 1-4
 │   └── cursor_instruction_frontend_api_integration.md ← FE API統合 Phase 2-1（#45）
 ├── setup/                 ← 環境構築ガイド
+├── CLAUDE_AI_MCP_SETUP.md ← claude.ai カスタムコネクタ OAuth 設定手順（Issue #85）
 ├── PROJECT_CONTEXT.md     ← ビジョン・ロードマップ
 ├── DEVELOPMENT_POLICY.md  ← 開発フロー・タスク分類・運用ルール
 ├── architecture.md        ← フロントエンド構成・ディレクトリ設計
@@ -67,6 +68,7 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-28 | Issue #85: `CLAUDE_AI_MCP_SETUP.md` 追加（GitHub OAuth + claude.ai MCP 連携） |
 | 2026-05-26 | Phase 2-2a: 不要ファイル削除（`* 2.*` 46件・`app.monolith.js`・`gas-script-v3.js`）|
 | 2026-05-26 | Phase 2-2b: 運用ドキュメントを React + Vercel + Railway 構成に更新 |
 | 2026-05-26 | Phase 2-1：`frontend-api-integration.md`・`frontend-react.md`（計画）・Cursor指示書・`/api/complete`（PR #46） |
