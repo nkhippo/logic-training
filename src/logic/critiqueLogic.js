@@ -18,7 +18,7 @@ function getCritiquePrompts(lang) {
     4: 'Difficulty 4 Form A: analysis report excerpt.',
     5: 'Difficulty 5 Form A: strategy document.',
   };
-  return addIndustryConstraintToPrompts(lang === 'ja' ? ja : en);
+  return addIndustryConstraintToPrompts(lang === 'ja' ? ja : en, lang);
 }
 
 /**

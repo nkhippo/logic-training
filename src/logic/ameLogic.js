@@ -18,7 +18,7 @@ function getAmePrompts(lang) {
     4: 'Difficulty 4: deductive or inductive.',
     5: 'Difficulty 5: advanced.',
   };
-  return addIndustryConstraintToPrompts(lang === 'ja' ? ja : en);
+  return addIndustryConstraintToPrompts(lang === 'ja' ? ja : en, lang);
 }
 
 /**

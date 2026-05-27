@@ -16,7 +16,7 @@ export function fillScoreColor(pct){
 export function fillScoreHtml(correct,total,lang){
   const pct=total?Math.round(correct/total*100):0;
   const color=fillScoreColor(pct);
-  const isJa=(lang||st.lang)==='ja';
+  const isJa=(lang ?? 'ja')==='ja';
   const text=isJa?`${correct} / ${total} 問正解（${pct}%）`:`${correct} / ${total} correct (${pct}%)`;
   return `<p class="fill-score" style="font-size:18px;font-weight:600;color:${color};margin:0 0 1rem;">${text}</p>`;
 }
@@ -48,9 +48,9 @@ export function stripScore100Line(text){
 }
 export function formatFeedback100(raw,lang){
   const {score,rest}=stripScore100Line(raw);
-  const isJa=(lang||st.lang)==='ja';
+  const isJa=(lang ?? 'ja')==='ja';
   const head=score!=null?score100Html(score,isJa):'';
-  return head+md2h(rest);
+  return head+md2h(rest, isJa ? 'ja' : 'en');
 }
 export function formatSummaryFeedback(raw,lang){return formatFeedback100(raw,lang);}
 function showCopyBar(mode){
@@ -153,7 +153,7 @@ function mdWrapTextBlocks(html){
     return p;
   }).join('');
 }
-export function md2h(tx){
+export function md2h(tx, lang = 'ja'){
   let raw=String(tx||'').trim();
   if(!raw)return '';
   const blockquotes=[];
@@ -164,7 +164,7 @@ export function md2h(tx){
   let h=esc(raw);
   blockquotes.forEach((bq,i)=>{h=h.replace(`\x01BQ${i}\x01`,bq);});
   h=h
-    .replace(/【スコア[：:]\s*(\d+)\/100】/g,(_,n)=>score100Html(n,st.lang==='ja'))
+    .replace(/【スコア[：:]\s*(\d+)\/100】/g,(_,n)=>score100Html(n,lang==='ja'))
     .replace(/【Score[：:]\s*(\d+)\/100】/gi,(_,n)=>score100Html(n,false));
   h=parseMdTables(h);
   h=h
