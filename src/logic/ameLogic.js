@@ -85,7 +85,7 @@ export async function gradeAmeProblem(prob, answersText) {
     service: 'logic',
     problem_id: prob.beProblemId || null,
     user_answer: answersText,
-    context: { tab: 'ame' },
+    context: { tab: 'ame', original_problem: prob.article || '' },
     markdownResponse: true,
   });
 }
