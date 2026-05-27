@@ -1,6 +1,6 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-26（Phase 2-1 FE API統合仕様・React計画・#46）  
+**最終更新**: 2026-05-27（#76–#79 Hotfix: テーマ行・モーダル・過去問設問の仕様追記）  
 **対応バージョン**: Ver.3.3
 
 > このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
@@ -67,6 +67,7 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-27 | Hotfix #76–#79: テーマ5列グリッド・guide-overlay モーダル・過去問設問表示（`specification/logic/common.md` §2–3、`specification/common.md` §3-1） |
 | 2026-05-26 | Phase 2-2a: 不要ファイル削除（`* 2.*` 46件・`app.monolith.js`・`gas-script-v3.js`）|
 | 2026-05-26 | Phase 2-2b: 運用ドキュメントを React + Vercel + Railway 構成に更新 |
 | 2026-05-26 | Phase 2-1：`frontend-api-integration.md`・`frontend-react.md`（計画）・Cursor指示書・`/api/complete`（PR #46） |
