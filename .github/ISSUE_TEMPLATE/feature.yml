@@ -1,0 +1,31 @@
+name: Feature / Fix
+description: 新機能・改修・バグ修正の依頼
+labels: ["ready-for-cursor"]
+body:
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景・目的
+      description: なぜこの改修が必要か
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: 要件・完了定義
+      description: 何を実装するか。完了したと判断できる具体的な動作を記述する
+    validations:
+      required: true
+
+  - type: textarea
+    id: related-docs
+    attributes:
+      label: 関連ドキュメント（任意）
+      description: 要件定義書・仕様書の URL など
+
+  - type: textarea
+    id: test-method
+    attributes:
+      label: テスト方法
+      description: 何をどう確認すれば完了か

@@ -22,6 +22,7 @@ let errorHandler;
 let generateProblemRoute;
 let scoreAnswerRoute;
 let completeRoute;
+let mcpRoute;
 
 try {
   express = require('express');
@@ -43,6 +44,10 @@ try {
   completeRoute = require('./api/complete');
   // eslint-disable-next-line no-console -- startup diagnostic
   console.log('[app] ✓ complete route loaded');
+
+  mcpRoute = require('./api/mcp');
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log('[app] ✓ mcp route loaded');
 } catch (err) {
   // eslint-disable-next-line no-console -- fatal error
   console.error('[app] ✗ FATAL: Module loading failed');
@@ -129,6 +134,7 @@ app.get('/health', (req, res) => {
 app.use('/api/generate-problem', generateProblemRoute);
 app.use('/api/score-answer', scoreAnswerRoute);
 app.use('/api/complete', completeRoute);
+app.use('/mcp', mcpRoute);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'not_found', message: 'Endpoint not found', status: 404 });

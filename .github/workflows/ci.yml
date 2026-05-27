@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install FE dependencies
+        run: npm ci
+
+      - name: Build FE
+        run: npm run build
+        env:
+          VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
+
+      - name: Install BE dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Check BE starts
+        run: |
+          node -e "require('./src/index.js')" &
+          sleep 3
+          curl -f http://localhost:3000/health || exit 1
+          kill %1
+        working-directory: backend
+        env:
+          NODE_ENV: development
+          PORT: '3000'
+          CLAUDE_API_KEY: dummy_for_ci
+          GOOGLE_SHEETS_API_KEY: dummy_for_ci
+          GOOGLE_SHEETS_ID: dummy_for_ci

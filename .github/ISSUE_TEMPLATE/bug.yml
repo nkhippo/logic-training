@@ -1,0 +1,30 @@
+name: Bug Report
+description: バグ報告
+labels: ["ready-for-cursor"]
+body:
+  - type: textarea
+    id: symptom
+    attributes:
+      label: 症状
+      description: 期待する動作と実際の動作
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      options:
+        - 緊急（使用不可）
+        - 高（機能に支障あり）
+        - 中（動作するが改善余地あり）
+        - 低（UI改善など）
+    validations:
+      required: true
