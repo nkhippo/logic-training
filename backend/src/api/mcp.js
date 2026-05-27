@@ -51,8 +51,8 @@ router.get('/', (req, res) => {
     description_for_model: 'Creates and lists GitHub Issues for the thinkgrindai repository.',
     auth: {
       type: 'oauth2',
-      authorization_url: `${MCP_API_BASE_URL}/mcp/auth`,
-      token_url: `${MCP_API_BASE_URL}/mcp/token`,
+      authorization_url: `${MCP_API_BASE_URL}/authorize`,
+      token_url: `${MCP_API_BASE_URL}/token`,
       scopes: ['repo'],
     },
     api: {
@@ -184,8 +184,8 @@ router.get('/openapi.json', (req, res) => {
           type: 'oauth2',
           flows: {
             authorizationCode: {
-              authorizationUrl: `${MCP_API_BASE_URL}/mcp/auth`,
-              tokenUrl: `${MCP_API_BASE_URL}/mcp/token`,
+              authorizationUrl: `${MCP_API_BASE_URL}/authorize`,
+              tokenUrl: `${MCP_API_BASE_URL}/token`,
               scopes: { repo: 'Full control of private repositories' },
             },
           },

@@ -62,8 +62,9 @@ Claude が直接 GitHub に Issue を作成します。
 **対策**:
 1. GitHub OAuth App の設定を再確認
 2. Client ID / Client Secret を正確に入力（コピペ推奨）
-3. Authorization callback URL が正確か確認：
-   `https://thinkgrindai-production.up.railway.app/mcp/callback`
+3. Authorization callback URL に以下 **2つ** が登録されているか確認：
+   - `https://thinkgrindai-production.up.railway.app/oauth/github/callback`（claude.ai 連携用・必須）
+   - `https://thinkgrindai-production.up.railway.app/mcp/callback`（旧フロー用・任意）
 
 ### Issue が作成されない
 
