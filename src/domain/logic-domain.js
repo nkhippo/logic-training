@@ -1,5 +1,6 @@
 /* Domain */
 import { DEFAULT_S_VOLUME } from './constants.js';
+import { parseF } from '../utils/markdown.js';
 
 const SUM_SCORE100_NOTE_JA =
   '\n\n最初の行に必ず【スコア：XX/100】の形式で100点満点の点数を記載してください。\n採点基準：内容の正確さ（50点）・簡潔さ・文字数遵守（30点）・表現・論理性（20点）。';
