@@ -74,7 +74,18 @@ export async function generateProblem(payload) {
 
 ---
 
-## 7. 参考
+## 7. 論理トレーニング共通 UI（Hotfix #76–#79、2026-05-27 反映）
+
+| 機能 | コンポーネント / スタイル | 仕様書 |
+|---|---|---|
+| テーマプリセット行（5列グリッド） | `PresetRow.jsx` + `.preset-row-theme` | `specification/logic/common.md §2` |
+| 言語モーダル | `LangModal.jsx` + `guide-overlay` | `specification/common.md §3-1, §5` |
+| ペルソナモーダル | `PersonaModal.jsx` + `guide-overlay` | `specification/common.md §3-1, §4` |
+| 過去問詳細（設問表示） | `past/PastList.jsx` | `specification/logic/common.md §3` |
+
+---
+
+## 8. 参考
 
 - `docs/specification/frontend/frontend-api-integration.md`
 - `docs/architecture.md`（React SPA 構成）
