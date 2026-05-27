@@ -84,8 +84,8 @@ export const INDUSTRY_CONSTRAINT={
   ja:'\n- 業界が指定されている場合は文脈の色付けのみに使用し、その業界の専門知識・専門用語・規制・法律を知らなくても読める内容にすること',
   en:'\n- If an industry is specified, use it only as context coloring. The content must be readable without specialized knowledge of that industry\'s regulations, terminology, or laws.',
 };
-export function addIndustryConstraintToPrompts(prompts){
-  const suffix=st.lang==='en'?INDUSTRY_CONSTRAINT.en:INDUSTRY_CONSTRAINT.ja;
+export function addIndustryConstraintToPrompts(prompts, lang = 'ja'){
+  const suffix=lang==='en'?INDUSTRY_CONSTRAINT.en:INDUSTRY_CONSTRAINT.ja;
   const out={};
   for(const k in prompts)out[k]=prompts[k]+suffix;
   return out;

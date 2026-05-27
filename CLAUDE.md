@@ -77,34 +77,51 @@ thinkgrindai/
 
 ---
 
-## 開発フロー（全6フェーズ）
+## 開発フロー（全7ステップ）
+
+> ステップ3〜6は「懸念なし」の場合はスキップして短縮できる。
+> 懸念の有無は Cursor の点検結果（Step 3-a）をもとに Naoya と Claude が判断する。
 
 ```
-Phase 1: アイデア出し
+Step 1: 要件具体化（Naoya × Claude）
   Naoya が Obsidian に ideas/REQ-XXX-<名前>.md を作成
-
-Phase 2: 要件確定
   Claude と議論 → 確定 → Google Sheets「要件確定シート」に記入
 
-Phase 3: 仕様・Issue 草稿（Claude が担当）
+Step 2: 指示書作成（Claude が担当）
   タイプ A・B: Issue 本文草稿を .md ファイルで出力
   タイプ C: docs/requirements/ + docs/specification/ + cursor-instructions/ を作成
             → Issue 本文草稿も .md ファイルで出力
+  ★ 指示書には「設計ドキュメントの整備」までを含める（Step 3-a を必ず指示する）
   → タイプ C は GitHub に docs を commit・push
 
-Phase 4: GitHub Issue 作成（Naoya が担当）
+GitHub Issue 作成（Naoya が担当）
   Claude 出力の .md をコピペして Issue 作成
   Label: feature / ready-for-cursor / <priority>
   タイプ C: Body に docs/ の URL を記載
 
-Phase 5: 実装（Cursor が担当）
-  Naoya が Issue URL を Cursor に渡す
-  → Issue 本文（+ タイプ C は docs/）を読んで実装 → PR 作成（Fixes #XXXX）
+Step 3: 設計ドキュメント整備 ＋ 点検（Cursor が担当）
+  a. 設計ドキュメントを整備する。併せて以下を点検し、結果を表形式で出力する
+     → 詳細は .cursor/rules/dev-flow.mdc「設計ドキュメント整備フェーズ」を参照
+  b. 点検結果に「持ち帰り基準」に該当する懸念があれば、持ち帰り資料を作成して Naoya に渡す
+  c. 該当しなければ、設計変更箇所・実装影響箇所をまとめて次ステップへ
 
-Phase 6: 完了処理
-  Naoya がテスト → Merge
-  → Sheets: ステータス = 完了、実完了日記入
-  → Obsidian: 完了ログ追記
+Step 4: 仕様練り直し（Naoya × Claude）  ← Step 3-b がある場合のみ
+  3-b の持ち帰り資料をもとに Claude と仕様を練り直す
+
+Step 5: 指示書更新（Claude が担当）  ← Step 3-b がある場合のみ
+  4 の結果を踏まえて指示書を更新する
+
+Step 6: 再点検（Cursor が担当）  ← Step 3-b がある場合のみ
+  変更箇所のみを対象に Step 3-a・3-b・3-c を再実施する
+  ・懸念残存 → Step 4 に戻る（2回目以降は変更箇所のみ対象）
+  ・懸念なし → Step 3-c を実施して Step 7 へ
+
+Step 7: 実装（Cursor が担当）
+  Step 3-c の成果物（設計変更箇所・実装影響箇所のまとめ）を入力として実装を行う
+  a. 実装 ＋ 点検（実装中に UX・運用変更の懸念が生じた場合は表形式で出力）
+     → 点検の観点・出力形式は .cursor/rules/dev-flow.mdc「実装フェーズの点検」を参照
+  b. 懸念あり → Step 4 に戻る（ドキュメント整備は不要、仕様練り直しのみ）
+  c. 懸念なし → 完了処理（Obsidian・Issue 整理・Google Sheets 更新）
 ```
 
 ---
