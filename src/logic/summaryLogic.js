@@ -131,7 +131,7 @@ export async function gradeSummaryProblem(prob, userTexts) {
     service: 'logic',
     problem_id: prob.beProblemId || null,
     user_answer: userTexts.join('\n'),
-    context: { tab: 'summary' },
+    context: { tab: 'summary', original_problem: prob.text || '' },
     markdownResponse: true,
   });
 }
