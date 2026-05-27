@@ -1,7 +1,57 @@
 import { A_ARTICLE_LENGTH, addIndustryConstraintToPrompts } from '../domain/logic-domain.js';
 import { callClaude, normalizeAmeFromModel, safeJSON } from '../services/api.js';
 import { buildPersonaPromptNote } from '../services/persona.js';
+import { parseF } from '../utils/markdown.js';
 import { buildThemeInFromDocType } from './themeHelpers.js';
+
+/**
+ * @param {string} text
+ * @param {string|null} constraint
+ * @returns {string}
+ */
+function stripAmeConstraintFromQuestion(text, constraint) {
+  let s = String(text || '').trim();
+  if (!s) return s;
+  s = s.replace(/【制約条件[：:][^】]*】\s*(を守りながら|を守って|に従い|に従って)?[、,]?\s*/g, '');
+  s = s.replace(
+    /\[(?:Umbrella\s+)?Constraint[：:][^\]]*\]\s*(while\s+(?:adhering\s+to|following)|adhering\s+to)?[,\s]*/gi,
+    ''
+  );
+  if (constraint) {
+    const esc = String(constraint).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    s = s.replace(
+      new RegExp(`[「『]?${esc}[」』]?\\s*(を守りながら|を守って|に従い|に従って)[、,]?\\s*`, 'g'),
+      ''
+    );
+    s = s.replace(
+      new RegExp(`(?:while\\s+)?(?:adhering\\s+to|following)\\s*[「『]?${esc}[」』]?[,.]?\\s*`, 'gi'),
+      ''
+    );
+  }
+  return s.replace(/\s{2,}/g, ' ').replace(/^[,、]\s*/, '').trim();
+}
+
+/**
+ * @param {object} prob
+ * @returns {object}
+ */
+export function normAmeProb(prob) {
+  const questions = Array.isArray(prob.questions) ? prob.questions : parseF(prob.questions) || [];
+  const constraint = prob.constraint || null;
+  const cleaned = questions.map((q) => {
+    const type = q.type || '';
+    if ((type !== '傘' && type !== 'Umbrella') || !q.question) return q;
+    return { ...q, question: stripAmeConstraintFromQuestion(q.question, constraint) };
+  });
+  return {
+    ...prob,
+    article: prob.article || '',
+    questions: cleaned,
+    law: prob.law || null,
+    constraint,
+    form: prob.form || 'inductive',
+  };
+}
 
 function getAmePrompts(lang) {
   const ja = {
@@ -85,7 +135,7 @@ export async function gradeAmeProblem(prob, answersText) {
     service: 'logic',
     problem_id: prob.beProblemId || null,
     user_answer: answersText,
-    context: { tab: 'ame' },
+    context: { tab: 'ame', original_problem: prob.article || '' },
     markdownResponse: true,
   });
 }

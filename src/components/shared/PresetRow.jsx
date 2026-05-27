@@ -7,6 +7,8 @@ import {
 import { useAppContext } from '../../contexts/AppContext.jsx';
 import { useTranslation } from '../../hooks/useTranslation.js';
 
+const THEME_PRESET_COLS = 5;
+
 const MAP = {
   f: { presets: FILL_PRESETS, docKey: 'fDocType', diffKey: 'fDiff' },
   s: { presets: SUMMARY_PRESETS, docKey: 'sDocType', diffKey: 'sDiff' },
@@ -32,7 +34,7 @@ export default function PresetRow({ tab }) {
       <label style={{ fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '8px' }}>
         {t('themeLbl')} <span className="label-req">*</span>
       </label>
-      <div className="preset-row">
+      <div className="preset-row preset-row-theme">
         {items.map((item) => {
           const disabled = diff > 0 && item.minDiff > diff;
           const sel = selected === item.value;
@@ -49,6 +51,9 @@ export default function PresetRow({ tab }) {
             </button>
           );
         })}
+        {Array.from({ length: Math.max(0, THEME_PRESET_COLS - items.length) }, (_, i) => (
+          <span key={`empty-${i}`} className="preset-cell-empty" aria-hidden="true" />
+        ))}
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ src/
         CritiqueTab.jsx  # 批判読みタブ
         AmeTab.jsx       # 空雨傘タブ
       past/
-        PastList.jsx     # 過去問一覧・詳細
+        PastList.jsx     # 過去問一覧・詳細（設問表示含む）
     thinking/
       ThinkingPage.jsx   # 思考トレーニングメインページ
       GenerateForm.jsx   # 問題設定フォーム（核心・業界・難易度・レベル）
@@ -53,7 +53,7 @@ src/
       ReflectionView.jsx # 振り返り対話（D1/D2/D3）
     shared/
       DiffSelector.jsx   # 難易度選択
-      PresetRow.jsx      # テーマプリセット行
+      PresetRow.jsx      # テーマプリセット行（5列 CSS Grid・THEME_PRESET_COLS=5）
       IndustrySelector.jsx # 業界選択
       PersonaModal.jsx   # ペルソナ設定モーダル
       LangModal.jsx      # 言語切替モーダル
