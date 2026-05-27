@@ -4,11 +4,9 @@ const crypto = require('crypto');
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
-const GITHUB_OWNER = process.env.GITHUB_OWNER || 'nkhippo';
-const GITHUB_REPO = process.env.GITHUB_REPO || 'ThinkGrindAi';
 const MCP_API_BASE_URL = process.env.MCP_API_BASE_URL || 'https://thinkgrindai-production.up.railway.app';
-const GITHUB_API = 'https://api.github.com';
 const OAUTH_CALLBACK_URL = `${MCP_API_BASE_URL}/mcp/callback`;
+const { createGitHubIssue, listGitHubIssues } = require('../services/github-issues-service');
 
 // セッション用メモリストア（本番環境では Redis 等を使用）
 const sessions = new Map();
@@ -262,29 +260,13 @@ router.post('/issues', async (req, res) => {
   }
 
   try {
-    const response = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      body: JSON.stringify({ title, body, labels }),
+    const issue = await createGitHubIssue({
+      accessToken: access_token,
+      title,
+      body,
+      labels,
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      return res.status(response.status).json({ error: error.message });
-    }
-
-    const issue = await response.json();
-    res.status(201).json({
-      number: issue.number,
-      title: issue.title,
-      url: issue.html_url,
-      labels: issue.labels.map((l) => l.name),
-    });
+    res.status(201).json(issue);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -301,28 +283,12 @@ router.get('/issues', async (req, res) => {
   }
 
   try {
-    const response = await fetch(
-      `${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues?state=${state}&per_page=${per_page}`,
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      }
-    );
-
-    const issues = await response.json();
-    res.json(
-      issues.map((i) => ({
-        number: i.number,
-        title: i.title,
-        url: i.html_url,
-        labels: i.labels.map((l) => l.name),
-        state: i.state,
-        created_at: i.created_at,
-      }))
-    );
+    const issues = await listGitHubIssues({
+      accessToken: access_token,
+      state,
+      perPage: Number(per_page) || 10,
+    });
+    res.json(issues);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

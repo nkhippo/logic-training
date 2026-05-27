@@ -24,6 +24,7 @@ let scoreAnswerRoute;
 let completeRoute;
 let mcpRoute;
 let oauthClaudeRoute;
+let mcpRemoteRoute;
 
 try {
   express = require('express');
@@ -53,6 +54,10 @@ try {
   oauthClaudeRoute = require('./api/oauth-claude');
   // eslint-disable-next-line no-console -- startup diagnostic
   console.log('[app] ✓ oauth-claude route loaded');
+
+  mcpRemoteRoute = require('./api/mcp-remote');
+  // eslint-disable-next-line no-console -- startup diagnostic
+  console.log('[app] ✓ mcp-remote route loaded');
 } catch (err) {
   // eslint-disable-next-line no-console -- fatal error
   console.error('[app] ✗ FATAL: Module loading failed');
@@ -113,7 +118,7 @@ app.use((req, res, next) => {
   }
 
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Mcp-Session-Id');
 
   if (req.method === 'OPTIONS') {
     res.sendStatus(200);
@@ -140,6 +145,7 @@ app.get('/health', (req, res) => {
 app.use('/api/generate-problem', generateProblemRoute);
 app.use('/api/score-answer', scoreAnswerRoute);
 app.use('/api/complete', completeRoute);
+app.use(mcpRemoteRoute);
 app.use('/mcp', mcpRoute);
 app.use(oauthClaudeRoute);
 

@@ -136,7 +136,7 @@ router.get('/oauth/github/callback', (req, res) => {
 /**
  * claude.ai MCP カスタムコネクタ用: authorization code → access token
  */
-router.post('/token', express.urlencoded({ extended: false }), async (req, res) => {
+router.post('/token', async (req, res) => {
   const grantType = req.body.grant_type;
   const code = req.body.code;
   const codeVerifier = req.body.code_verifier;
