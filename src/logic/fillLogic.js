@@ -37,7 +37,7 @@ function getFillPrompts(lang) {
       3: `難易度3（標準）:\n- 文書タイプ：提案書・企画書の一節（ビジネス文書）\n- 文字数：400〜500字\n- 穴抜き：3個\n- ヒント：なし（hintsはすべて空文字列）`,
       4: `難易度4（上級）:\n- 文書タイプ：分析レポート・調査報告（ビジネス文書）\n- 文字数：400〜500字\n- 穴抜き：4個\n- ヒント：なし（hintsはすべて空文字列）`,
       5: `難易度5（超難問）:\n- 文書タイプ：経営戦略文書・コンサルレポート（ビジネス文書）\n- 文字数：400〜500字\n- 穴抜き：5個\n- ヒント：なし（hintsはすべて空文字列）`,
-    });
+    }, lang);
   }
   return addIndustryConstraintToPrompts({
     1: `Difficulty 1 (Beginner):\n- Document type: Internal email / business communication\n- Length: 400-500 characters\n- Blanks: 2\n- Hints: specify the logical relation for each blank`,
@@ -45,7 +45,7 @@ function getFillPrompts(lang) {
     3: `Difficulty 3 (Standard):\n- Document type: Proposal excerpt\n- Length: 400-500 characters\n- Blanks: 3\n- Hints: none (all hints must be empty strings)`,
     4: `Difficulty 4 (Advanced):\n- Document type: Analysis report\n- Length: 400-500 characters\n- Blanks: 4\n- Hints: none (all hints must be empty strings)`,
     5: `Difficulty 5 (Master):\n- Document type: Strategy / consulting report\n- Length: 400-500 characters\n- Blanks: 5\n- Hints: none (all hints must be empty strings)`,
-  });
+  }, lang);
 }
 
 /**

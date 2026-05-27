@@ -45,7 +45,7 @@ function getSumPrompts(lang) {
           4: 'Difficulty 4: Analysis report. 3 questions. ~30%.',
           5: 'Difficulty 5: Strategy document. 3 questions. ~20%.',
         };
-  return addIndustryConstraintToPrompts(prompts);
+  return addIndustryConstraintToPrompts(prompts, lang);
 }
 
 /**
