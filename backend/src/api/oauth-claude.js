@@ -139,7 +139,6 @@ router.get('/oauth/github/callback', (req, res) => {
 router.post('/token', express.urlencoded({ extended: false }), async (req, res) => {
   const grantType = req.body.grant_type;
   const code = req.body.code;
-  const redirectUri = req.body.redirect_uri;
   const codeVerifier = req.body.code_verifier;
 
   if (grantType && grantType !== 'authorization_code') {
@@ -161,11 +160,9 @@ router.post('/token', express.urlencoded({ extended: false }), async (req, res) 
   }
 
   try {
-    const tokenData = await exchangeGitHubCode(
-      code,
-      redirectUri || 'https://claude.ai/api/mcp/auth_callback',
-      codeVerifier
-    );
+    // GitHub が発行した code は /authorize で指定した redirect_uri と一致する必要がある。
+    // Claude 側 redirect_uri をそのまま渡すと mismatch になるため、常に GitHub callback を使用する。
+    const tokenData = await exchangeGitHubCode(code, GITHUB_OAUTH_CALLBACK, codeVerifier);
 
     if (tokenData.error) {
       return res.status(400).json({
