@@ -7,6 +7,8 @@ import {
 import { useAppContext } from '../../contexts/AppContext.jsx';
 import { useTranslation } from '../../hooks/useTranslation.js';
 
+const THEME_PRESET_COLS = 5;
+
 const MAP = {
   f: { presets: FILL_PRESETS, docKey: 'fDocType', diffKey: 'fDiff' },
   s: { presets: SUMMARY_PRESETS, docKey: 'sDocType', diffKey: 'sDiff' },
@@ -49,6 +51,9 @@ export default function PresetRow({ tab }) {
             </button>
           );
         })}
+        {Array.from({ length: Math.max(0, THEME_PRESET_COLS - items.length) }, (_, i) => (
+          <div key={`spacer-${i}`} className="preset-spacer" aria-hidden="true" />
+        ))}
       </div>
     </div>
   );
