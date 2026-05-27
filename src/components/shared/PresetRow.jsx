@@ -34,7 +34,7 @@ export default function PresetRow({ tab }) {
       <label style={{ fontSize: '13px', fontWeight: 500, display: 'block', marginBottom: '8px' }}>
         {t('themeLbl')} <span className="label-req">*</span>
       </label>
-      <div className="preset-row">
+      <div className="preset-row preset-row-theme">
         {items.map((item) => {
           const disabled = diff > 0 && item.minDiff > diff;
           const sel = selected === item.value;
@@ -52,7 +52,7 @@ export default function PresetRow({ tab }) {
           );
         })}
         {Array.from({ length: Math.max(0, THEME_PRESET_COLS - items.length) }, (_, i) => (
-          <div key={`spacer-${i}`} className="preset-spacer" aria-hidden="true" />
+          <span key={`empty-${i}`} className="preset-cell-empty" aria-hidden="true" />
         ))}
       </div>
     </div>
