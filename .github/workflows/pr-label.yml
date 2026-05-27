@@ -1,0 +1,17 @@
+name: PR Label Handler
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  add-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add waiting-for-review label
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} \
+            --add-label "waiting-for-review" \
+            --repo ${{ github.repository }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
