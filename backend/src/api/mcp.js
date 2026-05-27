@@ -8,9 +8,36 @@ const GITHUB_OWNER = process.env.GITHUB_OWNER || 'nkhippo';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'ThinkGrindAi';
 const MCP_API_BASE_URL = process.env.MCP_API_BASE_URL || 'https://thinkgrindai-production.up.railway.app';
 const GITHUB_API = 'https://api.github.com';
+const OAUTH_CALLBACK_URL = `${MCP_API_BASE_URL}/mcp/callback`;
 
 // セッション用メモリストア（本番環境では Redis 等を使用）
 const sessions = new Map();
+
+/**
+ * GitHub OAuth の authorization code を access token に交換する
+ * @param {string} code - GitHub から受け取った authorization code
+ * @param {string} [redirectUri] - 認可リクエスト時と同じ redirect_uri
+ * @returns {Promise<Record<string, string>>}
+ */
+async function exchangeGitHubAuthorizationCode(code, redirectUri = OAUTH_CALLBACK_URL) {
+  const payload = {
+    client_id: GITHUB_CLIENT_ID,
+    client_secret: GITHUB_CLIENT_SECRET,
+    code,
+    redirect_uri: redirectUri,
+  };
+
+  const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return tokenResponse.json();
+}
 
 // ======================
 // MCP メタデータエンドポイント
@@ -50,7 +77,10 @@ router.get('/auth', (req, res) => {
   const state = crypto.randomBytes(16).toString('hex');
   sessions.set(state, { createdAt: Date.now() });
 
-  const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&scope=repo&state=${state}&allow_signup=false`;
+  const authUrl =
+    `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}` +
+    `&scope=repo&state=${state}&allow_signup=false` +
+    `&redirect_uri=${encodeURIComponent(OAUTH_CALLBACK_URL)}`;
   res.redirect(authUrl);
 });
 
@@ -71,31 +101,16 @@ router.get('/callback', async (req, res) => {
   }
 
   try {
-    const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({
-        client_id: GITHUB_CLIENT_ID,
-        client_secret: GITHUB_CLIENT_SECRET,
-        code,
-      }),
-    });
-
-    const tokenData = await tokenResponse.json();
+    const tokenData = await exchangeGitHubAuthorizationCode(code);
 
     if (tokenData.error) {
-      return res.status(400).json({ error: tokenData.error_description });
+      return res.status(400).json({ error: tokenData.error_description || tokenData.error });
     }
 
-    const accessToken = tokenData.access_token;
-
     res.json({
-      access_token: accessToken,
-      token_type: 'bearer',
-      scope: 'repo',
+      access_token: tokenData.access_token,
+      token_type: tokenData.token_type || 'bearer',
+      scope: tokenData.scope || 'repo',
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -103,10 +118,56 @@ router.get('/callback', async (req, res) => {
 });
 
 /**
- * アクセストークン エンドポイント（OpenAPI 互換）
+ * OAuth2 token エンドポイント（authorization_code grant）
+ * claude.ai カスタムコネクタが code を access_token に交換する際に使用
  */
-router.post('/token', async (req, res) => {
-  res.status(501).json({ error: 'Token endpoint not implemented. Use /auth and /callback flow.' });
+router.post('/token', express.urlencoded({ extended: false }), async (req, res) => {
+  const grantType = req.body.grant_type || req.body.grantType;
+  const code = req.body.code;
+  const redirectUri = req.body.redirect_uri || OAUTH_CALLBACK_URL;
+
+  if (grantType && grantType !== 'authorization_code') {
+    return res.status(400).json({
+      error: 'unsupported_grant_type',
+      error_description: 'Only authorization_code is supported',
+    });
+  }
+
+  if (!code) {
+    return res.status(400).json({
+      error: 'invalid_request',
+      error_description: 'code is required',
+    });
+  }
+
+  if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+    return res.status(500).json({
+      error: 'server_error',
+      error_description: 'GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET が設定されていません',
+    });
+  }
+
+  try {
+    const tokenData = await exchangeGitHubAuthorizationCode(code, redirectUri);
+
+    if (tokenData.error) {
+      return res.status(400).json({
+        error: tokenData.error,
+        error_description: tokenData.error_description || 'Token exchange failed',
+      });
+    }
+
+    res.json({
+      access_token: tokenData.access_token,
+      token_type: tokenData.token_type || 'bearer',
+      scope: tokenData.scope || 'repo',
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: 'server_error',
+      error_description: err.message,
+    });
+  }
 });
 
 // ======================

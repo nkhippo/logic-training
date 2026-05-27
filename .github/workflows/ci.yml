@@ -37,7 +37,8 @@ jobs:
           kill %1
         working-directory: backend
         env:
-          NODE_ENV: test
+          NODE_ENV: development
+          PORT: '3000'
           CLAUDE_API_KEY: dummy_for_ci
           GOOGLE_SHEETS_API_KEY: dummy_for_ci
           GOOGLE_SHEETS_ID: dummy_for_ci
