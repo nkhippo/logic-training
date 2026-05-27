@@ -10,9 +10,12 @@ import {
   generateCritiqueProblem,
   gradeCritiqueProblem,
   buildCritiquePastEntry,
+  normCritiqueProb,
 } from '../../../logic/critiqueLogic.js';
 import { addPastEntry } from '../../../services/pastStorage.js';
+import { L } from '../../../services/i18n.js';
 import { esc, formatFeedback100 } from '../../../utils/markdown.js';
+import CritiqueQuestionBlock from './CritiqueQuestionBlock.jsx';
 
 /**
  * @returns {JSX.Element}
@@ -20,8 +23,9 @@ import { esc, formatFeedback100 } from '../../../utils/markdown.js';
 export default function CritiqueTab() {
   const { state, dispatch } = useAppContext();
   const { t } = useTranslation();
-  const prob = state.critique;
-  const [answer, setAnswer] = useState('');
+  const labels = L[state.lang] || L.ja;
+  const prob = state.critique ? normCritiqueProb(state.critique) : null;
+  const [answers, setAnswers] = useState([]);
   const busy = state.genBusy === 'critique' || state.gradeBusy === 'critique';
 
   const handleGenerate = async () => {
@@ -31,28 +35,32 @@ export default function CritiqueTab() {
     }
     dispatch({ type: 'SET_GEN_BUSY', payload: 'critique' });
     try {
-      const data = await generateCritiqueProblem(state);
+      const data = normCritiqueProb(await generateCritiqueProblem(state));
       dispatch({ type: 'SET_CRITIQUE_PROBLEM', payload: data });
-      setAnswer('');
+      setAnswers(data.questions.map(() => ''));
       dispatch({ type: 'SET_PAST', tab: 'c', payload: addPastEntry('critique', buildCritiquePastEntry(data)) });
       dispatch({ type: 'SET_TOAST', payload: { message: t('cSavedOk') } });
     } catch (e) {
-      dispatch({ type: 'SET_TOAST', payload: { message: e.message } });
+      dispatch({ type: 'SET_TOAST', payload: { message: `${t('cGenFailed')} ${e.message}` } });
     } finally {
       dispatch({ type: 'SET_GEN_BUSY', payload: null });
     }
   };
 
   const handleScore = async () => {
-    if (!prob || !answer.trim()) return;
+    if (!prob) return;
+    if (answers.some((a) => !String(a || '').trim())) {
+      dispatch({ type: 'SET_TOAST', payload: { message: t('critiqueAnswerRequired') } });
+      return;
+    }
     dispatch({ type: 'SET_GRADE_BUSY', payload: 'critique' });
     try {
-      const feedback = await gradeCritiqueProblem(prob, answer);
+      const feedback = await gradeCritiqueProblem(prob, answers);
       const updated = { ...prob, feedback };
       dispatch({ type: 'SET_CRITIQUE_PROBLEM', payload: updated });
       dispatch({ type: 'SET_PAST', tab: 'c', payload: addPastEntry('critique', buildCritiquePastEntry(updated)) });
     } catch (e) {
-      dispatch({ type: 'SET_TOAST', payload: { message: e.message } });
+      dispatch({ type: 'SET_TOAST', payload: { message: `${t('cGradingErr')}: ${e.message}` } });
     } finally {
       dispatch({ type: 'SET_GRADE_BUSY', payload: null });
     }
@@ -69,20 +77,23 @@ export default function CritiqueTab() {
       {prob && (
         <div style={{ marginTop: '1.5rem' }}>
           <ProblemMeta prob={prob} />
-          {prob.text && <div className="problem-box">{esc(prob.text)}</div>}
-          {prob.questions?.map((q, i) => (
-            <div key={i} style={{ marginTop: '1rem' }}>
-              {q.argument && <p className="sum-q-text">{esc(q.argument)}</p>}
-              <p className="sum-q-text">{esc(q.question)}</p>
-            </div>
+          {prob.form === 'A' && prob.text && <div className="problem-box">{esc(prob.text)}</div>}
+          {prob.questions.map((q, i) => (
+            <CritiqueQuestionBlock
+              key={q.id || i}
+              q={q}
+              index={i}
+              form={prob.form}
+              lang={prob.lang || state.lang}
+              value={answers[i] || ''}
+              onChange={(v) => {
+                const next = [...answers];
+                next[i] = v;
+                setAnswers(next);
+              }}
+              labels={labels}
+            />
           ))}
-          <textarea
-            className="sum-ta"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            style={{ minHeight: '120px', width: '100%', marginTop: '1rem' }}
-            placeholder={t('cInst')}
-          />
           <button type="button" className="btn" style={{ marginTop: '12px' }} onClick={handleScore} disabled={busy}>
             {t('cSubmit')}
           </button>
