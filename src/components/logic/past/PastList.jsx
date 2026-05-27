@@ -22,6 +22,53 @@ export default function PastList({ tab }) {
   const list = all.filter((p) => (filter === 'all' ? true : String(p.diff) === filter));
   const [selected, setSelected] = useState(null);
 
+  /**
+   * critique 過去問は A(form) だと text、B(form) だと questions が主体。
+   * questions が文字列/配列/オブジェクトのどれで来ても表示できる形に整形する。
+   * @param {any} p
+   * @returns {string}
+   */
+  const critiqueBody = (p) => {
+    const text = String(p?.text || '').trim();
+    if (text) return text;
+    const qRaw = p?.questions;
+    if (!qRaw) return '—';
+
+    let qs = qRaw;
+    if (typeof qs === 'string') {
+      const s = qs.trim();
+      if (!s) return '—';
+      try {
+        qs = JSON.parse(s);
+      } catch {
+        return s;
+      }
+    }
+
+    if (Array.isArray(qs)) {
+      const lines = qs
+        .map((q, idx) => {
+          const id = q?.id ?? idx + 1;
+          const type = q?.type ? `（${q.type}）` : '';
+          const arg = q?.argument ? `\n${q.argument}` : '';
+          const question = q?.question ? `\n${q.question}` : '';
+          return `【設問${id}】${type}${arg}${question}`.trim();
+        })
+        .filter(Boolean);
+      return lines.length ? lines.join('\n\n') : '—';
+    }
+
+    if (typeof qs === 'object') {
+      try {
+        return JSON.stringify(qs, null, 2);
+      } catch {
+        return String(qs);
+      }
+    }
+
+    return String(qs);
+  };
+
   const preview = (p) => {
     if (tab === 'fill') return String(p.text || '').replace(/【_\d+_】/g, '[  ]').slice(0, 80);
     if (tab === 'ame') return String(p.article || '').slice(0, 80);
@@ -35,10 +82,10 @@ export default function PastList({ tab }) {
         <button type="button" className="back-btn no-print" onClick={() => setSelected(null)}>
           ← {t('back')}
         </button>
-        <div className="problem-box" style={{ marginTop: '1rem' }}>
+        <div className="problem-box" style={{ marginTop: '1rem', whiteSpace: 'pre-wrap' }}>
           {tab === 'fill' && esc(p.text)}
           {tab === 'summary' && esc(p.text)}
-          {tab === 'critique' && esc(p.text || p.questions)}
+          {tab === 'critique' && esc(critiqueBody(p))}
           {tab === 'ame' && esc(p.article)}
         </div>
         {tab === 'fill' && p.answers && (
