@@ -30,7 +30,7 @@ jobs:
       - name: Resolve and validate trigger
         id: gate
         env:
-          DISPATCH_ISSUE_NUMBER: ${{ inputs.issue_number }}
+          DISPATCH_ISSUE_NUMBER: ${{ github.event.inputs.issue_number }}
         run: |
           set -euo pipefail
 
