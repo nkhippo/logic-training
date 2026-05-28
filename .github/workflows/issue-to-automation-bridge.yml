@@ -2,9 +2,15 @@ name: Issue to Automation Bridge
 
 on:
   issues:
-    types: [opened, reopened, labeled]
+    types: [labeled]
   issue_comment:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number for manual bridge test"
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -13,46 +19,115 @@ permissions:
 
 jobs:
   bridge:
-    if: |
-      github.event.issue.pull_request == null &&
-      (
-        (
-          github.event_name == 'issues' &&
-          contains(github.event.issue.labels.*.name, 'ready-for-cursor')
-        ) ||
-        (
-          github.event_name == 'issue_comment' &&
-          startsWith(github.event.comment.body, '/auto') &&
-          contains(github.event.issue.labels.*.name, 'ready-for-cursor')
-        )
-      )
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REPO: ${{ github.repository }}
-      ISSUE_NUMBER: ${{ github.event.issue.number }}
-      ISSUE_TITLE: ${{ github.event.issue.title }}
-      ISSUE_BODY: ${{ github.event.issue.body }}
-      ISSUE_URL: ${{ github.event.issue.html_url }}
       BASE_BRANCH: develop
       EVENT_NAME: ${{ github.event_name }}
       EVENT_ACTION: ${{ github.event.action }}
-      COMMENT_BODY: ${{ github.event.comment.body }}
     steps:
+      - name: Resolve and validate trigger
+        id: gate
+        env:
+          DISPATCH_ISSUE_NUMBER: ${{ inputs.issue_number }}
+        run: |
+          set -euo pipefail
+
+          EVENT_NAME="${{ github.event_name }}"
+          ACTION="${{ github.event.action }}"
+
+          ISSUE_NUMBER=""
+          ISSUE_TITLE=""
+          ISSUE_URL=""
+          ISSUE_BODY=""
+          COMMENT_BODY=""
+          SHOULD_RUN="false"
+
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            if [ -z "${DISPATCH_ISSUE_NUMBER}" ]; then
+              echo "Manual run skipped: inputs.issue_number is empty."
+            else
+              ISSUE_JSON=$(gh issue view "${DISPATCH_ISSUE_NUMBER}" --repo "${REPO}" --json number,title,body,url,labels)
+              if echo "${ISSUE_JSON}" | jq -e '.labels[].name | select(. == "ready-for-cursor")' >/dev/null; then
+                ISSUE_NUMBER=$(echo "${ISSUE_JSON}" | jq -r '.number')
+                ISSUE_TITLE=$(echo "${ISSUE_JSON}" | jq -r '.title')
+                ISSUE_BODY=$(echo "${ISSUE_JSON}" | jq -r '.body')
+                ISSUE_URL=$(echo "${ISSUE_JSON}" | jq -r '.url')
+                SHOULD_RUN="true"
+              else
+                echo "Manual run skipped: issue does not have ready-for-cursor label."
+              fi
+            fi
+          else
+            ISSUE_NUMBER='${{ github.event.issue.number }}'
+            COMMENT_BODY='${{ github.event.comment.body }}'
+
+            ISSUE_API_JSON=$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}")
+            if echo "${ISSUE_API_JSON}" | jq -e '.pull_request.url' >/dev/null; then
+              echo "Skip: issue_comment is for PR conversation, not issue."
+            else
+              ISSUE_TITLE=$(echo "${ISSUE_API_JSON}" | jq -r '.title')
+              ISSUE_BODY=$(echo "${ISSUE_API_JSON}" | jq -r '.body')
+              ISSUE_URL=$(echo "${ISSUE_API_JSON}" | jq -r '.html_url')
+            fi
+
+            if [ "${EVENT_NAME}" = "issues" ] && [ "${ACTION}" = "labeled" ] && [ '${{ github.event.label.name }}' = "ready-for-cursor" ]; then
+              SHOULD_RUN="true"
+            elif [ "${EVENT_NAME}" = "issue_comment" ] && printf "%s" "${COMMENT_BODY}" | grep -qE '^/auto(\s|$)'; then
+              LABELS_JSON='${{ toJSON(github.event.issue.labels) }}'
+              if printf "%s" "${LABELS_JSON}" | jq -e '.[] | select(.name == "ready-for-cursor")' >/dev/null; then
+                SHOULD_RUN="true"
+              else
+                echo "Skip: /auto comment found but issue has no ready-for-cursor label."
+              fi
+            else
+              echo "Skip: event did not match bridge conditions."
+            fi
+          fi
+
+          echo "should_run=${SHOULD_RUN}" >> "$GITHUB_OUTPUT"
+          echo "issue_number=${ISSUE_NUMBER}" >> "$GITHUB_OUTPUT"
+          echo "issue_title<<EOF" >> "$GITHUB_OUTPUT"
+          printf "%s\n" "${ISSUE_TITLE}" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "issue_body<<EOF" >> "$GITHUB_OUTPUT"
+          printf "%s\n" "${ISSUE_BODY}" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "issue_url=${ISSUE_URL}" >> "$GITHUB_OUTPUT"
+          echo "comment_body<<EOF" >> "$GITHUB_OUTPUT"
+          printf "%s\n" "${COMMENT_BODY}" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Stop when conditions are not met
+        if: steps.gate.outputs.should_run != 'true'
+        run: |
+          echo "Bridge conditions not met. Exiting successfully."
+          exit 0
+
       - name: Checkout repository
+        if: steps.gate.outputs.should_run == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Configure git user
+        if: steps.gate.outputs.should_run == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Create or update bridge branch
+        if: steps.gate.outputs.should_run == 'true'
         id: branch
         run: |
           set -euo pipefail
+
+          ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
+          ISSUE_TITLE="${{ steps.gate.outputs.issue_title }}"
+          ISSUE_BODY="${{ steps.gate.outputs.issue_body }}"
+          ISSUE_URL="${{ steps.gate.outputs.issue_url }}"
+          COMMENT_BODY="${{ steps.gate.outputs.comment_body }}"
 
           BRANCH_NAME="auto/issue-${ISSUE_NUMBER}"
           FILE_PATH=".cursor/automation-bridge/issue-${ISSUE_NUMBER}.md"
@@ -100,10 +175,13 @@ jobs:
           echo "file_path=${FILE_PATH}" >> "$GITHUB_OUTPUT"
 
       - name: Create or find PR
+        if: steps.gate.outputs.should_run == 'true'
         id: pr
         run: |
           set -euo pipefail
 
+          ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
+          ISSUE_URL="${{ steps.gate.outputs.issue_url }}"
           BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
           EXISTING_PR=$(gh pr list \
             --repo "${REPO}" \
@@ -144,9 +222,11 @@ Do not merge this PR manually unless you intentionally want to keep the snapshot
           echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
 
       - name: Comment AUTO trigger on PR
+        if: steps.gate.outputs.should_run == 'true'
         run: |
           set -euo pipefail
 
+          ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
           PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
           MARKER="<!-- issue-auto-bridge:${ISSUE_NUMBER}:${GITHUB_RUN_ID} -->"
 
