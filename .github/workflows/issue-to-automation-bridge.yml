@@ -27,7 +27,7 @@ jobs:
           set -euo pipefail
 
           normalized_comment="$(
-            python - <<'PY'
+            python3 - <<'PY'
           import os
 
           print(os.environ["COMMENT_BODY"].strip().lower())
