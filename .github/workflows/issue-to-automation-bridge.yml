@@ -1,0 +1,163 @@
+name: Issue to Automation Bridge
+
+on:
+  issues:
+    types: [opened, reopened, labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  bridge:
+    if: |
+      github.event.issue.pull_request == null &&
+      (
+        (
+          github.event_name == 'issues' &&
+          contains(github.event.issue.labels.*.name, 'ready-for-cursor')
+        ) ||
+        (
+          github.event_name == 'issue_comment' &&
+          startsWith(github.event.comment.body, '/auto') &&
+          contains(github.event.issue.labels.*.name, 'ready-for-cursor')
+        )
+      )
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
+      ISSUE_BODY: ${{ github.event.issue.body }}
+      ISSUE_URL: ${{ github.event.issue.html_url }}
+      BASE_BRANCH: develop
+      EVENT_NAME: ${{ github.event_name }}
+      EVENT_ACTION: ${{ github.event.action }}
+      COMMENT_BODY: ${{ github.event.comment.body }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create or update bridge branch
+        id: branch
+        run: |
+          set -euo pipefail
+
+          BRANCH_NAME="auto/issue-${ISSUE_NUMBER}"
+          FILE_PATH=".cursor/automation-bridge/issue-${ISSUE_NUMBER}.md"
+
+          git fetch origin "${BASE_BRANCH}"
+
+          if git ls-remote --heads origin "${BRANCH_NAME}" | grep -q "${BRANCH_NAME}"; then
+            git checkout -B "${BRANCH_NAME}" "origin/${BRANCH_NAME}"
+          else
+            git checkout -B "${BRANCH_NAME}" "origin/${BASE_BRANCH}"
+          fi
+
+          mkdir -p .cursor/automation-bridge
+
+          {
+            echo "# Issue Bridge Snapshot"
+            echo ""
+            echo "- Issue: #${ISSUE_NUMBER}"
+            echo "- Title: ${ISSUE_TITLE}"
+            echo "- URL: ${ISSUE_URL}"
+            echo "- Trigger: ${EVENT_NAME}/${EVENT_ACTION}"
+            echo "- Updated At (UTC): $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo ""
+            echo "## Body"
+            echo ""
+            printf "%s\n" "${ISSUE_BODY}"
+            if [ -n "${COMMENT_BODY}" ]; then
+              echo ""
+              echo "## Auto Command"
+              echo ""
+              printf "%s\n" "${COMMENT_BODY}"
+            fi
+          } > "${FILE_PATH}"
+
+          git add "${FILE_PATH}"
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "chore: bridge issue #${ISSUE_NUMBER} to automation trigger"
+            git push -u origin "${BRANCH_NAME}"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "branch_name=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+          echo "file_path=${FILE_PATH}" >> "$GITHUB_OUTPUT"
+
+      - name: Create or find PR
+        id: pr
+        run: |
+          set -euo pipefail
+
+          BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
+          EXISTING_PR=$(gh pr list \
+            --repo "${REPO}" \
+            --base "${BASE_BRANCH}" \
+            --head "${BRANCH_NAME}" \
+            --state open \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -z "${EXISTING_PR}" ]; then
+            gh pr create \
+              --repo "${REPO}" \
+              --base "${BASE_BRANCH}" \
+              --head "${BRANCH_NAME}" \
+              --title "chore: auto bridge for issue #${ISSUE_NUMBER}" \
+              --body "## Bridge PR
+
+This PR is created automatically to bridge GitHub Issue events to Cursor Automations.
+
+- Source issue: #${ISSUE_NUMBER}
+- Issue URL: ${ISSUE_URL}
+- Snapshot file: \`${{ steps.branch.outputs.file_path }}\`
+
+Do not merge this PR manually unless you intentionally want to keep the snapshot changes." \
+              --label "chore"
+
+            PR_NUMBER=$(gh pr list \
+              --repo "${REPO}" \
+              --base "${BASE_BRANCH}" \
+              --head "${BRANCH_NAME}" \
+              --state open \
+              --json number \
+              --jq '.[0].number')
+          else
+            PR_NUMBER="${EXISTING_PR}"
+          fi
+
+          echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment AUTO trigger on PR
+        run: |
+          set -euo pipefail
+
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          MARKER="<!-- issue-auto-bridge:${ISSUE_NUMBER}:${GITHUB_RUN_ID} -->"
+
+          gh pr comment "${PR_NUMBER}" \
+            --repo "${REPO}" \
+            --body "AUTO: Issue #${ISSUE_NUMBER} を処理してください。
+
+${MARKER}
+
+要件:
+- まず Issue 本文を正本として読み、実装範囲を特定する
+- 変更は最小限にする
+- 不明点があれば PR に質問コメントを返す
+- 修正後はこのPRに commit する"
