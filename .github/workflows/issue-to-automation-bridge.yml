@@ -90,16 +90,7 @@ jobs:
 
           echo "should_run=${SHOULD_RUN}" >> "$GITHUB_OUTPUT"
           echo "issue_number=${ISSUE_NUMBER}" >> "$GITHUB_OUTPUT"
-          echo "issue_title<<EOF" >> "$GITHUB_OUTPUT"
-          printf "%s\n" "${ISSUE_TITLE}" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
-          echo "issue_body<<EOF" >> "$GITHUB_OUTPUT"
-          printf "%s\n" "${ISSUE_BODY}" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
           echo "issue_url=${ISSUE_URL}" >> "$GITHUB_OUTPUT"
-          echo "comment_body<<EOF" >> "$GITHUB_OUTPUT"
-          printf "%s\n" "${COMMENT_BODY}" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Stop when conditions are not met
         if: steps.gate.outputs.should_run != 'true'
@@ -128,10 +119,12 @@ jobs:
           EVENT_NAME="${GITHUB_EVENT_NAME}"
           EVENT_ACTION=$(jq -r '.action // empty' "${GITHUB_EVENT_PATH}")
           ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
-          ISSUE_TITLE="${{ steps.gate.outputs.issue_title }}"
-          ISSUE_BODY="${{ steps.gate.outputs.issue_body }}"
           ISSUE_URL="${{ steps.gate.outputs.issue_url }}"
-          COMMENT_BODY="${{ steps.gate.outputs.comment_body }}"
+
+          ISSUE_API_JSON=$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}")
+          ISSUE_TITLE=$(echo "${ISSUE_API_JSON}" | jq -r '.title')
+          ISSUE_BODY=$(echo "${ISSUE_API_JSON}" | jq -r '.body')
+          COMMENT_BODY=$(jq -r '.comment.body // empty' "${GITHUB_EVENT_PATH}")
 
           BRANCH_NAME="auto/issue-${ISSUE_NUMBER}"
           FILE_PATH=".cursor/automation-bridge/issue-${ISSUE_NUMBER}.md"
