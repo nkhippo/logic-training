@@ -14,7 +14,14 @@
 docs/
 ├── TERMS.md                   ← ★まず読む：プロジェクト用語定義
 ├── DOCUMENT_GUIDELINES.md     ← ★まず読む：ドキュメント記載粒度ガイドライン
-├── DESIGN_DECISION_HISTORY.md ← 設計判断の経緯メモ（没案・変更理由の記録）
+├── DESIGN_DECISION_HISTORY.md ← 設計判断の経緯メモ（参照用・ADR移行済み）
+├── adr/                       ← 設計判断の正本（ADR）
+│   ├── README.md              ← ADR運用ルール
+│   ├── 0001-hosting-github-pages-to-vercel.md
+│   ├── 0002-backend-gas-to-railway.md
+│   ├── 0003-frontend-vanilla-to-react.md
+│   ├── 0004-ai-model-claude-sonnet.md
+│   └── 0005-mcp-remote-json-rpc.md
 │
 ├── requirements/          ← 「なぜ・何を」（ユーザー体験・設計の動機）
 │   ├── common.md          ← 両サービス共通（目的・背景・AI方針・ペルソナ設計）
@@ -74,6 +81,7 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-28 | ADR 体系化：`docs/adr/` を新設し、主要な設計判断を ADR-0001〜0005 に移行 |
 | 2026-05-28 | Opus レビュー：重複ディレクトリ削除・ドキュメント陳腐化修正・インフラ構成図追加・トラブルシューティング集追加・開発フロー自動化改善 |
 | 2026-05-28 | Issue #85: Remote MCP 対応（well-known discovery / JSON-RPC `/mcp`）に合わせて `architecture.md`・`dev-flow.md`・`CLAUDE_AI_MCP_SETUP.md` を更新 |
 | 2026-05-28 | Issue #85: `CLAUDE_AI_MCP_SETUP.md` 追加（GitHub OAuth + claude.ai MCP 連携） |
@@ -126,7 +134,9 @@ docs/
 ### 「設計判断の経緯を確認したい」
 
 ```
-docs/DESIGN_DECISION_HISTORY.md ← 没案・変更理由・ヒアリング確定事項
+1. docs/adr/README.md                     ← ADR の読み方・追加ルール
+2. docs/adr/000x-*.md                     ← 個別の設計判断（正本）
+3. docs/DESIGN_DECISION_HISTORY.md        ← 旧記録（参照用）
 ```
 
 ### 「新しいタブを追加したい」
