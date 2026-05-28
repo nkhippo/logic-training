@@ -198,18 +198,16 @@ jobs:
             --jq '.[0].number')
 
           if [ -z "${EXISTING_PR}" ]; then
-            PR_BODY=$(cat <<EOF
-## Bridge PR
-
-This PR is created automatically to bridge GitHub Issue events to Cursor Automations.
-
-- Source issue: #${ISSUE_NUMBER}
-- Issue URL: ${ISSUE_URL}
-- Snapshot file: \`${SNAPSHOT_FILE}\`
-
-Do not merge this PR manually unless you intentionally want to keep the snapshot changes.
-EOF
-)
+            PR_BODY=$(printf '%s\n' \
+              '## Bridge PR' \
+              '' \
+              'This PR is created automatically to bridge GitHub Issue events to Cursor Automations.' \
+              '' \
+              "- Source issue: #${ISSUE_NUMBER}" \
+              "- Issue URL: ${ISSUE_URL}" \
+              "- Snapshot file: \`${SNAPSHOT_FILE}\`" \
+              '' \
+              'Do not merge this PR manually unless you intentionally want to keep the snapshot changes.')
 
             gh pr create \
               --repo "${REPO}" \
