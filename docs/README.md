@@ -39,3 +39,5 @@ Knowledge 更新手順: [PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md](PROJECTS_KNOWLEDGE_
 ## Wiki（新規参入者向け）
 
 正本は [.github/wiki/](../.github/wiki/) です。`main` へ push すると GitHub Wiki に自動同期されます。
+
+Automation bridge test note: README minimal update applied.
