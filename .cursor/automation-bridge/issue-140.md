@@ -3,8 +3,8 @@
 - Issue: #140
 - Title: hotfix: okコメントでCursorがマージを実行しない問題（承認コメントのAUTO:変換）
 - URL: https://github.com/nkhippo/ThinkGrindAi/issues/140
-- Trigger: issues/labeled
-- Updated At (UTC): 2026-05-28T13:56:46Z
+- Trigger: issue_comment/created
+- Updated At (UTC): 2026-05-28T14:59:44Z
 
 ## Body
 
@@ -71,3 +71,7 @@ PR本文には以下を必ず記載すること：
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。PR Commentsに質問を書くこと。
+
+## Auto Command
+
+/auto
