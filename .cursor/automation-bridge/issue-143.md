@@ -3,8 +3,8 @@
 - Issue: #143
 - Title: docs: PR本文テンプレート改訂（概要・変更理由を必須化）
 - URL: https://github.com/nkhippo/ThinkGrindAi/issues/143
-- Trigger: issues/labeled
-- Updated At (UTC): 2026-05-28T14:37:08Z
+- Trigger: issue_comment/created
+- Updated At (UTC): 2026-05-28T14:59:45Z
 
 ## Body
 
@@ -87,3 +87,7 @@ Closes #142
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。PR Commentsに質問を書くこと。
+
+## Auto Command
+
+/auto

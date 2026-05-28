@@ -3,8 +3,8 @@
 - Issue: #147
 - Title: chore: Bridge workflow にステップレベル自動リトライを追加（max 3回）
 - URL: https://github.com/nkhippo/ThinkGrindAi/issues/147
-- Trigger: issues/labeled
-- Updated At (UTC): 2026-05-28T14:42:14Z
+- Trigger: issue_comment/created
+- Updated At (UTC): 2026-05-28T14:59:43Z
 
 ## Body
 
@@ -106,3 +106,7 @@ Closes #145
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。PR Commentsに質問を書くこと。
+
+## Auto Command
+
+/auto
