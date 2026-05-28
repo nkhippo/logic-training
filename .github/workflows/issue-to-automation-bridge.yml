@@ -24,8 +24,6 @@ jobs:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       REPO: ${{ github.repository }}
       BASE_BRANCH: develop
-      EVENT_NAME: ${{ github.event_name }}
-      EVENT_ACTION: ${{ github.event.action }}
     steps:
       - name: Resolve and validate trigger
         id: gate
@@ -34,8 +32,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          EVENT_NAME="${{ github.event_name }}"
-          ACTION="${{ github.event.action }}"
+          EVENT_NAME="${GITHUB_EVENT_NAME}"
+          ACTION=$(jq -r '.action // empty' "${GITHUB_EVENT_PATH}")
 
           ISSUE_NUMBER=""
           ISSUE_TITLE=""
@@ -60,29 +58,33 @@ jobs:
               fi
             fi
           else
-            ISSUE_NUMBER='${{ github.event.issue.number }}'
-            COMMENT_BODY='${{ github.event.comment.body }}'
+            ISSUE_NUMBER=$(jq -r '.issue.number // empty' "${GITHUB_EVENT_PATH}")
+            COMMENT_BODY=$(jq -r '.comment.body // empty' "${GITHUB_EVENT_PATH}")
+            LABEL_NAME=$(jq -r '.label.name // empty' "${GITHUB_EVENT_PATH}")
+            ISSUE_PR_URL=$(jq -r '.issue.pull_request.url // empty' "${GITHUB_EVENT_PATH}")
 
-            ISSUE_API_JSON=$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}")
-            if echo "${ISSUE_API_JSON}" | jq -e '.pull_request.url' >/dev/null; then
+            if [ -z "${ISSUE_NUMBER}" ]; then
+              echo "Skip: event payload has no issue number."
+            elif [ -n "${ISSUE_PR_URL}" ]; then
               echo "Skip: issue_comment is for PR conversation, not issue."
             else
+              ISSUE_API_JSON=$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}")
               ISSUE_TITLE=$(echo "${ISSUE_API_JSON}" | jq -r '.title')
               ISSUE_BODY=$(echo "${ISSUE_API_JSON}" | jq -r '.body')
               ISSUE_URL=$(echo "${ISSUE_API_JSON}" | jq -r '.html_url')
-            fi
 
-            if [ "${EVENT_NAME}" = "issues" ] && [ "${ACTION}" = "labeled" ] && [ '${{ github.event.label.name }}' = "ready-for-cursor" ]; then
-              SHOULD_RUN="true"
-            elif [ "${EVENT_NAME}" = "issue_comment" ] && printf "%s" "${COMMENT_BODY}" | grep -qE '^/auto(\s|$)'; then
-              LABELS_JSON='${{ toJSON(github.event.issue.labels) }}'
-              if printf "%s" "${LABELS_JSON}" | jq -e '.[] | select(.name == "ready-for-cursor")' >/dev/null; then
+              if [ "${EVENT_NAME}" = "issues" ] && [ "${ACTION}" = "labeled" ] && [ "${LABEL_NAME}" = "ready-for-cursor" ]; then
                 SHOULD_RUN="true"
+              elif [ "${EVENT_NAME}" = "issue_comment" ] && printf "%s" "${COMMENT_BODY}" | grep -qE '^/auto(\s|$)'; then
+                LABELS_JSON=$(echo "${ISSUE_API_JSON}" | jq -c '.labels')
+                if printf "%s" "${LABELS_JSON}" | jq -e '.[] | select(.name == "ready-for-cursor")' >/dev/null; then
+                  SHOULD_RUN="true"
+                else
+                  echo "Skip: /auto comment found but issue has no ready-for-cursor label."
+                fi
               else
-                echo "Skip: /auto comment found but issue has no ready-for-cursor label."
+                echo "Skip: event did not match bridge conditions."
               fi
-            else
-              echo "Skip: event did not match bridge conditions."
             fi
           fi
 
@@ -123,6 +125,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          EVENT_NAME="${GITHUB_EVENT_NAME}"
+          EVENT_ACTION=$(jq -r '.action // empty' "${GITHUB_EVENT_PATH}")
           ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
           ISSUE_TITLE="${{ steps.gate.outputs.issue_title }}"
           ISSUE_BODY="${{ steps.gate.outputs.issue_body }}"
