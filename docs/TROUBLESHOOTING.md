@@ -14,6 +14,7 @@
 4. [GitHub Actions 関連](#4-github-actions-関連)
 5. [ローカル開発](#5-ローカル開発)
 6. [Cursor 自動実装](#6-cursor-自動実装)
+7. [コメント・Issue の投稿者識別](#7-コメントissue-の投稿者識別)
 
 ---
 
@@ -142,6 +143,19 @@ npm install
 **確認事項**:
 1. `.cursor/rules/dev-flow.mdc` に「PR Comments 監視・返答」ルールが記載されているか
 2. Cursor の Background Agent が PR Comments も監視対象にしているか
+
+---
+
+## 7. コメント・Issue の投稿者識別
+
+GitHub 上のコメント・Issue はすべて `nkhippo` アカウントで表示されるが、
+冒頭の署名ブロックで投稿者を識別できる。
+
+| 署名 | 投稿者 |
+|---|---|
+| 🤖 **Claude より** | Claude（設計・起票） |
+| 🛠️ **Cursor より** | Cursor（実装・自動返答） |
+| 署名なし | Naoya（手動投稿）または GitHub Actions |
 
 ---
 
