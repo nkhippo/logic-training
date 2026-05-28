@@ -1,6 +1,6 @@
 # thinkgrindai ファイル構成
 
-**最終更新**: 2026-05-27  
+**最終更新**: 2026-05-28  
 **目的**: リポジトリ全体のディレクトリ・ファイル配置を一覧し、新規参加者・Claude・Cursor が「何がどこにあるか」を素早く把握するための索引。
 
 > `node_modules` / `.git` / `dist` / `coverage` / `.DS_Store` は本ドキュメントの対象外。
@@ -34,8 +34,12 @@ thinkgrindai/
 │   │   ├── chore.md
 │   │   └── feature.md
 │   ├── workflows/
+│   │   ├── approval.yml
+│   │   ├── auto-pr-to-main.yml
+│   │   ├── ci.yml
 │   │   ├── deploy-pages.yml
 │   │   └── sync-wiki.yml
+│   ├── PULL_REQUEST_TEMPLATE.md
 │   └── wiki/                    # GitHub Wiki 正本（sync-wiki で同期）
 │       ├── Home.md
 │       ├── README.md
@@ -75,6 +79,8 @@ docs/
 ├── DESIGN_DECISION_HISTORY.md   # 設計判断の経緯メモ
 ├── PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md
 ├── TASK_TRACKER_URL.md
+├── INFRASTRUCTURE.md            # インフラ構成図・CI/CDフロー・環境変数一覧
+├── TROUBLESHOOTING.md           # 障害対応ナレッジ
 ├── gas-column-headers.md        # GAS シートのカラム定義（参照用）
 ├── requirements.md              # 要件定義（索引・旧形式）
 ├── requirements-thinking.md
@@ -121,7 +127,10 @@ docs/
 │   ├── cursor_instruction_frontend_api_integration.md
 │   ├── cursor_instruction_doc_index.md
 │   ├── cursor_instruction_doc_integrity_fix.md
-│   └── cursor_instruction_doc_restructure.md
+│   ├── cursor_instruction_doc_restructure.md
+│   ├── cursor_instruction_block_a_environments.md
+│   ├── cursor_instruction_block_b_automation.md
+│   └── cursor_instruction_block_c_oauth_mcp.md
 │
 └── setup/                       # 環境セットアップ手順
     ├── COMPREHENSIVE_SETUP_GUIDE.md
