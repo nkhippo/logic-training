@@ -15,7 +15,6 @@ jobs:
       github.event.issue.pull_request != null &&
       github.event.comment.user.login != 'github-actions[bot]'
     runs-on: ubuntu-latest
-
     steps:
       - name: Convert reviewer approval comment to AUTO command
         env:
