@@ -1,0 +1,74 @@
+name: Auto Close Linked Issues
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  close-issues:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close linked issues from PR body and branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || "";
+            const branch = context.payload.pull_request.head.ref || "";
+
+            const numbers = new Set();
+
+            // Extract from PR body: Closes #123 / Fixes #123 / Resolves #123
+            const bodyPattern = /(?:close[sd]?|fixe?[sd]?|resolve[sd]?)\s+#(\d+)/gi;
+            let match;
+            while ((match = bodyPattern.exec(body)) !== null) {
+              numbers.add(Number(match[1]));
+            }
+
+            // Extract from branch naming patterns:
+            // - issue-123 / issue/123
+            // - /123-... (e.g. feat/123-something)
+            const branchPatterns = [/issue[-/](\d+)/gi, /\/(\d+)-/g];
+            for (const pattern of branchPatterns) {
+              while ((match = pattern.exec(branch)) !== null) {
+                numbers.add(Number(match[1]));
+              }
+            }
+
+            if (numbers.size === 0) {
+              core.info("No issue number found in PR body or branch.");
+              return;
+            }
+
+            for (const issueNumber of numbers) {
+              if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
+                continue;
+              }
+
+              try {
+                const issue = await github.rest.issues.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber
+                });
+
+                if (issue.data.state === "closed") {
+                  core.info(`Issue #${issueNumber} already closed. Skipping.`);
+                  continue;
+                }
+
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: "closed"
+                });
+                core.info(`Closed issue #${issueNumber}`);
+              } catch (error) {
+                core.warning(`Skipped #${issueNumber}: ${error.message}`);
+              }
+            }
