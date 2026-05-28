@@ -5,6 +5,7 @@ const {
   addGitHubIssueComment,
   getGitHubFileContent,
   listGitHubDirectory,
+  getGitHubPrDiff,
   GitHubApiError,
 } = require('../services/github-issues-service');
 
@@ -94,6 +95,17 @@ const TOOL_DEFINITIONS = [
         body: { type: 'string', description: 'コメント本文（Markdown）' },
       },
       required: ['pr_number', 'body'],
+    },
+  },
+  {
+    name: 'get_pr_diff',
+    description: '指定した PR の変更内容（diff）を取得する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pr_number: { type: 'integer', description: 'PR 番号' },
+      },
+      required: ['pr_number'],
     },
   },
   {
@@ -306,6 +318,24 @@ async function handleMcpJsonRpc(req, res) {
         const payload = await getGitHubIssueComments({
           accessToken,
           issueNumber: args.pr_number,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'get_pr_diff') {
+        if (!Number.isInteger(args.pr_number)) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'pr_number は整数で指定してください'));
+        }
+
+        const payload = await getGitHubPrDiff({
+          accessToken,
+          prNumber: args.pr_number,
         });
 
         return res.json(
