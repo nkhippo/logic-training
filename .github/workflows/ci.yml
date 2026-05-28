@@ -25,10 +25,6 @@ jobs:
         env:
           VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
 
-      # TODO: FE テストフレームワーク（Vitest 等）導入時に以下を追加
-      # - name: Run FE tests
-      #   run: npm test
-
       - name: Install BE dependencies
         run: npm ci
         working-directory: backend

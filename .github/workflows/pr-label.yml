@@ -4,9 +4,6 @@ on:
   pull_request:
     types: [opened, reopened]
 
-permissions:
-  pull-requests: write
-
 jobs:
   add-label:
     runs-on: ubuntu-latest

@@ -4,9 +4,11 @@ const crypto = require('crypto');
 
 const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET;
+const GITHUB_OWNER = process.env.GITHUB_OWNER || 'nkhippo';
+const GITHUB_REPO = process.env.GITHUB_REPO || 'ThinkGrindAi';
 const MCP_API_BASE_URL = process.env.MCP_API_BASE_URL || 'https://thinkgrindai-production.up.railway.app';
+const GITHUB_API = 'https://api.github.com';
 const OAUTH_CALLBACK_URL = `${MCP_API_BASE_URL}/mcp/callback`;
-const { createGitHubIssue, listGitHubIssues } = require('../services/github-issues-service');
 
 // セッション用メモリストア（本番環境では Redis 等を使用）
 const sessions = new Map();
@@ -49,8 +51,8 @@ router.get('/', (req, res) => {
     description_for_model: 'Creates and lists GitHub Issues for the thinkgrindai repository.',
     auth: {
       type: 'oauth2',
-      authorization_url: `${MCP_API_BASE_URL}/authorize`,
-      token_url: `${MCP_API_BASE_URL}/token`,
+      authorization_url: `${MCP_API_BASE_URL}/mcp/auth`,
+      token_url: `${MCP_API_BASE_URL}/mcp/token`,
       scopes: ['repo'],
     },
     api: {
@@ -182,8 +184,8 @@ router.get('/openapi.json', (req, res) => {
           type: 'oauth2',
           flows: {
             authorizationCode: {
-              authorizationUrl: `${MCP_API_BASE_URL}/authorize`,
-              tokenUrl: `${MCP_API_BASE_URL}/token`,
+              authorizationUrl: `${MCP_API_BASE_URL}/mcp/auth`,
+              tokenUrl: `${MCP_API_BASE_URL}/mcp/token`,
               scopes: { repo: 'Full control of private repositories' },
             },
           },
@@ -260,13 +262,29 @@ router.post('/issues', async (req, res) => {
   }
 
   try {
-    const issue = await createGitHubIssue({
-      accessToken: access_token,
-      title,
-      body,
-      labels,
+    const response = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify({ title, body, labels }),
     });
-    res.status(201).json(issue);
+
+    if (!response.ok) {
+      const error = await response.json();
+      return res.status(response.status).json({ error: error.message });
+    }
+
+    const issue = await response.json();
+    res.status(201).json({
+      number: issue.number,
+      title: issue.title,
+      url: issue.html_url,
+      labels: issue.labels.map((l) => l.name),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -283,12 +301,28 @@ router.get('/issues', async (req, res) => {
   }
 
   try {
-    const issues = await listGitHubIssues({
-      accessToken: access_token,
-      state,
-      perPage: Number(per_page) || 10,
-    });
-    res.json(issues);
+    const response = await fetch(
+      `${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues?state=${state}&per_page=${per_page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+      }
+    );
+
+    const issues = await response.json();
+    res.json(
+      issues.map((i) => ({
+        number: i.number,
+        title: i.title,
+        url: i.html_url,
+        labels: i.labels.map((l) => l.name),
+        state: i.state,
+        created_at: i.created_at,
+      }))
+    );
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
