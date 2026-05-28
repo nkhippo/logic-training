@@ -181,6 +181,8 @@ jobs:
       - name: Create or find PR
         if: steps.gate.outputs.should_run == 'true'
         id: pr
+        env:
+          SNAPSHOT_FILE: ${{ steps.branch.outputs.file_path }}
         run: |
           set -euo pipefail
 
@@ -196,20 +198,25 @@ jobs:
             --jq '.[0].number')
 
           if [ -z "${EXISTING_PR}" ]; then
-            gh pr create \
-              --repo "${REPO}" \
-              --base "${BASE_BRANCH}" \
-              --head "${BRANCH_NAME}" \
-              --title "chore: auto bridge for issue #${ISSUE_NUMBER}" \
-              --body "## Bridge PR
+            PR_BODY=$(cat <<EOF
+## Bridge PR
 
 This PR is created automatically to bridge GitHub Issue events to Cursor Automations.
 
 - Source issue: #${ISSUE_NUMBER}
 - Issue URL: ${ISSUE_URL}
-- Snapshot file: \`${{ steps.branch.outputs.file_path }}\`
+- Snapshot file: \`${SNAPSHOT_FILE}\`
 
-Do not merge this PR manually unless you intentionally want to keep the snapshot changes." \
+Do not merge this PR manually unless you intentionally want to keep the snapshot changes.
+EOF
+)
+
+            gh pr create \
+              --repo "${REPO}" \
+              --base "${BASE_BRANCH}" \
+              --head "${BRANCH_NAME}" \
+              --title "chore: auto bridge for issue #${ISSUE_NUMBER}" \
+              --body "${PR_BODY}" \
               --label "chore"
 
             PR_NUMBER=$(gh pr list \
