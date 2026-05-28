@@ -3,8 +3,8 @@
 - Issue: #144
 - Title: docs: Issue完了定義のチェックボックス廃止（文章形式に統一）
 - URL: https://github.com/nkhippo/ThinkGrindAi/issues/144
-- Trigger: issues/labeled
-- Updated At (UTC): 2026-05-28T14:37:23Z
+- Trigger: issue_comment/created
+- Updated At (UTC): 2026-05-28T14:59:41Z
 
 ## Body
 
@@ -87,3 +87,7 @@ Closes #144
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。PR Commentsに質問を書くこと。
+
+## Auto Command
+
+/auto
