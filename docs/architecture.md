@@ -42,6 +42,7 @@ src/
         FillTab.jsx      # 穴埋めタブ
         SummaryTab.jsx   # 要約タブ
         CritiqueTab.jsx  # 批判読みタブ
+        CritiqueQuestionBlock.jsx # 批判読みの設問ブロック（Phase 2-3で抽出）
         AmeTab.jsx       # 空雨傘タブ
       past/
         PastList.jsx     # 過去問一覧・詳細（設問表示含む）
@@ -49,8 +50,11 @@ src/
       ThinkingPage.jsx   # 思考トレーニングメインページ
       GenerateForm.jsx   # 問題設定フォーム（核心・業界・難易度・レベル）
       ProblemView.jsx    # 問題表示・ステップ回答
+      StepView.jsx       # ステップ別回答UI（answer/define/typeselect モード）
+      FinalQuestionView.jsx # 最終問い表示・回答UI
       FeedbackView.jsx   # 最終フィードバック表示
       ReflectionView.jsx # 振り返り対話（D1/D2/D3）
+      ThinkingPastList.jsx # 思考トレーニング過去問一覧
     shared/
       DiffSelector.jsx   # 難易度選択
       PresetRow.jsx      # テーマプリセット行（5列 CSS Grid・THEME_PRESET_COLS=5）
@@ -76,6 +80,40 @@ src/
   styles/
     App.css              # 全コンポーネント共通スタイル
 ```
+
+## バックエンド（Remote MCP）構成
+
+`backend/src/` のうち、claude.ai カスタムコネクタ連携で使用する主要ファイルは以下。
+
+```
+backend/src/
+  index.js                      # Express エントリ。/mcp と OAuth ルートをマウント
+  api/
+    mcp-remote.js               # Remote MCP エンドポイント（well-known + POST /mcp）
+    oauth-claude.js             # OAuth 認可開始 /authorize と token 交換 /token
+    mcp.js                      # 既存 OpenAPI 互換エンドポイント（互換用途）
+  mcp/
+    protocol-handler.js         # MCP JSON-RPC ハンドラ（initialize/tools/list/tools/call）
+  services/
+    github-issues-service.js    # GitHub Issue 作成・一覧の共通サービス
+```
+
+### Remote MCP エンドポイント
+
+| エンドポイント | 役割 |
+|---|---|
+| `GET /.well-known/oauth-protected-resource/mcp` | OAuth Protected Resource Metadata（RFC 9728） |
+| `GET /.well-known/oauth-authorization-server` | OAuth Authorization Server Metadata（RFC 8414） |
+| `GET /authorize` | claude.ai からの OAuth 認可開始 |
+| `POST /token` | authorization_code + PKCE でトークン交換 |
+| `POST /mcp` | MCP JSON-RPC（`initialize` / `tools/list` / `tools/call`） |
+
+### 提供ツール（MCP）
+
+| ツール名 | 内容 |
+|---|---|
+| `create_issue` | thinkgrindai リポジトリに Issue 作成 |
+| `list_issues` | thinkgrindai リポジトリの Issue 一覧取得 |
 
 ---
 
@@ -127,3 +165,39 @@ npm run dev
 | **バックエンドスケールアップ** | ユーザー数が増えて Railway の制限に当たったとき |
 | **認証追加** | Phase 5（マルチユーザー対応）のタイミング |
 | **React Native 化** | モバイルアプリ化の需要が出たとき |
+
+---
+
+## 環境構成
+
+| 環境 | FE | BE | 用途 |
+|---|---|---|---|
+| **本番** | Vercel Production（`main` ブランチ） | Railway Production | ユーザー利用 |
+| **検証** | Vercel Preview（`develop` ブランチ） | Railway Staging | マージ前確認 |
+| **ローカル** | `npm run dev`（feature ブランチ） | 検証環境に接続 | 開発作業 |
+
+### URL 対応表
+
+| 種類 | URL |
+|---|---|
+| BE 本番 | https://thinkgrindai-production.up.railway.app |
+| BE 検証 | https://thinkgrindai-staging.up.railway.app |
+| MCP エンドポイント | https://thinkgrindai-production.up.railway.app/mcp |
+| FE 本番・検証 | Vercel ダッシュボードで確認 |
+
+### CI/CD フロー
+
+```
+feature/* push → CI（npm test + build）
+  ↓
+PR (base: develop)
+  ↓ Naoya が承認（approve / OK / 👍 等）
+  ↓
+develop マージ → Vercel Preview / Railway Staging 自動デプロイ
+  ↓ 検証OK
+  ↓
+develop → main PR（GitHub Actions が自動作成）
+  ↓ Naoya が承認
+  ↓
+main マージ → Vercel Production / Railway Production 自動デプロイ
+```

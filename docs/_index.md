@@ -1,6 +1,6 @@
 # thinkgrindai ドキュメント索引
 
-**最終更新**: 2026-05-28（OAuth MCP 連携・FILE_STRUCTURE.md・Hotfix #76–#79）  
+**最終更新**: 2026-05-28（Opus レビュー反映・#96）  
 **対応バージョン**: Ver.3.3
 
 > このファイルは Claude と Cursor が「何がどこに書いてあるか」を把握するための索引です。  
@@ -40,7 +40,7 @@ docs/
 │   │   └── specification_railway_phase1_4.md  ← Railway デプロイ・CI/CD・FE統合（Phase 1-4）
 │   ├── frontend/
 │   │   ├── frontend-api-integration.md      ← FE↔Railway API統合（Phase 2-1 / Issue #45）
-│   │   └── frontend-react.md                ← React化計画（Phase 2-2〜、未実装）
+│   │   └── frontend-react.md                ← React化計画・実装記録（Phase 2-2〜2-3 完了）
 │   └── thinking/
 │       ├── overview.md    ← 状態オブジェクト・問題オブジェクト・画面構成・定数一覧
 │       ├── steps.md       ← レベル別ステップフロー・80点ルール・90点ルール・振り返りUI
@@ -51,7 +51,12 @@ docs/
 │   ├── cursor_instruction_backend_phase1_3.md      ← BEサーバー Phase 1-3（Issue #40）
 │   ├── cursor_instruction_phase1-3_backend_base.md
 │   ├── cursor_instruction_railway_phase1_4.md        ← Railway デプロイ Phase 1-4
-│   └── cursor_instruction_frontend_api_integration.md ← FE API統合 Phase 2-1（#45）
+│   ├── cursor_instruction_frontend_api_integration.md ← FE API統合 Phase 2-1（#45）
+│   ├── cursor_instruction_block_a_environments.md     ← Block A: 環境構成整備（記録）
+│   ├── cursor_instruction_block_b_automation.md       ← Block B: 開発フロー自動化（記録）
+│   └── cursor_instruction_block_c_oauth_mcp.md        ← Block C: OAuth MCP対応（記録）
+├── INFRASTRUCTURE.md      ← インフラ構成図・CI/CDフロー・環境変数一覧
+├── TROUBLESHOOTING.md     ← 障害対応ナレッジ（Railway/Vercel/MCP/GitHub Actions）
 ├── setup/                 ← 環境構築ガイド
 ├── CLAUDE_AI_MCP_SETUP.md ← claude.ai カスタムコネクタ OAuth 設定手順（Issue #85）
 ├── PROJECT_CONTEXT.md     ← ビジョン・ロードマップ
@@ -69,6 +74,8 @@ docs/
 
 | 日付 | 内容 |
 |---|---|
+| 2026-05-28 | Opus レビュー：重複ディレクトリ削除・ドキュメント陳腐化修正・インフラ構成図追加・トラブルシューティング集追加・開発フロー自動化改善 |
+| 2026-05-28 | Issue #85: Remote MCP 対応（well-known discovery / JSON-RPC `/mcp`）に合わせて `architecture.md`・`dev-flow.md`・`CLAUDE_AI_MCP_SETUP.md` を更新 |
 | 2026-05-28 | Issue #85: `CLAUDE_AI_MCP_SETUP.md` 追加（GitHub OAuth + claude.ai MCP 連携） |
 | 2026-05-27 | 新規：`FILE_STRUCTURE.md`（リポジトリ全体のファイル構成索引）を追加 |
 | 2026-05-27 | Hotfix #76–#79: テーマ5列グリッド・guide-overlay モーダル・過去問設問表示（`specification/logic/common.md` §2–3、`specification/common.md` §3-1） |

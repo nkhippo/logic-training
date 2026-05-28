@@ -1,7 +1,11 @@
-> ⚠️ **このファイルは廃止予定です。**
-> 新しいドキュメントは以下を参照してください：
-> - `docs/requirements/common.md`（共通要件）
-> - `docs/requirements/logic/` 以下（論理トレーニング）
+> ⚠️ **このファイルは旧形式です（Phase 1 以前の単一ファイル形式）**
+>
+> 現在の正本は以下に階層化されています：
+> - 要件定義: `docs/requirements/{logic,thinking}/`
+> - 仕様書: `docs/specification/{logic,thinking,backend,frontend}/`
+>
+> このファイルは参照用に残していますが、**新規変更は階層化版に行うこと**。
+> 内容に齟齬がある場合は階層化版が優先されます。
 
 # 論理トレーニングアプリ 要件定義書
 

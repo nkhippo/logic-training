@@ -1,7 +1,11 @@
-> ⚠️ **このファイルは廃止予定です。**
-> 新しいドキュメントは以下を参照してください：
-> - `docs/requirements/thinking/overview.md`（思考トレーニング全体）
-> - `docs/requirements/thinking/scoring.md`（採点・振り返り設計）
+> ⚠️ **このファイルは旧形式です（Phase 1 以前の単一ファイル形式）**
+>
+> 現在の正本は以下に階層化されています：
+> - 要件定義: `docs/requirements/{logic,thinking}/`
+> - 仕様書: `docs/specification/{logic,thinking,backend,frontend}/`
+>
+> このファイルは参照用に残していますが、**新規変更は階層化版に行うこと**。
+> 内容に齟齬がある場合は階層化版が優先されます。
 
 # 思考トレーニング 要件定義書
 
