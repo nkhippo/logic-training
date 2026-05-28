@@ -1,25 +1,25 @@
-area: frontend:
+"area: frontend":
   - src/**/*
 
-area: backend:
+"area: backend":
   - backend/**/*
 
-area: docs:
+"area: docs":
   - docs/**/*
   - "*.md"
   - CLAUDE.md
 
-area: ci:
+"area: ci":
   - .github/**/*
   - .cursor/**/*
 
-area: thinking:
+"area: thinking":
   - src/components/thinking/**/*
   - src/logic/thinkingLogic.js
   - backend/src/api/generate-problem.js
   - backend/src/api/score-answer.js
 
-area: logic:
+"area: logic":
   - src/components/logic/**/*
   - src/logic/fillLogic.js
   - src/logic/summaryLogic.js
