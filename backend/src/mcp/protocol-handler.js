@@ -1,4 +1,10 @@
-const { createGitHubIssue, listGitHubIssues } = require('../services/github-issues-service');
+const {
+  createGitHubIssue,
+  listGitHubIssues,
+  getGitHubIssueComments,
+  addGitHubIssueComment,
+  GitHubApiError,
+} = require('../services/github-issues-service');
 
 const MCP_PROTOCOL_VERSION = '2024-11-05';
 const SERVER_NAME = 'thinkgrindai-github';
@@ -42,6 +48,52 @@ const TOOL_DEFINITIONS = [
       },
     },
   },
+  {
+    name: 'get_issue_comments',
+    description: '指定した Issue のコメント一覧を取得する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issue_number: { type: 'integer', description: 'Issue 番号' },
+      },
+      required: ['issue_number'],
+    },
+  },
+  {
+    name: 'add_issue_comment',
+    description: '指定した Issue にコメントを追加する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issue_number: { type: 'integer', description: 'Issue 番号' },
+        body: { type: 'string', description: 'コメント本文（Markdown）' },
+      },
+      required: ['issue_number', 'body'],
+    },
+  },
+  {
+    name: 'get_pr_comments',
+    description: '指定した PR のコメント一覧を取得する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pr_number: { type: 'integer', description: 'PR 番号' },
+      },
+      required: ['pr_number'],
+    },
+  },
+  {
+    name: 'add_pr_comment',
+    description: '指定した PR にコメントを追加する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pr_number: { type: 'integer', description: 'PR 番号' },
+        body: { type: 'string', description: 'コメント本文（Markdown）' },
+      },
+      required: ['pr_number', 'body'],
+    },
+  },
 ];
 
 /**
@@ -78,6 +130,18 @@ function jsonRpcError(id, code, message, data) {
   const error = { code, message };
   if (data !== undefined) error.data = data;
   return { jsonrpc: '2.0', id, error };
+}
+
+/**
+ * 外部サービスエラーを HTTP ステータスに変換する
+ * @param {unknown} err
+ * @returns {number}
+ */
+function resolveHttpStatus(err) {
+  if (err instanceof GitHubApiError && [401, 404].includes(err.status)) {
+    return err.status;
+  }
+  return 500;
 }
 
 /**
@@ -172,9 +236,83 @@ async function handleMcpJsonRpc(req, res) {
         );
       }
 
+      if (toolName === 'get_issue_comments') {
+        if (!Number.isInteger(args.issue_number)) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'issue_number は整数で指定してください'));
+        }
+
+        const payload = await getGitHubIssueComments({
+          accessToken,
+          issueNumber: args.issue_number,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'add_issue_comment') {
+        if (!Number.isInteger(args.issue_number) || !args.body) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'issue_number と body は必須です'));
+        }
+
+        const payload = await addGitHubIssueComment({
+          accessToken,
+          issueNumber: args.issue_number,
+          body: args.body,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'get_pr_comments') {
+        if (!Number.isInteger(args.pr_number)) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'pr_number は整数で指定してください'));
+        }
+
+        const payload = await getGitHubIssueComments({
+          accessToken,
+          issueNumber: args.pr_number,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'add_pr_comment') {
+        if (!Number.isInteger(args.pr_number) || !args.body) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'pr_number と body は必須です'));
+        }
+
+        const payload = await addGitHubIssueComment({
+          accessToken,
+          issueNumber: args.pr_number,
+          body: args.body,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
       return res.status(404).json(jsonRpcError(id, -32601, `Unknown tool: ${toolName}`));
     } catch (err) {
-      return res.status(500).json(
+      return res.status(resolveHttpStatus(err)).json(
         jsonRpcResult(id, {
           content: [{ type: 'text', text: err.message }],
           isError: true,
