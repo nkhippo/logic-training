@@ -3,8 +3,8 @@
 - Issue: #135
 - Title: docs: Cursor自動運用 後処理ポリシー策定（Issue close・auto/* PR ライフサイクル）
 - URL: https://github.com/nkhippo/ThinkGrindAi/issues/135
-- Trigger: issue_comment/created
-- Updated At (UTC): 2026-05-28T13:50:32Z
+- Trigger: issues/labeled
+- Updated At (UTC): 2026-05-28T13:51:28Z
 
 ## Body
 
@@ -89,7 +89,3 @@ PR本文には以下を必ず記載すること：
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。PR Commentsに質問を書くこと。
-
-## Auto Command
-
-/auto retry
