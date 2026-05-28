@@ -69,6 +69,7 @@
 | `docs/DEVELOPMENT_POLICY.md` | 開発フロー・タスク分類・運用ルール | 何を作るかではなく、どう作るかの方針 |
 | `docs/architecture.md` | フロントエンド構成・ディレクトリ設計 | 実装の構造図であり、機能仕様ではない |
 | `docs/gas-column-headers.md` | GASシートのカラム定義（コピペ用） | 仕様書のコピペ補助情報 |
+| `docs/adr/*.md` | Architecture Decision Record（設計判断の正本） | 要件定義書・仕様書ではなく、意思決定の記録 |
 | `docs/DESIGN_DECISION_HISTORY.md` | 設計判断の経緯メモ | ドキュメントに書かれない「なぜそうなったか」の記録 |
 | `docs/_index.md` | ドキュメント索引 | 全ドキュメントの目次 |
 | `docs/TERMS.md`（このファイル） | 用語定義 | プロジェクト内の用語集 |
