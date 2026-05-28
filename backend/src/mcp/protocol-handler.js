@@ -3,6 +3,8 @@ const {
   listGitHubIssues,
   getGitHubIssueComments,
   addGitHubIssueComment,
+  getGitHubFileContent,
+  listGitHubDirectory,
   GitHubApiError,
 } = require('../services/github-issues-service');
 
@@ -94,6 +96,29 @@ const TOOL_DEFINITIONS = [
       required: ['pr_number', 'body'],
     },
   },
+  {
+    name: 'get_file_content',
+    description: 'GitHub 上のテキストファイル内容を取得する（main ブランチ固定）',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: '取得したいファイルパス（例: docs/_index.md）' },
+        repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
+      },
+      required: ['path'],
+    },
+  },
+  {
+    name: 'list_directory',
+    description: 'GitHub 上のディレクトリ一覧を取得する（1階層・main ブランチ固定）',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: '対象ディレクトリパス（省略時はルート）' },
+        repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
+      },
+    },
+  },
 ];
 
 /**
@@ -138,7 +163,7 @@ function jsonRpcError(id, code, message, data) {
  * @returns {number}
  */
 function resolveHttpStatus(err) {
-  if (err instanceof GitHubApiError && [401, 404].includes(err.status)) {
+  if (err instanceof GitHubApiError && [400, 401, 404].includes(err.status)) {
     return err.status;
   }
   return 500;
@@ -300,6 +325,44 @@ async function handleMcpJsonRpc(req, res) {
           accessToken,
           issueNumber: args.pr_number,
           body: args.body,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'get_file_content') {
+        if (typeof args.path !== 'string' || args.path.trim().length === 0) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'path は必須です'));
+        }
+
+        const payload = await getGitHubFileContent({
+          accessToken,
+          path: args.path,
+          repo: typeof args.repo === 'string' ? args.repo : undefined,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'list_directory') {
+        if (typeof args.path !== 'undefined' && typeof args.path !== 'string') {
+          return res.status(400).json(jsonRpcError(id, -32602, 'path は文字列で指定してください'));
+        }
+
+        const payload = await listGitHubDirectory({
+          accessToken,
+          path: typeof args.path === 'string' ? args.path : '',
+          repo: typeof args.repo === 'string' ? args.repo : undefined,
         });
 
         return res.json(
