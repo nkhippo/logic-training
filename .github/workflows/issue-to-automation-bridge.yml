@@ -229,15 +229,8 @@ jobs:
           ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
           PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
           MARKER="<!-- issue-auto-bridge:${ISSUE_NUMBER}:${GITHUB_RUN_ID} -->"
+          COMMENT_BODY="AUTO: Issue #${ISSUE_NUMBER} を処理してください。 ${MARKER} 要件: Issue本文を正本として読み、最小変更で実装し、不明点はPRへ質問コメント、修正後はこのPRへcommit。"
 
           gh pr comment "${PR_NUMBER}" \
             --repo "${REPO}" \
-            --body "AUTO: Issue #${ISSUE_NUMBER} を処理してください。
-
-${MARKER}
-
-要件:
-- まず Issue 本文を正本として読み、実装範囲を特定する
-- 変更は最小限にする
-- 不明点があれば PR に質問コメントを返す
-- 修正後はこのPRに commit する"
+            --body "${COMMENT_BODY}"
