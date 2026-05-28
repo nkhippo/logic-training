@@ -264,6 +264,76 @@ async function listGitHubDirectory({ accessToken, path = '', repo }) {
 }
 
 /**
+ * GitHub PR の diff 情報を取得する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {number} params.prNumber
+ * @returns {Promise<{ pr_number: number, title: string, base: string, head: string, state: string, files: Array<{ filename: string, status: string, additions: number, deletions: number, patch: string }>, total_additions: number, total_deletions: number, total_files: number }>}
+ */
+async function getGitHubPrDiff({ accessToken, prNumber }) {
+  const prResponse = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls/${prNumber}`, {
+    headers: githubHeaders(accessToken),
+  });
+
+  if (!prResponse.ok) {
+    let message = 'PR 情報の取得に失敗しました';
+    try {
+      const error = await prResponse.json();
+      message = error.message || message;
+    } catch (_err) {
+      // ignore JSON parse error
+    }
+    throw new GitHubApiError(message, prResponse.status);
+  }
+
+  const filesResponse = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls/${prNumber}/files`, {
+    headers: githubHeaders(accessToken),
+  });
+
+  if (!filesResponse.ok) {
+    let message = 'PR diff の取得に失敗しました';
+    try {
+      const error = await filesResponse.json();
+      message = error.message || message;
+    } catch (_err) {
+      // ignore JSON parse error
+    }
+    throw new GitHubApiError(message, filesResponse.status);
+  }
+
+  const pr = await prResponse.json();
+  const files = await filesResponse.json();
+
+  const normalizedFiles = files.map((file) => {
+    const patchText = typeof file.patch === 'string' ? file.patch : '';
+    const patch = Buffer.byteLength(patchText, 'utf8') > MAX_FILE_SIZE_BYTES ? '(省略: ファイルが大きすぎます)' : patchText;
+
+    return {
+      filename: file.filename,
+      status: file.status,
+      additions: file.additions || 0,
+      deletions: file.deletions || 0,
+      patch,
+    };
+  });
+
+  const totalAdditions = normalizedFiles.reduce((sum, file) => sum + file.additions, 0);
+  const totalDeletions = normalizedFiles.reduce((sum, file) => sum + file.deletions, 0);
+
+  return {
+    pr_number: pr.number,
+    title: pr.title,
+    base: pr.base?.ref || '',
+    head: pr.head?.ref || '',
+    state: pr.state,
+    files: normalizedFiles,
+    total_additions: totalAdditions,
+    total_deletions: totalDeletions,
+    total_files: normalizedFiles.length,
+  };
+}
+
+/**
  * GitHub Issue 一覧を取得する
  * @param {object} params
  * @param {string} params.accessToken
@@ -300,6 +370,7 @@ module.exports = {
   addGitHubIssueComment,
   getGitHubFileContent,
   listGitHubDirectory,
+  getGitHubPrDiff,
   GitHubApiError,
   GITHUB_OWNER,
   GITHUB_REPO,
