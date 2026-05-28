@@ -1,6 +1,7 @@
 const GITHUB_OWNER = process.env.GITHUB_OWNER || 'nkhippo';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'ThinkGrindAi';
 const GITHUB_API = 'https://api.github.com';
+const MAX_FILE_SIZE_BYTES = 100 * 1024;
 
 class GitHubApiError extends Error {
   /**
@@ -129,6 +130,140 @@ async function addGitHubIssueComment({ accessToken, issueNumber, body }) {
 }
 
 /**
+ * Base64文字列をUTF-8文字列として復号する
+ * @param {string} base64Text
+ * @returns {string}
+ */
+function decodeBase64Text(base64Text) {
+  const normalized = base64Text.replace(/\n/g, '');
+  return Buffer.from(normalized, 'base64').toString('utf8');
+}
+
+/**
+ * 文字列がバイナリっぽいかを判定する
+ * @param {string} text
+ * @returns {boolean}
+ */
+function isLikelyBinaryText(text) {
+  return text.includes('\u0000');
+}
+
+/**
+ * 参照対象リポジトリ名を確定する
+ * @param {string|undefined} repo
+ * @returns {string}
+ */
+function resolveRepo(repo) {
+  if (typeof repo === 'string' && repo.trim().length > 0) {
+    return repo.trim();
+  }
+  return GITHUB_REPO;
+}
+
+/**
+ * GitHub Contents API を取得する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {string} [params.path]
+ * @param {string} [params.repo]
+ * @returns {Promise<any>}
+ */
+async function fetchGitHubContents({ accessToken, path = '', repo }) {
+  const targetRepo = resolveRepo(repo);
+  const cleanPath = typeof path === 'string' ? path.replace(/^\/+/, '') : '';
+  const endpoint = `${GITHUB_API}/repos/${GITHUB_OWNER}/${targetRepo}/contents/${cleanPath}`;
+  const response = await fetch(`${endpoint}?ref=main`, { headers: githubHeaders(accessToken) });
+
+  if (!response.ok) {
+    let message = 'GitHub ファイル取得に失敗しました';
+    try {
+      const error = await response.json();
+      message = error.message || message;
+    } catch (_err) {
+      // ignore JSON parse error
+    }
+    throw new GitHubApiError(message, response.status);
+  }
+
+  return {
+    data: await response.json(),
+    repo: targetRepo,
+    path: cleanPath,
+  };
+}
+
+/**
+ * GitHub 上のテキストファイル内容を取得する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {string} params.path
+ * @param {string} [params.repo]
+ * @returns {Promise<{ path: string, content: string, sha: string, size: number, url: string }>}
+ */
+async function getGitHubFileContent({ accessToken, path, repo }) {
+  const result = await fetchGitHubContents({ accessToken, path, repo });
+  const file = result.data;
+
+  if (Array.isArray(file) || file.type !== 'file') {
+    throw new GitHubApiError('指定パスはファイルではありません', 400);
+  }
+
+  if (typeof file.size === 'number' && file.size > MAX_FILE_SIZE_BYTES) {
+    throw new GitHubApiError('ファイルが大きすぎます（100KB以下のみ対応）', 400);
+  }
+
+  if (file.encoding !== 'base64' || typeof file.content !== 'string') {
+    throw new GitHubApiError('テキストファイルのみ対応しています', 400);
+  }
+
+  const content = decodeBase64Text(file.content);
+  if (isLikelyBinaryText(content)) {
+    throw new GitHubApiError('テキストファイルのみ対応しています', 400);
+  }
+
+  return {
+    path: result.path,
+    content,
+    sha: file.sha,
+    size: file.size,
+    url: file.html_url,
+  };
+}
+
+/**
+ * GitHub 上のディレクトリ一覧（1階層）を取得する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {string} [params.path]
+ * @param {string} [params.repo]
+ * @returns {Promise<{ path: string, entries: Array<{ name: string, type: string, size: number }>, total: number, url: string }>}
+ */
+async function listGitHubDirectory({ accessToken, path = '', repo }) {
+  const result = await fetchGitHubContents({ accessToken, path, repo });
+  const entries = result.data;
+
+  if (!Array.isArray(entries)) {
+    throw new GitHubApiError('指定パスはディレクトリではありません', 400);
+  }
+
+  const normalized = entries.map((entry) => ({
+    name: entry.name,
+    type: entry.type === 'dir' ? 'dir' : 'file',
+    size: entry.type === 'file' ? entry.size || 0 : 0,
+  }));
+
+  return {
+    path: result.path,
+    entries: normalized,
+    total: normalized.length,
+    url:
+      result.path.length > 0
+        ? `https://github.com/${GITHUB_OWNER}/${result.repo}/tree/main/${result.path}`
+        : `https://github.com/${GITHUB_OWNER}/${result.repo}`,
+  };
+}
+
+/**
  * GitHub Issue 一覧を取得する
  * @param {object} params
  * @param {string} params.accessToken
@@ -163,6 +298,8 @@ module.exports = {
   listGitHubIssues,
   getGitHubIssueComments,
   addGitHubIssueComment,
+  getGitHubFileContent,
+  listGitHubDirectory,
   GitHubApiError,
   GITHUB_OWNER,
   GITHUB_REPO,
