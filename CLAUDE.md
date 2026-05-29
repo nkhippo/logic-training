@@ -259,7 +259,7 @@ Cursor は実装と同じ PR でドキュメントを更新する。
 | `docs/specification/` | Claude | Step 2（仕様確定時） |
 | `docs/architecture.md` | Cursor | 対応 PR に含める |
 | `docs/dev-flow.md` | Cursor | 対応 PR に含める |
-| `CLAUDE.md` | Claude（Naoya確認後） | 運用ルール変更時。変更はdevelop経由でマージ |
+| `CLAUDE.md` | Claude（Naoya確認後） | 運用ルール変更時。変更は develop 経由でマージ |
 | `docs/ai-context/FILE_MAP.md` | Cursor | 対応 PR に含める |
 
 #### Cursor がドキュメントを更新するときの禁止事項
@@ -370,7 +370,7 @@ Naoya が承認後に起票する。
 
 > **原則**: すべての変更は develop を経由する。main への直接コミット・直行マージは禁止。
 > Claude・Cursor は develop ブランチを正として参照すること。
-> develop → main のマージはリリース判断時のみ行う。
+> develop → main のマージはリリース判断時（Naoya の明示的な承認後）のみ行う。
 
 ### Issue 草稿・仕様書を作るときの形式
 
