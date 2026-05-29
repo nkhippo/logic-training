@@ -87,3 +87,7 @@ Closes #144
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。PR Commentsに質問を書くこと。
+
+## Auto Command
+
+/auto
