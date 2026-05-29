@@ -8,6 +8,78 @@ export function calcFillScore(answers,ua){
   const pct=total?Math.round(correct/total*100):0;
   return {correct,total,pct};
 }
+/**
+ * 生スコアを100点満点に換算する（穴埋め Summary 表の Total 行用）
+ * @param {number} raw
+ * @param {number} max
+ * @returns {number}
+ */
+export function scoreRawTo100(raw,max){
+  if(!max||max<=0)return 0;
+  return Math.round((raw/max)*100);
+}
+/**
+ * "54/60" 形式の文字列をパースする
+ * @param {string} cell
+ * @returns {{ raw: number, max: number }|null}
+ */
+function parseFractionCell(cell){
+  const m=String(cell||'').replace(/\*\*/g,'').match(/(\d+)\s*\/\s*(\d+)/);
+  if(!m)return null;
+  return {raw:+m[1],max:+m[2]};
+}
+/**
+ * マークダウン表の Total / 合計 行から生スコア合計を取得する
+ * @param {string} text
+ * @returns {{ raw: number, max: number }|null}
+ */
+function parseFillTotalFraction(text){
+  const lines=String(text||'').split('\n');
+  for(const line of lines){
+    if(!/\|/.test(line))continue;
+    if(!/(?:\bTotal\b|合計)/i.test(line))continue;
+    const cells=line.split('|').map((c)=>c.trim()).filter(Boolean);
+    const fracs=cells.map(parseFractionCell).filter(Boolean);
+    const rawCell=fracs.find((f)=>f.max!==100);
+    if(rawCell)return rawCell;
+  }
+  const arrow=text.match(/(\d+)\s*\/\s*(\d+)\s*→\s*(\d+)\s*\/\s*100/);
+  if(arrow&&+arrow[2]!==100)return {raw:+arrow[1],max:+arrow[2]};
+  return null;
+}
+/**
+ * 穴埋め採点フィードバック内の100点換算を修正する（LLMが Total 行で加算する誤りを補正）
+ * @param {string} feedback
+ * @returns {string}
+ */
+export function fixFillFeedbackScores(feedback){
+  if(!feedback||typeof feedback!=='string')return feedback;
+  const total=parseFillTotalFraction(feedback);
+  if(!total||total.max<=0)return feedback;
+  const normalized=scoreRawTo100(total.raw,total.max);
+  let text=feedback;
+  text=text.replace(
+    /(\d+)\s*\/\s*(\d+)\s*→\s*(\d+)\s*\/\s*100/g,
+    (match,raw,max)=>{
+      if(+max===100)return match;
+      return `${raw}/${max} → ${scoreRawTo100(+raw,+max)}/100`;
+    }
+  );
+  text=text.split('\n').map((line)=>{
+    if(!/\|/.test(line)||!/(?:\bTotal\b|合計)/i.test(line))return line;
+    const fracs=[...line.matchAll(/(\d+)\s*\/\s*(\d+)/g)].map((m)=>({raw:+m[1],max:+m[2],index:m.index}));
+    const rawFrac=fracs.find((f)=>f.max!==100);
+    if(!rawFrac)return line;
+    const hundredFrac=fracs.filter((f)=>f.max===100).pop();
+    if(!hundredFrac||hundredFrac.raw===normalized)return line;
+    const before=line.slice(0,hundredFrac.index);
+    const after=line.slice(hundredFrac.index+hundredFrac.raw.toString().length+4);
+    return `${before}${normalized}/100${after}`;
+  }).join('\n');
+  text=text.replace(/^【Score[：:]\s*\d+\/100】/im,`【Score: ${normalized}/100】`);
+  text=text.replace(/^【スコア[：:]\s*\d+\/100】/m,`【スコア：${normalized}/100】`);
+  return text;
+}
 export function fillScoreColor(pct){
   if(pct>=80)return 'var(--green)';
   if(pct>=60)return 'var(--amber)';
@@ -51,6 +123,15 @@ export function formatFeedback100(raw,lang){
   const isJa=(lang ?? 'ja')==='ja';
   const head=score!=null?score100Html(score,isJa):'';
   return head+md2h(rest, isJa ? 'ja' : 'en');
+}
+/**
+ * 穴埋めタブ用：100点換算補正後に HTML 化する
+ * @param {string} raw
+ * @param {string} [lang]
+ * @returns {string}
+ */
+export function formatFillFeedback100(raw,lang){
+  return formatFeedback100(fixFillFeedbackScores(raw),lang);
 }
 export function formatSummaryFeedback(raw,lang){return formatFeedback100(raw,lang);}
 function showCopyBar(mode){
