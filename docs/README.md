@@ -6,7 +6,6 @@
 |---------|------|
 | [../CLAUDE.md](../CLAUDE.md) | Claude・Cursor 共通ルール |
 | [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) | ビジョン・背景・戦略 |
-| [DEVELOPMENT_POLICY.md](DEVELOPMENT_POLICY.md) | 開発ルール・ロール責務 |
 
 Knowledge 更新手順: [PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md](PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md)
 

@@ -215,7 +215,6 @@ docs/
 ├── TERMS.md                         ← プロジェクト用語定義（最優先で読む）
 ├── DOCUMENT_GUIDELINES.md           ← ドキュメント記載粒度ガイドライン（最優先で読む）
 ├── PROJECT_CONTEXT.md               ← ビジョン・ロードマップ
-├── DEVELOPMENT_POLICY.md            ← 開発フロー・タスク分類
 ├── DESIGN_DECISION_HISTORY.md       ← 設計判断の経緯メモ
 ├── ai-context/FILE_MAP.md           ← AI向けファイルマップ
 ├── architecture.md                  ← フロントエンド構成

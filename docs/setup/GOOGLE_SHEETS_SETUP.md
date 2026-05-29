@@ -272,6 +272,6 @@ function syncGitHubIssues() {
 
 ## 関連ドキュメント
 
-- 🔗 [DEVELOPMENT_POLICY.md](./DEVELOPMENT_POLICY.md) - 開発ポリシー
+- 🔗 [CLAUDE.md](../../CLAUDE.md) - 開発ポリシー
 - 🔗 [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md) - プロジェクト背景
 - 🔗 [GITHUB_PROJECTS_SETUP.md](./GITHUB_PROJECTS_SETUP.md) - GitHub Projects 設定

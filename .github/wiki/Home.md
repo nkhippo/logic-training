@@ -83,5 +83,4 @@ thinkgrindai プロジェクトへようこそ！
 さらに詳しい情報は GitHub のドキュメントを参照：
 
 - [PROJECT_CONTEXT.md](../docs/PROJECT_CONTEXT.md) - プロジェクトのビジョン・背景・戦略
-- [DEVELOPMENT_POLICY.md](../docs/DEVELOPMENT_POLICY.md) - 開発ルール・フロー詳細
 - [CLAUDE.md](../CLAUDE.md) - Claude・Cursor の共通ルール
