@@ -114,7 +114,7 @@ const TOOL_DEFINITIONS = [
     inputSchema: {
       type: 'object',
       properties: {
-        path: { type: 'string', description: '取得したいファイルパス（例: docs/_index.md）' },
+        path: { type: 'string', description: '取得したいファイルパス（例: docs/ai-context/FILE_MAP.md）' },
         ref: { type: 'string', description: 'ブランチ名またはコミットSHA（省略時は main）' },
         repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
       },

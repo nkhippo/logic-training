@@ -110,7 +110,7 @@
 
 - [ ] セクション番号の連番が崩れていないか（前後のセクションも確認）
 - [ ] 他ファイルからの crossref が壊れていないか（`grep -rn "§"` で検索）
-- [ ] `_index.md` の更新が必要か判断したか
+- [ ] `docs/ai-context/FILE_MAP.md` の更新が必要か判断したか
 - [ ] 関連する `cursor-instructions/` の指示書も更新が必要か判断したか
 
 ---
@@ -177,7 +177,7 @@ extraInfoの詳細は `specification/thinking/overview.md §6` を参照。
 ### 7-1. 新規ドキュメント追加時
 
 - [ ] ファイル先頭に「最終更新」「バージョン」「目的」を記載
-- [ ] `docs/_index.md` のドキュメント一覧に追加
+- [ ] `docs/ai-context/FILE_MAP.md` のドキュメント一覧に追加
 - [ ] `docs/TERMS.md §1` のテーブルに追加（要件定義書・仕様書なら必須）
 - [ ] 既存ファイルでこのドキュメントを参照すべき箇所がないか確認
 
@@ -185,13 +185,13 @@ extraInfoの詳細は `specification/thinking/overview.md §6` を参照。
 
 - [ ] このドキュメントを参照している他ファイルがないか `grep` で確認
 - [ ] 参照元の修正を同時に行う
-- [ ] `docs/_index.md` から削除
+- [ ] `docs/ai-context/FILE_MAP.md` から削除
 - [ ] `docs/TERMS.md` から削除（記載があれば）
 
 ### 7-3. ドキュメント分割・統合時
 
 - [ ] 旧ファイルにdeprecation noticeを追加（参照リンク付き）
-- [ ] `docs/_index.md` を更新
+- [ ] `docs/ai-context/FILE_MAP.md` を更新
 - [ ] `docs/TERMS.md §1` を更新
 
 ---

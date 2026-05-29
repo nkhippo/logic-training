@@ -42,7 +42,7 @@
 | ファイル | 何が書かれているか |
 |---|---|
 | `docs/specification/common.md` | 両サービス共通のファイル構成・API共通仕様・ヘッダー・ペルソナUI・GAS共通仕様 |
-| `docs/specification/logic/common.md` | 論理トレーニング共通UI（テーマ選択・max_tokens・GASエンドポイント） |
+| `docs/specification/logic/ui-shared.md` | 論理トレーニング共通UI（テーマ選択・max_tokens・GASエンドポイント） |
 | `docs/specification/logic/{tab}.md` | 各タブの状態遷移・問題生成・採点・プロンプト設計意図・GASカラム |
 | `docs/specification/thinking/overview.md` | 状態オブジェクト・問題オブジェクト・画面構成・定数一覧 |
 | `docs/specification/thinking/steps.md` | レベル別ステップフロー・80点ルール・90点ルール |
@@ -71,7 +71,7 @@
 | `docs/gas-column-headers.md` | GASシートのカラム定義（コピペ用） | 仕様書のコピペ補助情報 |
 | `docs/adr/*.md` | Architecture Decision Record（設計判断の正本） | 要件定義書・仕様書ではなく、意思決定の記録 |
 | `docs/DESIGN_DECISION_HISTORY.md` | 設計判断の経緯メモ | ドキュメントに書かれない「なぜそうなったか」の記録 |
-| `docs/_index.md` | ドキュメント索引 | 全ドキュメントの目次 |
+| `docs/ai-context/FILE_MAP.md` | AI向けファイルマップ | 何を知りたいかに応じた参照先 |
 | `docs/TERMS.md`（このファイル） | 用語定義 | プロジェクト内の用語集 |
 | `docs/DOCUMENT_GUIDELINES.md` | ドキュメント記載粒度のガイドライン | ドキュメント編集時の基準 |
 | `docs/cursor-instructions/*.md` | Cursor向け作業指示書 | 実装単位の作業手順 |

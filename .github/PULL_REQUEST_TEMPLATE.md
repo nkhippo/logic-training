@@ -18,6 +18,6 @@ Closes #
 
 ## ドキュメント更新
 - [ ] `docs/architecture.md` を更新した（コード構造変更時）
-- [ ] `docs/_index.md` を更新した（新規ドキュメント追加時）
+- [ ] `docs/ai-context/FILE_MAP.md` を更新した（新規ドキュメント追加時）
 - [ ] `docs/TROUBLESHOOTING.md` を更新した（運用上の発見がある場合）
 - [ ] 該当なし

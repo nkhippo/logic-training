@@ -260,7 +260,7 @@ Cursor は実装と同じ PR でドキュメントを更新する。
 | `docs/architecture.md` | Cursor | 対応 PR に含める |
 | `docs/dev-flow.md` | Cursor | 対応 PR に含める |
 | `CLAUDE.md` | Claude（Naoya確認後） | 運用ルール変更時 |
-| `docs/_index.md` | Cursor | 対応 PR に含める |
+| `docs/ai-context/FILE_MAP.md` | Cursor | 対応 PR に含める |
 
 #### Cursor がドキュメントを更新するときの禁止事項
 
@@ -274,7 +274,7 @@ Cursor は実装と同じ PR でドキュメントを更新する。
 #### ドキュメント更新の確認チェックリスト（PR マージ前）
 
 - [ ] `docs/architecture.md` の構成がコードの実態と一致しているか
-- [ ] `docs/_index.md` に変更したファイルが反映されているか
+- [ ] `docs/ai-context/FILE_MAP.md` に変更したファイルが反映されているか
 - [ ] 更新したドキュメント内の他ファイルへの参照（パス・セクション名）が正しいか
 - [ ] `TERMS.md` に新しい用語を追加すべき変更がなかったか
 
@@ -327,12 +327,12 @@ Wiki の更新が不要な場合（議論・相談のみ）は、次のいずれ
 
 ```
 📋 索引更新チェック
-- [ ] docs/_index.md のドキュメント一覧に変更はあるか？
+- [ ] docs/ai-context/FILE_MAP.md のドキュメント一覧に変更はあるか？
       （新規ドキュメント追加・削除・行数の大幅変化）
-- [ ] docs/_index.md のセクション索引に変更はあるか？
+- [ ] docs/ai-context/FILE_MAP.md のセクション索引に変更はあるか？
       （セクションの追加・削除・内容の大幅変化）
 → 変更がある場合は「📖 Wiki 修正チェックリスト」に
-  docs/_index.md の更新内容も含めること
+  docs/ai-context/FILE_MAP.md の更新内容も含めること
 ```
 
 ### 新しいチャットを始めるとき

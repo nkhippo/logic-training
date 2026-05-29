@@ -42,7 +42,7 @@ docs/requirements/thinking/overview.md
 docs/requirements/thinking/scoring.md
 
 docs/specification/common.md
-docs/specification/logic/common.md
+docs/specification/logic/ui-shared.md
 docs/specification/logic/fill.md
 docs/specification/logic/summary.md
 docs/specification/logic/critique.md
@@ -53,7 +53,7 @@ docs/specification/thinking/api.md
 docs/specification/thinking/data.md
 
 docs/DESIGN_DECISION_HISTORY.md  ← 設計判断の経緯メモ（新規）
-docs/_index.md（更新版）
+docs/ai-context/FILE_MAP.md（更新版）
 ```
 
 ---
@@ -108,7 +108,7 @@ docs/
 │   └── thinking/（overview・scoring）
 ├── specification/
 │   ├── common.md
-│   ├── logic/（common・fill・summary・critique・ame）
+│   ├── logic/（ui-shared・fill・summary・critique・ame）
 │   └── thinking/（overview・steps・api・data）
 ├── cursor-instructions/
 ├── setup/
@@ -117,7 +117,7 @@ docs/
 ├── architecture.md
 ├── gas-column-headers.md
 ├── dev-flow.md
-└── _index.md
+└── ai-context/FILE_MAP.md
 ```
 
 ---
@@ -126,7 +126,7 @@ docs/
 
 - [ ] `docs/requirements/` 以下：8ファイルが存在する
 - [ ] `docs/specification/` 以下：10ファイルが存在する
-- [ ] `docs/_index.md` が更新されている
+- [ ] `docs/ai-context/FILE_MAP.md` が更新されている
 - [ ] 旧4ファイルの先頭にdeprecation noticeが追加されている
 - [ ] `CLAUDE.md` のファイル構成セクションが更新されている
 
@@ -135,7 +135,7 @@ docs/
 ## Step 6：git commit
 
 ```bash
-git add docs/requirements/ docs/specification/ docs/_index.md
+git add docs/requirements/ docs/specification/ docs/ai-context/FILE_MAP.md
 git add docs/requirements.md docs/requirements-thinking.md docs/specification.md docs/specification-thinking.md
 git add docs/DESIGN_DECISION_HISTORY.md
 git add CLAUDE.md
