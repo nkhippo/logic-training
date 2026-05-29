@@ -33,7 +33,7 @@ thinkgrindai プロジェクトの開発体制を整備しました。
 - Knowledge: 3 つのファイルをアップロード
   - CLAUDE.md
   - PROJECT_CONTEXT.md
-  - DEVELOPMENT_POLICY.md
+  - CLAUDE.md
 
 **効果**: どのチャットを立てても、自動的にフローがガイドされる
 
@@ -202,7 +202,7 @@ Naoya がテスト・Merge
 | CLAUDE.md | 共通ルール | Claude・Cursor |
 | .cursor/rules/dev-flow.mdc | Cursor ルール | Cursor |
 | docs/PROJECT_CONTEXT.md | ビジョン・背景 | 全員 |
-| docs/DEVELOPMENT_POLICY.md | 開発ルール詳細 | 全員 |
+| CLAUDE.md | 開発ルール詳細 | 全員 |
 | docs/TASK_TRACKER_URL.md | Sheets リンク | 全員 |
 | docs/requirements-*.md | 要件定義書 | 開発者 |
 | docs/specification-*.md | 仕様書 | 開発者 |

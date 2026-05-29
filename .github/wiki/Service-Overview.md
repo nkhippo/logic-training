@@ -157,7 +157,7 @@ Level 5: 高度（新しい型を作る）
 ## 🔗 関連ドキュメント
 
 - [PROJECT_CONTEXT.md](../docs/PROJECT_CONTEXT.md) - ビジョン・背景・戦略詳細
-- [DEVELOPMENT_POLICY.md](../docs/DEVELOPMENT_POLICY.md) - 開発ルール詳細
+- [CLAUDE.md](../CLAUDE.md) - 開発ルール詳細
 - [要件確定シート](https://docs.google.com/spreadsheets/d/1b4bod69wE_KjM-qL4hOIa2n_MPRw8XDb6dM3RYVCTto/) - タスク管理
 
 ---

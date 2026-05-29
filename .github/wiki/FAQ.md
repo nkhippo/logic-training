@@ -71,7 +71,7 @@ A: PR テンプレに従ってください。最低限以下を記入：
 Fixes #T0XX
 ```
 
-詳細は [DEVELOPMENT_POLICY.md](../docs/DEVELOPMENT_POLICY.md) を参照
+詳細は [CLAUDE.md](../CLAUDE.md) を参照
 
 ### Q: 既存コードを修正してもいい？
 

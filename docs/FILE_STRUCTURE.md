@@ -75,7 +75,6 @@ docs/
 ├── PROJECT_CONTEXT.md           # ビジョン・ロードマップ
 ├── architecture.md              # フロントエンド構成・ディレクトリ設計
 ├── dev-flow.md                  # 開発フロー詳細
-├── DEVELOPMENT_POLICY.md        # 開発フロー・タスク分類・運用ルール
 ├── DESIGN_DECISION_HISTORY.md   # 設計判断の経緯メモ
 ├── PROJECTS_KNOWLEDGE_UPDATE_GUIDE.md
 ├── TASK_TRACKER_URL.md

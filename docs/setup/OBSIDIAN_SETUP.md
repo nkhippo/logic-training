@@ -445,7 +445,7 @@ git push origin main
 ## 関連ドキュメント
 
 - 🔗 [PROJECT_CONTEXT.md](./PROJECT_CONTEXT.md) - プロジェクト背景
-- 🔗 [DEVELOPMENT_POLICY.md](./DEVELOPMENT_POLICY.md) - 開発ポリシー
+- 🔗 [CLAUDE.md](../../CLAUDE.md) - 開発ポリシー
 - 🔗 [GOOGLE_SHEETS_SETUP.md](./GOOGLE_SHEETS_SETUP.md) - Google Sheets 設定
 
 ---
