@@ -4,13 +4,10 @@ on:
   issue_comment:
     types: [created]
 
-<<<<<<< HEAD
 permissions:
   pull-requests: write
   contents: write
 
-=======
->>>>>>> origin/develop
 jobs:
   handle-comment:
     if: github.event.issue.pull_request != null
@@ -23,7 +20,6 @@ jobs:
           echo "Unauthorized user. Skipping."
           exit 0
 
-<<<<<<< HEAD
       - name: Detect comment intent
         id: intent
         run: |
@@ -77,12 +73,6 @@ jobs:
           github.event.comment.user.login == 'nkhippo' &&
           steps.intent.outputs.action == 'approve' &&
           steps.pr_meta.outputs.is_bridge_pr != 'true'
-=======
-      - name: Merge on approve
-        if: |
-          github.event.comment.user.login == 'nkhippo' &&
-          contains(github.event.comment.body, 'approve')
->>>>>>> origin/develop
         run: |
           PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
           gh pr merge "$PR_NUMBER" \
@@ -95,11 +85,7 @@ jobs:
       - name: Handle revision request
         if: |
           github.event.comment.user.login == 'nkhippo' &&
-<<<<<<< HEAD
           steps.intent.outputs.action == 'revision'
-=======
-          (contains(github.event.comment.body, '修正依頼') || contains(github.event.comment.body, '修正:') || contains(github.event.comment.body, '修正：'))
->>>>>>> origin/develop
         run: |
           PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
           gh pr edit "$PR_NUMBER" \
