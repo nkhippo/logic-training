@@ -1,7 +1,7 @@
 const GITHUB_OWNER = process.env.GITHUB_OWNER || 'nkhippo';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'ThinkGrindAi';
 const GITHUB_API = 'https://api.github.com';
-const MAX_FILE_SIZE_BYTES = 100 * 1024;
+const MAX_FILE_SIZE_BYTES = 1024 * 1024;
 
 class GitHubApiError extends Error {
   /**
@@ -165,14 +165,16 @@ function resolveRepo(repo) {
  * @param {object} params
  * @param {string} params.accessToken
  * @param {string} [params.path]
+ * @param {string} [params.ref]
  * @param {string} [params.repo]
  * @returns {Promise<any>}
  */
-async function fetchGitHubContents({ accessToken, path = '', repo }) {
+async function fetchGitHubContents({ accessToken, path = '', ref = 'main', repo }) {
   const targetRepo = resolveRepo(repo);
   const cleanPath = typeof path === 'string' ? path.replace(/^\/+/, '') : '';
+  const targetRef = typeof ref === 'string' && ref.trim().length > 0 ? ref.trim() : 'main';
   const endpoint = `${GITHUB_API}/repos/${GITHUB_OWNER}/${targetRepo}/contents/${cleanPath}`;
-  const response = await fetch(`${endpoint}?ref=main`, { headers: githubHeaders(accessToken) });
+  const response = await fetch(`${endpoint}?ref=${encodeURIComponent(targetRef)}`, { headers: githubHeaders(accessToken) });
 
   if (!response.ok) {
     let message = 'GitHub ファイル取得に失敗しました';
@@ -189,6 +191,7 @@ async function fetchGitHubContents({ accessToken, path = '', repo }) {
     data: await response.json(),
     repo: targetRepo,
     path: cleanPath,
+    ref: targetRef,
   };
 }
 
@@ -197,11 +200,12 @@ async function fetchGitHubContents({ accessToken, path = '', repo }) {
  * @param {object} params
  * @param {string} params.accessToken
  * @param {string} params.path
+ * @param {string} [params.ref]
  * @param {string} [params.repo]
  * @returns {Promise<{ path: string, content: string, sha: string, size: number, url: string }>}
  */
-async function getGitHubFileContent({ accessToken, path, repo }) {
-  const result = await fetchGitHubContents({ accessToken, path, repo });
+async function getGitHubFileContent({ accessToken, path, ref, repo }) {
+  const result = await fetchGitHubContents({ accessToken, path, ref, repo });
   const file = result.data;
 
   if (Array.isArray(file) || file.type !== 'file') {
@@ -209,7 +213,7 @@ async function getGitHubFileContent({ accessToken, path, repo }) {
   }
 
   if (typeof file.size === 'number' && file.size > MAX_FILE_SIZE_BYTES) {
-    throw new GitHubApiError('ファイルが大きすぎます（100KB以下のみ対応）', 400);
+    throw new GitHubApiError('ファイルが大きすぎます（1MB以下のみ対応）', 400);
   }
 
   if (file.encoding !== 'base64' || typeof file.content !== 'string') {
@@ -235,11 +239,12 @@ async function getGitHubFileContent({ accessToken, path, repo }) {
  * @param {object} params
  * @param {string} params.accessToken
  * @param {string} [params.path]
+ * @param {string} [params.ref]
  * @param {string} [params.repo]
- * @returns {Promise<{ path: string, entries: Array<{ name: string, type: string, size: number }>, total: number, url: string }>}
+ * @returns {Promise<{ path: string, entries: Array<{ name: string, path: string, type: string, size: number }>, total: number, url: string }>}
  */
-async function listGitHubDirectory({ accessToken, path = '', repo }) {
-  const result = await fetchGitHubContents({ accessToken, path, repo });
+async function listGitHubDirectory({ accessToken, path = '', ref, repo }) {
+  const result = await fetchGitHubContents({ accessToken, path, ref, repo });
   const entries = result.data;
 
   if (!Array.isArray(entries)) {
@@ -248,6 +253,7 @@ async function listGitHubDirectory({ accessToken, path = '', repo }) {
 
   const normalized = entries.map((entry) => ({
     name: entry.name,
+    path: entry.path,
     type: entry.type === 'dir' ? 'dir' : 'file',
     size: entry.type === 'file' ? entry.size || 0 : 0,
   }));
@@ -258,7 +264,7 @@ async function listGitHubDirectory({ accessToken, path = '', repo }) {
     total: normalized.length,
     url:
       result.path.length > 0
-        ? `https://github.com/${GITHUB_OWNER}/${result.repo}/tree/main/${result.path}`
+        ? `https://github.com/${GITHUB_OWNER}/${result.repo}/tree/${result.ref}/${result.path}`
         : `https://github.com/${GITHUB_OWNER}/${result.repo}`,
   };
 }
