@@ -110,11 +110,12 @@ const TOOL_DEFINITIONS = [
   },
   {
     name: 'get_file_content',
-    description: 'GitHub 上のテキストファイル内容を取得する（main ブランチ固定）',
+    description: 'GitHub 上のテキストファイル内容を取得する',
     inputSchema: {
       type: 'object',
       properties: {
         path: { type: 'string', description: '取得したいファイルパス（例: docs/_index.md）' },
+        ref: { type: 'string', description: 'ブランチ名またはコミットSHA（省略時は main）' },
         repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
       },
       required: ['path'],
@@ -122,11 +123,12 @@ const TOOL_DEFINITIONS = [
   },
   {
     name: 'list_directory',
-    description: 'GitHub 上のディレクトリ一覧を取得する（1階層・main ブランチ固定）',
+    description: 'GitHub 上のディレクトリ一覧を取得する（1階層）',
     inputSchema: {
       type: 'object',
       properties: {
         path: { type: 'string', description: '対象ディレクトリパス（省略時はルート）' },
+        ref: { type: 'string', description: 'ブランチ名またはコミットSHA（省略時は main）' },
         repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
       },
     },
@@ -373,6 +375,7 @@ async function handleMcpJsonRpc(req, res) {
         const payload = await getGitHubFileContent({
           accessToken,
           path: args.path,
+          ref: typeof args.ref === 'string' ? args.ref : undefined,
           repo: typeof args.repo === 'string' ? args.repo : undefined,
         });
 
@@ -392,6 +395,7 @@ async function handleMcpJsonRpc(req, res) {
         const payload = await listGitHubDirectory({
           accessToken,
           path: typeof args.path === 'string' ? args.path : '',
+          ref: typeof args.ref === 'string' ? args.ref : undefined,
           repo: typeof args.repo === 'string' ? args.repo : undefined,
         });
 
