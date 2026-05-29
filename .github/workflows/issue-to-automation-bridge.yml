@@ -205,7 +205,8 @@ jobs:
               --jq '.[0].number')
 
             if [ -z "${EXISTING_PR}" ]; then
-              PR_BODY="Bridge PR auto-created from issue #${ISSUE_NUMBER}. Issue URL: ${ISSUE_URL}. Snapshot file: ${SNAPSHOT_FILE}. Do not merge this PR manually unless you intentionally want to keep the snapshot changes."
+              PR_BODY=$(printf '## 🤖 Auto Bridge PR\n\n| 項目 | 値 |\n|---|---|\n| 関連Issue | #%s |\n| Issue URL | %s |\n| スナップショット | `%s` |\n\n---\n\n> ⚠️ このPRはCursorの自動実装トリガー用です。\n> Cursorによる実装PRが別途作成されます。**このPRを手動マージしないでください。**' \
+                "${ISSUE_NUMBER}" "${ISSUE_URL}" "${SNAPSHOT_FILE}")
 
               gh pr create \
                 --repo "${REPO}" \
@@ -243,7 +244,8 @@ jobs:
             ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
             PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
             MARKER="<!-- issue-auto-bridge:${ISSUE_NUMBER}:${GITHUB_RUN_ID} -->"
-            COMMENT_BODY="AUTO: Issue #${ISSUE_NUMBER} を処理してください。 ${MARKER} 要件: Issue本文を正本として読み、最小変更で実装し、不明点はPRへ質問コメント、修正後はこのPRへcommit。"
+            COMMENT_BODY=$(printf '%s\nAUTO: Issue #%s を実装してください。\n\nIssue本文を正本として読み、記載された完了定義・作業の進め方に従って進めること。' \
+              "${MARKER}" "${ISSUE_NUMBER}")
 
             gh pr comment "${PR_NUMBER}" \
               --repo "${REPO}" \
