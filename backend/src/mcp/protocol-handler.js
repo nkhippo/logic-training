@@ -1,5 +1,8 @@
 const {
   createGitHubIssue,
+  createGitHubPullRequest,
+  getGitHubPullRequest,
+  mergeGitHubPullRequest,
   listGitHubIssues,
   getGitHubIssueComments,
   addGitHubIssueComment,
@@ -109,12 +112,61 @@ const TOOL_DEFINITIONS = [
     },
   },
   {
-    name: 'get_file_content',
-    description: 'GitHub 上のテキストファイル内容を取得する（main ブランチ固定）',
+    name: 'create_pull_request',
+    description: 'thinkgrindai リポジトリに GitHub Pull Request を作成する',
     inputSchema: {
       type: 'object',
       properties: {
-        path: { type: 'string', description: '取得したいファイルパス（例: docs/_index.md）' },
+        title: { type: 'string', description: 'PR のタイトル' },
+        body: { type: 'string', description: 'PR の本文（Markdown）' },
+        head: { type: 'string', description: 'head ブランチ（例: develop）' },
+        base: { type: 'string', description: 'base ブランチ（例: main）' },
+        labels: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'PR に付与するラベル配列',
+        },
+        draft: { type: 'boolean', description: 'Draft PR として作成するか' },
+      },
+      required: ['title', 'body', 'head', 'base'],
+    },
+  },
+  {
+    name: 'merge_pull_request',
+    description: '指定した GitHub Pull Request をマージする',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pull_number: { type: 'integer', description: 'PR 番号' },
+        merge_method: {
+          type: 'string',
+          enum: ['merge', 'squash', 'rebase'],
+          description: 'マージ方式（省略時は squash）',
+        },
+        commit_title: { type: 'string', description: 'マージコミットのタイトル' },
+      },
+      required: ['pull_number'],
+    },
+  },
+  {
+    name: 'get_pull_request',
+    description: '指定した GitHub Pull Request の情報を取得する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        pull_number: { type: 'integer', description: 'PR 番号' },
+      },
+      required: ['pull_number'],
+    },
+  },
+  {
+    name: 'get_file_content',
+    description: 'GitHub 上のテキストファイル内容を取得する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: { type: 'string', description: '取得したいファイルパス（例: docs/ai-context/FILE_MAP.md）' },
+        ref: { type: 'string', description: 'ブランチ名またはコミットSHA（省略時は main）' },
         repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
       },
       required: ['path'],
@@ -122,11 +174,12 @@ const TOOL_DEFINITIONS = [
   },
   {
     name: 'list_directory',
-    description: 'GitHub 上のディレクトリ一覧を取得する（1階層・main ブランチ固定）',
+    description: 'GitHub 上のディレクトリ一覧を取得する（1階層）',
     inputSchema: {
       type: 'object',
       properties: {
         path: { type: 'string', description: '対象ディレクトリパス（省略時はルート）' },
+        ref: { type: 'string', description: 'ブランチ名またはコミットSHA（省略時は main）' },
         repo: { type: 'string', description: '対象リポジトリ名（省略時は既定リポジトリ）' },
       },
     },
@@ -346,6 +399,86 @@ async function handleMcpJsonRpc(req, res) {
         );
       }
 
+      if (toolName === 'create_pull_request') {
+        const { title, body: prBody, head, base, labels, draft } = args;
+        if (
+          typeof title !== 'string' ||
+          title.trim().length === 0 ||
+          typeof prBody !== 'string' ||
+          prBody.trim().length === 0 ||
+          typeof head !== 'string' ||
+          head.trim().length === 0 ||
+          typeof base !== 'string' ||
+          base.trim().length === 0
+        ) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'title, body, head, base は必須です'));
+        }
+        if (labels !== undefined && (!Array.isArray(labels) || !labels.every((label) => typeof label === 'string'))) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'labels は文字列配列で指定してください'));
+        }
+
+        const payload = await createGitHubPullRequest({
+          accessToken,
+          title,
+          body: prBody,
+          head,
+          base,
+          labels,
+          draft: typeof draft === 'boolean' ? draft : false,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'merge_pull_request') {
+        if (!Number.isInteger(args.pull_number)) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'pull_number は整数で指定してください'));
+        }
+        if (
+          args.merge_method !== undefined &&
+          !['merge', 'squash', 'rebase'].includes(args.merge_method)
+        ) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'merge_method は merge, squash, rebase のいずれかです'));
+        }
+
+        const payload = await mergeGitHubPullRequest({
+          accessToken,
+          pullNumber: args.pull_number,
+          mergeMethod: typeof args.merge_method === 'string' ? args.merge_method : 'squash',
+          commitTitle: typeof args.commit_title === 'string' ? args.commit_title : undefined,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'get_pull_request') {
+        if (!Number.isInteger(args.pull_number)) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'pull_number は整数で指定してください'));
+        }
+
+        const payload = await getGitHubPullRequest({
+          accessToken,
+          pullNumber: args.pull_number,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(payload, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
       if (toolName === 'add_pr_comment') {
         if (!Number.isInteger(args.pr_number) || !args.body) {
           return res.status(400).json(jsonRpcError(id, -32602, 'pr_number と body は必須です'));
@@ -373,6 +506,7 @@ async function handleMcpJsonRpc(req, res) {
         const payload = await getGitHubFileContent({
           accessToken,
           path: args.path,
+          ref: typeof args.ref === 'string' ? args.ref : undefined,
           repo: typeof args.repo === 'string' ? args.repo : undefined,
         });
 
@@ -392,6 +526,7 @@ async function handleMcpJsonRpc(req, res) {
         const payload = await listGitHubDirectory({
           accessToken,
           path: typeof args.path === 'string' ? args.path : '',
+          ref: typeof args.ref === 'string' ? args.ref : undefined,
           repo: typeof args.repo === 'string' ? args.repo : undefined,
         });
 

@@ -1,7 +1,7 @@
 const GITHUB_OWNER = process.env.GITHUB_OWNER || 'nkhippo';
 const GITHUB_REPO = process.env.GITHUB_REPO || 'ThinkGrindAi';
 const GITHUB_API = 'https://api.github.com';
-const MAX_FILE_SIZE_BYTES = 100 * 1024;
+const MAX_FILE_SIZE_BYTES = 1024 * 1024;
 
 class GitHubApiError extends Error {
   /**
@@ -30,6 +30,23 @@ function githubHeaders(accessToken) {
 }
 
 /**
+ * GitHub API エラーレスポンスからメッセージを取り出す
+ * @param {Response} response
+ * @param {string} fallbackMessage
+ * @returns {Promise<never>}
+ */
+async function throwGitHubApiError(response, fallbackMessage) {
+  let message = fallbackMessage;
+  try {
+    const error = await response.json();
+    message = error.message || message;
+  } catch (_err) {
+    // ignore JSON parse error
+  }
+  throw new GitHubApiError(message, response.status);
+}
+
+/**
  * GitHub Issue を作成する
  * @param {object} params
  * @param {string} params.accessToken
@@ -46,8 +63,7 @@ async function createGitHubIssue({ accessToken, title, body, labels = ['ready-fo
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'GitHub Issue 作成に失敗しました');
+    await throwGitHubApiError(response, 'GitHub Issue 作成に失敗しました');
   }
 
   const issue = await response.json();
@@ -56,6 +72,113 @@ async function createGitHubIssue({ accessToken, title, body, labels = ['ready-fo
     title: issue.title,
     url: issue.html_url,
     labels: issue.labels.map((label) => label.name),
+  };
+}
+
+/**
+ * GitHub Pull Request を作成する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {string} params.title
+ * @param {string} params.body
+ * @param {string} params.head
+ * @param {string} params.base
+ * @param {string[]} [params.labels]
+ * @param {boolean} [params.draft]
+ * @returns {Promise<{ number: number, url: string, title: string }>}
+ */
+async function createGitHubPullRequest({ accessToken, title, body, head, base, labels, draft = false }) {
+  const response = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls`, {
+    method: 'POST',
+    headers: githubHeaders(accessToken),
+    body: JSON.stringify({ title, body, head, base, draft }),
+  });
+
+  if (!response.ok) {
+    await throwGitHubApiError(response, 'GitHub PR 作成に失敗しました');
+  }
+
+  const pullRequest = await response.json();
+
+  if (Array.isArray(labels) && labels.length > 0) {
+    const labelsResponse = await fetch(
+      `${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues/${pullRequest.number}/labels`,
+      {
+        method: 'POST',
+        headers: githubHeaders(accessToken),
+        body: JSON.stringify({ labels }),
+      }
+    );
+
+    if (!labelsResponse.ok) {
+      await throwGitHubApiError(labelsResponse, 'GitHub PR ラベル付与に失敗しました');
+    }
+  }
+
+  return {
+    number: pullRequest.number,
+    url: pullRequest.html_url,
+    title: pullRequest.title,
+  };
+}
+
+/**
+ * GitHub Pull Request を取得する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {number} params.pullNumber
+ * @returns {Promise<{ number: number, title: string, state: string, mergeable: boolean|null, labels: string[], head: string, base: string }>}
+ */
+async function getGitHubPullRequest({ accessToken, pullNumber }) {
+  const response = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls/${pullNumber}`, {
+    headers: githubHeaders(accessToken),
+  });
+
+  if (!response.ok) {
+    await throwGitHubApiError(response, 'GitHub PR 情報の取得に失敗しました');
+  }
+
+  const pullRequest = await response.json();
+  return {
+    number: pullRequest.number,
+    title: pullRequest.title,
+    state: pullRequest.state,
+    mergeable: pullRequest.mergeable,
+    labels: Array.isArray(pullRequest.labels) ? pullRequest.labels.map((label) => label.name) : [],
+    head: pullRequest.head?.ref || '',
+    base: pullRequest.base?.ref || '',
+  };
+}
+
+/**
+ * GitHub Pull Request をマージする
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {number} params.pullNumber
+ * @param {'merge'|'squash'|'rebase'} [params.mergeMethod]
+ * @param {string} [params.commitTitle]
+ * @returns {Promise<{ merged: boolean, message: string }>}
+ */
+async function mergeGitHubPullRequest({ accessToken, pullNumber, mergeMethod = 'squash', commitTitle }) {
+  const body = { merge_method: mergeMethod };
+  if (typeof commitTitle === 'string' && commitTitle.trim().length > 0) {
+    body.commit_title = commitTitle.trim();
+  }
+
+  const response = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/pulls/${pullNumber}/merge`, {
+    method: 'PUT',
+    headers: githubHeaders(accessToken),
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    await throwGitHubApiError(response, 'GitHub PR マージに失敗しました');
+  }
+
+  const result = await response.json();
+  return {
+    merged: Boolean(result.merged),
+    message: result.message || '',
   };
 }
 
@@ -165,14 +288,16 @@ function resolveRepo(repo) {
  * @param {object} params
  * @param {string} params.accessToken
  * @param {string} [params.path]
+ * @param {string} [params.ref]
  * @param {string} [params.repo]
  * @returns {Promise<any>}
  */
-async function fetchGitHubContents({ accessToken, path = '', repo }) {
+async function fetchGitHubContents({ accessToken, path = '', ref = 'main', repo }) {
   const targetRepo = resolveRepo(repo);
   const cleanPath = typeof path === 'string' ? path.replace(/^\/+/, '') : '';
+  const targetRef = typeof ref === 'string' && ref.trim().length > 0 ? ref.trim() : 'main';
   const endpoint = `${GITHUB_API}/repos/${GITHUB_OWNER}/${targetRepo}/contents/${cleanPath}`;
-  const response = await fetch(`${endpoint}?ref=main`, { headers: githubHeaders(accessToken) });
+  const response = await fetch(`${endpoint}?ref=${encodeURIComponent(targetRef)}`, { headers: githubHeaders(accessToken) });
 
   if (!response.ok) {
     let message = 'GitHub ファイル取得に失敗しました';
@@ -189,6 +314,7 @@ async function fetchGitHubContents({ accessToken, path = '', repo }) {
     data: await response.json(),
     repo: targetRepo,
     path: cleanPath,
+    ref: targetRef,
   };
 }
 
@@ -197,11 +323,12 @@ async function fetchGitHubContents({ accessToken, path = '', repo }) {
  * @param {object} params
  * @param {string} params.accessToken
  * @param {string} params.path
+ * @param {string} [params.ref]
  * @param {string} [params.repo]
  * @returns {Promise<{ path: string, content: string, sha: string, size: number, url: string }>}
  */
-async function getGitHubFileContent({ accessToken, path, repo }) {
-  const result = await fetchGitHubContents({ accessToken, path, repo });
+async function getGitHubFileContent({ accessToken, path, ref, repo }) {
+  const result = await fetchGitHubContents({ accessToken, path, ref, repo });
   const file = result.data;
 
   if (Array.isArray(file) || file.type !== 'file') {
@@ -209,7 +336,7 @@ async function getGitHubFileContent({ accessToken, path, repo }) {
   }
 
   if (typeof file.size === 'number' && file.size > MAX_FILE_SIZE_BYTES) {
-    throw new GitHubApiError('ファイルが大きすぎます（100KB以下のみ対応）', 400);
+    throw new GitHubApiError('ファイルが大きすぎます（1MB以下のみ対応）', 400);
   }
 
   if (file.encoding !== 'base64' || typeof file.content !== 'string') {
@@ -235,11 +362,12 @@ async function getGitHubFileContent({ accessToken, path, repo }) {
  * @param {object} params
  * @param {string} params.accessToken
  * @param {string} [params.path]
+ * @param {string} [params.ref]
  * @param {string} [params.repo]
- * @returns {Promise<{ path: string, entries: Array<{ name: string, type: string, size: number }>, total: number, url: string }>}
+ * @returns {Promise<{ path: string, entries: Array<{ name: string, path: string, type: string, size: number }>, total: number, url: string }>}
  */
-async function listGitHubDirectory({ accessToken, path = '', repo }) {
-  const result = await fetchGitHubContents({ accessToken, path, repo });
+async function listGitHubDirectory({ accessToken, path = '', ref, repo }) {
+  const result = await fetchGitHubContents({ accessToken, path, ref, repo });
   const entries = result.data;
 
   if (!Array.isArray(entries)) {
@@ -248,6 +376,7 @@ async function listGitHubDirectory({ accessToken, path = '', repo }) {
 
   const normalized = entries.map((entry) => ({
     name: entry.name,
+    path: entry.path,
     type: entry.type === 'dir' ? 'dir' : 'file',
     size: entry.type === 'file' ? entry.size || 0 : 0,
   }));
@@ -258,7 +387,7 @@ async function listGitHubDirectory({ accessToken, path = '', repo }) {
     total: normalized.length,
     url:
       result.path.length > 0
-        ? `https://github.com/${GITHUB_OWNER}/${result.repo}/tree/main/${result.path}`
+        ? `https://github.com/${GITHUB_OWNER}/${result.repo}/tree/${result.ref}/${result.path}`
         : `https://github.com/${GITHUB_OWNER}/${result.repo}`,
   };
 }
@@ -365,6 +494,9 @@ async function listGitHubIssues({ accessToken, state = 'open', perPage = 10 }) {
 
 module.exports = {
   createGitHubIssue,
+  createGitHubPullRequest,
+  getGitHubPullRequest,
+  mergeGitHubPullRequest,
   listGitHubIssues,
   getGitHubIssueComments,
   addGitHubIssueComment,

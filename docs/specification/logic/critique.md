@@ -4,7 +4,7 @@
 **バージョン**: 1.0  
 **作成日**: 2026-05-25
 
-> 要件定義は `requirements/logic/critique.md`、共通UI仕様は `specification/logic/common.md` を参照。
+> 要件定義は `requirements/logic/critique.md`、共通UI仕様は `specification/logic/ui-shared.md` を参照。
 
 ---
 

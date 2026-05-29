@@ -10,6 +10,7 @@ import {
   parseModelJSON,
 } from '../services/api.js';
 import { buildPersonaPromptNote } from '../services/persona.js';
+import { fixFillFeedbackScores } from '../utils/markdown.js';
 import { buildThemeInFromDocType } from './themeHelpers.js';
 
 const FILL_HINT_NONE_NOTE_JA =
@@ -144,7 +145,7 @@ export async function gradeFillProblem(prob, ua) {
   const prompt = isEN
     ? `${FILL_SCORE100_NOTE_EN}\n\nGrade fill-in-the-blank (Difficulty ${prob.diff}/5).\n[Problem]\n${ct}\n[Correct]\n${prob.answers.map((a, i) => `(${i + 1}) ${a}`).join('\n')}\n[Learner]\n${ua.map((a, i) => `(${i + 1}) ${a}`).join('\n')}`
     : `${FILL_SCORE100_NOTE_JA}\n\n穴埋め問題（難易度${prob.diff}/5）の添削。\n【問題文】${ct}\n【正解】${prob.answers.map((a, i) => `（${i + 1}）${a}`).join('\n')}\n【学習者】${ua.map((a, i) => `（${i + 1}）${a}`).join('\n')}`;
-  return callClaude(prompt, sys, gradeMaxTokensByDiff(prob.diff), 0.3, {
+  const feedback = await callClaude(prompt, sys, gradeMaxTokensByDiff(prob.diff), 0.3, {
     mode: 'score',
     service: 'logic',
     problem_id: prob.beProblemId || null,
@@ -152,6 +153,7 @@ export async function gradeFillProblem(prob, ua) {
     context: { original_problem: ct, tab: 'fill' },
     markdownResponse: true,
   });
+  return fixFillFeedbackScores(feedback);
 }
 
 /**

@@ -212,7 +212,6 @@ Google Sheets (アーカイブ)
    ```
    docs/
    ├── PROJECT_CONTEXT.md
-   ├── DEVELOPMENT_POLICY.md
    ├── TASK_TRACKER_URL.md
    ├── requirements-*.md
    ├── specification-*.md
@@ -226,7 +225,7 @@ Google Sheets (アーカイブ)
    ```markdown
    ## 📋 タスク管理・開発フロー
    - [PROJECT_CONTEXT.md](./docs/PROJECT_CONTEXT.md) - ビジョン・背景
-   - [DEVELOPMENT_POLICY.md](./docs/DEVELOPMENT_POLICY.md) - 開発ルール
+   - [CLAUDE.md](./CLAUDE.md) - 開発ルール
    - [GitHub Projects](./docs/GITHUB_PROJECTS_SETUP.md) - タスク管理
    - [Google Sheets](./docs/GOOGLE_SHEETS_SETUP.md) - 要件管理
    - [Obsidian](./docs/OBSIDIAN_SETUP.md) - 思考管理
@@ -546,7 +545,7 @@ git push origin main
 | ドキュメント | 位置 | 作成者 | 更新頻度 |
 |-----------|------|--------|--------|
 | **PROJECT_CONTEXT.md** | docs/ | Naoya | 月 1 回（Phase 変更時） |
-| **DEVELOPMENT_POLICY.md** | docs/ | Naoya | 3 月に 1 回（ルール変更時） |
+| **CLAUDE.md** | repository root | Claude / Cursor | ルール変更時 |
 | **このファイル** | docs/ | Claude | 不定期 |
 
 ### セットアップ
@@ -585,7 +584,7 @@ git push origin main
 2. ✅ 軽微 Issue で試す（1～2 個）
 3. ✅ 中規模タスクで本格運用開始
 4. 📊 月 1 回、ドキュメント・フローをレビュー
-5. 🔄 改善点があれば DEVELOPMENT_POLICY を更新
+5. 🔄 改善点があれば CLAUDE.md / dev-flow.md を更新
 
 ---
 
