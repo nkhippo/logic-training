@@ -1,0 +1,45 @@
+"area: frontend":
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "src/**/*"
+
+"area: backend":
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "backend/**/*"
+
+"area: docs":
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "docs/**/*"
+              - "*.md"
+              - "CLAUDE.md"
+
+"area: ci":
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - ".github/**/*"
+              - ".cursor/**/*"
+
+"area: thinking":
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "src/components/thinking/**/*"
+              - "src/logic/thinkingLogic.js"
+              - "backend/src/api/generate-problem.js"
+              - "backend/src/api/score-answer.js"
+
+"area: logic":
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - "src/components/logic/**/*"
+              - "src/logic/fillLogic.js"
+              - "src/logic/summaryLogic.js"
+              - "src/logic/critiqueLogic.js"
+              - "src/logic/ameLogic.js"

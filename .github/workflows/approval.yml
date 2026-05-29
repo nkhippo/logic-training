@@ -4,6 +4,10 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   handle-comment:
     if: github.event.issue.pull_request != null
@@ -16,10 +20,59 @@ jobs:
           echo "Unauthorized user. Skipping."
           exit 0
 
+      - name: Detect comment intent
+        id: intent
+        run: |
+          BODY='${{ github.event.comment.body }}'
+          BODY_LOWER=$(echo "$BODY" | tr '[:upper:]' '[:lower:]' | xargs)
+
+          if echo "$BODY_LOWER" | grep -qE "^(approve|ok|lgtm)$" || \
+             echo "$BODY" | grep -qE "^(👍|✅)$"; then
+            echo "action=approve" >> "$GITHUB_OUTPUT"
+          elif echo "$BODY_LOWER" | grep -qE "^(修正依頼:|要修正:|change request:)"; then
+            echo "action=revision" >> "$GITHUB_OUTPUT"
+          else
+            echo "action=none" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Resolve PR head branch
+        if: |
+          github.event.comment.user.login == 'nkhippo' &&
+          steps.intent.outputs.action == 'approve'
+        id: pr_meta
+        run: |
+          PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+          HEAD_REF=$(gh pr view "$PR_NUMBER" \
+            --repo "${{ github.repository }}" \
+            --json headRefName \
+            --jq '.headRefName')
+          echo "head_ref=${HEAD_REF}" >> "$GITHUB_OUTPUT"
+          if [[ "${HEAD_REF}" == auto/issue-* ]]; then
+            echo "is_bridge_pr=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_bridge_pr=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Skip merge for bridge PR (auto/issue-*)
+        if: |
+          github.event.comment.user.login == 'nkhippo' &&
+          steps.intent.outputs.action == 'approve' &&
+          steps.pr_meta.outputs.is_bridge_pr == 'true'
+        run: |
+          PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+          gh pr comment "$PR_NUMBER" \
+            --repo "${{ github.repository }}" \
+            --body "⏭️ Bridge PR（\`auto/issue-*\`）のため、\`ok\` / \`approve\` による自動マージをスキップしました。実装コミットが付いた PR をレビューしてマージしてください。"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Merge on approve
         if: |
           github.event.comment.user.login == 'nkhippo' &&
-          contains(github.event.comment.body, 'approve')
+          steps.intent.outputs.action == 'approve' &&
+          steps.pr_meta.outputs.is_bridge_pr != 'true'
         run: |
           PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
           gh pr merge "$PR_NUMBER" \
@@ -32,7 +85,7 @@ jobs:
       - name: Handle revision request
         if: |
           github.event.comment.user.login == 'nkhippo' &&
-          (contains(github.event.comment.body, '修正依頼') || contains(github.event.comment.body, '修正:') || contains(github.event.comment.body, '修正：'))
+          steps.intent.outputs.action == 'revision'
         run: |
           PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
           gh pr edit "$PR_NUMBER" \
