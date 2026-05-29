@@ -212,7 +212,6 @@ Google Sheets (アーカイブ)
    ```
    docs/
    ├── PROJECT_CONTEXT.md
-   ├── CLAUDE.md
    ├── TASK_TRACKER_URL.md
    ├── requirements-*.md
    ├── specification-*.md
@@ -585,7 +584,7 @@ git push origin main
 2. ✅ 軽微 Issue で試す（1～2 個）
 3. ✅ 中規模タスクで本格運用開始
 4. 📊 月 1 回、ドキュメント・フローをレビュー
-5. 🔄 改善点があれば DEVELOPMENT_POLICY を更新
+5. 🔄 改善点があれば CLAUDE.md / dev-flow.md を更新
 
 ---
 

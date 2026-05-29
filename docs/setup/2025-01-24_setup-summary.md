@@ -30,10 +30,9 @@ thinkgrindai プロジェクトの開発体制を整備しました。
 
 **内容**:
 - Instructions: CLAUDE.md に従うよう記入
-- Knowledge: 3 つのファイルをアップロード
+- Knowledge: 2 つのファイルをアップロード
   - CLAUDE.md
   - PROJECT_CONTEXT.md
-  - CLAUDE.md
 
 **効果**: どのチャットを立てても、自動的にフローがガイドされる
 
