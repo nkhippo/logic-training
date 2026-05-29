@@ -73,4 +73,4 @@ jobs:
 
           gh pr comment "$PR_NUMBER" \
             --repo "$REPOSITORY" \
-            --body "AUTO: This PR has been approved by the reviewer. Please merge this PR if all checks pass."
+            --body "AUTO: このPRはレビュアーによって承認されました。すべてのチェックが通過していることを確認し、このPRをdevelopにマージしてください。マージ後、関連するIssueがCloseされていることを確認すること。"

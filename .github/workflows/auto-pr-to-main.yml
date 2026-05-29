@@ -11,7 +11,9 @@ jobs:
     if: |
       github.event.pull_request.merged == true &&
       (contains(github.event.pull_request.labels.*.name, 'feature') ||
-       contains(github.event.pull_request.labels.*.name, 'bug'))
+       contains(github.event.pull_request.labels.*.name, 'bug') ||
+       contains(github.event.pull_request.labels.*.name, 'docs') ||
+       contains(github.event.pull_request.labels.*.name, 'chore'))
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -34,19 +36,24 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          BODY_FILE=$(mktemp)
+          cat > "$BODY_FILE" <<'EOF'
+          ## 概要
+          develop ブランチの変更を main にマージします。
+
+          ## マージ前の確認
+          - [ ] Staging（develop）環境での動作確認が完了している
+          - [ ] CI が全て通過している
+
+          ## 承認方法
+          このコメントに `approve` / `ok` / `lgtm` / 👍 / ✅ のいずれかをコメントすると自動マージされます。
+          複数の feature を develop に積んでからまとめて承認することも可能です。
+          EOF
+
           gh pr create \
             --base main \
             --head develop \
             --title "release: develop → main（$(date +'%Y-%m-%d')）" \
             --label "release" \
-            --body "## 概要
-develop ブランチの変更を main にマージします。
-
-## マージ前の確認
-- [ ] Staging（develop）環境での動作確認が完了している
-- [ ] CI が全て通過している
-
-## 承認方法
-このコメントに \`approve\` / \`ok\` / \`lgtm\` / 👍 / ✅ のいずれかをコメントすると自動マージされます。
-複数の feature を develop に積んでからまとめて承認することも可能です。" \
+            --body-file "$BODY_FILE" \
             --repo ${{ github.repository }}
