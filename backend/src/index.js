@@ -98,7 +98,7 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
 ];
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 app.use((req, res, next) => {
   const origin = req.headers.origin;

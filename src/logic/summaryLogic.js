@@ -8,7 +8,7 @@ import {
   addIndustryConstraintToPrompts,
 } from '../domain/logic-domain.js';
 import { DEFAULT_S_VOLUME } from '../domain/constants.js';
-import { callClaude, safeJSON } from '../services/api.js';
+import { callClaude, callClaudeMsg, fileToBase64, safeJSON } from '../services/api.js';
 import { buildPersonaPromptNote } from '../services/persona.js';
 import { buildThemeInFromDocType } from './themeHelpers.js';
 
@@ -134,6 +134,51 @@ export async function gradeSummaryProblem(prob, userTexts) {
     context: { tab: 'summary', original_problem: prob.text || '' },
     markdownResponse: true,
   });
+}
+
+/**
+ * @param {object} prob
+ * @param {File} imageFile
+ * @returns {Promise<string>}
+ */
+export async function gradeSummaryProblemImage(prob, imageFile) {
+  const isEN = (prob.lang || 'ja') === 'en';
+  const sys = isEN
+    ? 'You are an expert educator. Read the submitted image and give markdown feedback in English.'
+    : 'あなたは教育専門家です。提出画像を読み取り、マークダウンで日本語フィードバックしてください。';
+  const p = {
+    ...prob,
+    questions: Array.isArray(prob.questions) ? prob.questions : [],
+  };
+  const questionList = p.questions
+    .map((q, i) =>
+      isEN
+        ? `Question ${q.id || i + 1}: ${q.question || ''} (target: ${q.targetChars || 50} chars)`
+        : `設問${q.id || i + 1}: ${q.question || ''}（目標: ${q.targetChars || 50}文字以内）`
+    )
+    .join('\n');
+  const prompt = isEN
+    ? `[Passage]\n${p.text || ''}\n\n[Questions]\n${questionList}\n\nRead the learner's answers from the attached image. If some text is unreadable, state that explicitly. Grade each question individually on accuracy, conciseness, expression, and logical selection, then provide improved examples within the character limits and overall feedback.`
+    : `【問題文】\n${p.text || ''}\n\n【設問】\n${questionList}\n\n添付画像から学習者の回答を読み取ってください。読み取れない箇所がある場合は、その旨を明記してください。各設問ごとに「内容の正確さ・簡潔さ・表現・論理的取捨選択」で評価し、文字数以内の改善例と総合講評を示してください。`;
+  const base64 = await fileToBase64(imageFile);
+  const feedback = await callClaudeMsg(
+    sys,
+    [
+      { type: 'text', text: prompt },
+      {
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: imageFile.type || 'image/jpeg',
+          data: base64,
+        },
+      },
+    ],
+    3750,
+    0.3
+  );
+  if (!feedback) throw new Error('Empty response');
+  return feedback;
 }
 
 export function buildSummaryPastEntry(prob) {
