@@ -63,11 +63,13 @@ thinkgrindai/
 
 ## docs/
 
-設計・運用ドキュメントの正本。詳細索引は [`docs/_index.md`](./_index.md) を参照。
+設計・運用ドキュメントの正本。詳細索引は [`docs/ai-context/FILE_MAP.md`](./ai-context/FILE_MAP.md) を参照。
 
 ```
 docs/
-├── _index.md                    # ドキュメント索引
+├── ai-context/
+│   ├── REPO.md                  # リポジトリ基本情報
+│   └── FILE_MAP.md              # AI向けファイルマップ
 ├── FILE_STRUCTURE.md            # このファイル（リポジトリ全体のファイル構成）
 ├── README.md
 ├── TERMS.md                     # プロジェクト用語定義
@@ -107,7 +109,7 @@ docs/
 │   │   ├── frontend-react.md
 │   │   └── frontend-api-integration.md
 │   ├── logic/
-│   │   ├── common.md
+│   │   ├── ui-shared.md
 │   │   ├── fill.md
 │   │   ├── summary.md
 │   │   ├── critique.md
@@ -366,7 +368,7 @@ scripts/
 
 | 知りたいこと | 参照先 |
 |---|---|
-| ドキュメントの内容・索引 | [`docs/_index.md`](./_index.md) |
+| ドキュメントの内容・索引 | [`docs/ai-context/FILE_MAP.md`](./ai-context/FILE_MAP.md) |
 | フロントエンドの設計意図 | [`docs/architecture.md`](./architecture.md) |
 | 開発フロー | [`docs/dev-flow.md`](./dev-flow.md) / `.cursor/rules/dev-flow.mdc` |
 | 用語の定義 | [`docs/TERMS.md`](./TERMS.md) |

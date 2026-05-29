@@ -78,10 +78,10 @@ export async function generateProblem(payload) {
 
 | 機能 | コンポーネント / スタイル | 仕様書 |
 |---|---|---|
-| テーマプリセット行（5列グリッド） | `PresetRow.jsx` + `.preset-row-theme` | `specification/logic/common.md §2` |
+| テーマプリセット行（5列グリッド） | `PresetRow.jsx` + `.preset-row-theme` | `specification/logic/ui-shared.md §2` |
 | 言語モーダル | `LangModal.jsx` + `guide-overlay` | `specification/common.md §3-1, §5` |
 | ペルソナモーダル | `PersonaModal.jsx` + `guide-overlay` | `specification/common.md §3-1, §4` |
-| 過去問詳細（設問表示） | `past/PastList.jsx` | `specification/logic/common.md §3` |
+| 過去問詳細（設問表示） | `past/PastList.jsx` | `specification/logic/ui-shared.md §3` |
 
 ---
 
