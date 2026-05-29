@@ -113,6 +113,7 @@ jobs:
       - name: Create or update bridge branch
         if: steps.gate.outputs.should_run == 'true'
         id: branch
+<<<<<<< HEAD
         run: |
           set -euo pipefail
 
@@ -170,12 +171,79 @@ jobs:
 
           echo "branch_name=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
           echo "file_path=${FILE_PATH}" >> "$GITHUB_OUTPUT"
+=======
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_wait_seconds: 30
+          timeout_minutes: 5
+          shell: bash
+          on_retry_command: echo "Retrying bridge branch creation..."
+          command: |
+            set -euo pipefail
+
+            EVENT_NAME="${GITHUB_EVENT_NAME}"
+            EVENT_ACTION=$(jq -r '.action // empty' "${GITHUB_EVENT_PATH}")
+            ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
+            ISSUE_URL="${{ steps.gate.outputs.issue_url }}"
+
+            ISSUE_API_JSON=$(gh api "repos/${REPO}/issues/${ISSUE_NUMBER}")
+            ISSUE_TITLE=$(echo "${ISSUE_API_JSON}" | jq -r '.title')
+            ISSUE_BODY=$(echo "${ISSUE_API_JSON}" | jq -r '.body')
+            COMMENT_BODY=$(jq -r '.comment.body // empty' "${GITHUB_EVENT_PATH}")
+
+            BRANCH_NAME="auto/issue-${ISSUE_NUMBER}"
+            FILE_PATH=".cursor/automation-bridge/issue-${ISSUE_NUMBER}.md"
+
+            git fetch origin "${BASE_BRANCH}"
+
+            if git ls-remote --heads origin "${BRANCH_NAME}" | grep -q "${BRANCH_NAME}"; then
+              git checkout -B "${BRANCH_NAME}" "origin/${BRANCH_NAME}"
+            else
+              git checkout -B "${BRANCH_NAME}" "origin/${BASE_BRANCH}"
+            fi
+
+            mkdir -p .cursor/automation-bridge
+
+            {
+              echo "# Issue Bridge Snapshot"
+              echo ""
+              echo "- Issue: #${ISSUE_NUMBER}"
+              echo "- Title: ${ISSUE_TITLE}"
+              echo "- URL: ${ISSUE_URL}"
+              echo "- Trigger: ${EVENT_NAME}/${EVENT_ACTION}"
+              echo "- Updated At (UTC): $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+              echo ""
+              echo "## Body"
+              echo ""
+              printf "%s\n" "${ISSUE_BODY}"
+              if [ -n "${COMMENT_BODY}" ]; then
+                echo ""
+                echo "## Auto Command"
+                echo ""
+                printf "%s\n" "${COMMENT_BODY}"
+              fi
+            } > "${FILE_PATH}"
+
+            git add "${FILE_PATH}"
+            if git diff --cached --quiet; then
+              echo "changed=false" >> "$GITHUB_OUTPUT"
+            else
+              git commit -m "chore: bridge issue #${ISSUE_NUMBER} to automation trigger"
+              git push -u origin "${BRANCH_NAME}"
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+            fi
+
+            echo "branch_name=${BRANCH_NAME}" >> "$GITHUB_OUTPUT"
+            echo "file_path=${FILE_PATH}" >> "$GITHUB_OUTPUT"
+>>>>>>> origin/develop
 
       - name: Create or find PR
         if: steps.gate.outputs.should_run == 'true'
         id: pr
         env:
           SNAPSHOT_FILE: ${{ steps.branch.outputs.file_path }}
+<<<<<<< HEAD
         run: |
           set -euo pipefail
 
@@ -202,12 +270,29 @@ jobs:
               --label "chore"
 
             PR_NUMBER=$(gh pr list \
+=======
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_wait_seconds: 30
+          timeout_minutes: 5
+          shell: bash
+          on_retry_command: echo "Retrying PR creation..."
+          command: |
+            set -euo pipefail
+
+            ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
+            ISSUE_URL="${{ steps.gate.outputs.issue_url }}"
+            BRANCH_NAME="${{ steps.branch.outputs.branch_name }}"
+            EXISTING_PR=$(gh pr list \
+>>>>>>> origin/develop
               --repo "${REPO}" \
               --base "${BASE_BRANCH}" \
               --head "${BRANCH_NAME}" \
               --state open \
               --json number \
               --jq '.[0].number')
+<<<<<<< HEAD
           else
             PR_NUMBER="${EXISTING_PR}"
           fi
@@ -227,3 +312,59 @@ jobs:
           gh pr comment "${PR_NUMBER}" \
             --repo "${REPO}" \
             --body "${COMMENT_BODY}"
+=======
+
+            if [ -z "${EXISTING_PR}" ]; then
+              PR_BODY="Bridge PR auto-created from issue #${ISSUE_NUMBER}. Issue URL: ${ISSUE_URL}. Snapshot file: ${SNAPSHOT_FILE}. Do not merge this PR manually unless you intentionally want to keep the snapshot changes."
+
+              gh pr create \
+                --repo "${REPO}" \
+                --base "${BASE_BRANCH}" \
+                --head "${BRANCH_NAME}" \
+                --title "chore: auto bridge for issue #${ISSUE_NUMBER}" \
+                --body "${PR_BODY}" \
+                --label "chore"
+
+              PR_NUMBER=$(gh pr list \
+                --repo "${REPO}" \
+                --base "${BASE_BRANCH}" \
+                --head "${BRANCH_NAME}" \
+                --state open \
+                --json number \
+                --jq '.[0].number')
+            else
+              PR_NUMBER="${EXISTING_PR}"
+            fi
+
+            echo "pr_number=${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - name: Comment AUTO trigger on PR
+        if: steps.gate.outputs.should_run == 'true'
+        uses: nick-fields/retry@v3
+        with:
+          max_attempts: 3
+          retry_wait_seconds: 30
+          timeout_minutes: 5
+          shell: bash
+          on_retry_command: echo "Retrying AUTO trigger comment..."
+          command: |
+            set -euo pipefail
+
+            ISSUE_NUMBER="${{ steps.gate.outputs.issue_number }}"
+            PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+            MARKER="<!-- issue-auto-bridge:${ISSUE_NUMBER}:${GITHUB_RUN_ID} -->"
+            COMMENT_BODY="AUTO: Issue #${ISSUE_NUMBER} を処理してください。 ${MARKER} 要件: Issue本文を正本として読み、最小変更で実装し、不明点はPRへ質問コメント、修正後はこのPRへcommit。"
+
+            gh pr comment "${PR_NUMBER}" \
+              --repo "${REPO}" \
+              --body "${COMMENT_BODY}"
+
+      - name: Notify bridge retry failure
+        if: failure() && steps.gate.outputs.should_run == 'true'
+        run: |
+          set -euo pipefail
+
+          gh issue comment "${{ steps.gate.outputs.issue_number }}" \
+            --repo "${REPO}" \
+            --body $'⚠️ Bridge自動リトライが3回失敗しました。手動での確認が必要です。\n\n再実行する場合はこのIssueに `/auto` とコメントしてください。'
+>>>>>>> origin/develop
