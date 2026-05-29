@@ -1,0 +1,76 @@
+name: Approval Comment Automation Bridge
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  pull-requests: write
+  issues: read
+
+jobs:
+  approval-comment-bridge:
+    if: |
+      github.event.issue.pull_request != null &&
+      github.event.comment.user.login != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Convert reviewer approval comment to AUTO command
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          PR_NUMBER: ${{ github.event.issue.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          normalized_comment="$(
+            python3 - <<'PY'
+          import os
+
+          print(os.environ["COMMENT_BODY"].strip().lower())
+          PY
+          )"
+
+          case "$normalized_comment" in
+            ok|lgtm|approve|"ship it")
+              ;;
+            *)
+              echo "Comment is not an approval command. Skipping."
+              exit 0
+              ;;
+          esac
+
+          head_branch="$(
+            gh pr view "$PR_NUMBER" \
+              --repo "$REPOSITORY" \
+              --json headRefName \
+              --jq '.headRefName'
+          )"
+
+          case "$head_branch" in
+            auto/issue-*)
+              echo "Bridge PR (auto/issue-*). Skipping AUTO conversion."
+              exit 0
+              ;;
+          esac
+
+          base_branch="$(
+            gh pr view "$PR_NUMBER" \
+              --repo "$REPOSITORY" \
+              --json baseRefName \
+              --jq '.baseRefName'
+          )"
+
+          case "$base_branch" in
+            develop|main)
+              ;;
+            *)
+              echo "Base branch '$base_branch' is not eligible. Skipping."
+              exit 0
+              ;;
+          esac
+
+          gh pr comment "$PR_NUMBER" \
+            --repo "$REPOSITORY" \
+            --body "AUTO: This PR has been approved by the reviewer. Please merge this PR if all checks pass."
