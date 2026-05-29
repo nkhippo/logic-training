@@ -358,7 +358,7 @@ Naoya が実施:
 Naoya が実施:
 - [ ] 今月のベロシティ（完了数）を集計
 - [ ] 次月の目標を設定
-- [ ] DEVELOPMENT_POLICY に問題がないか確認
+- [ ] CLAUDE.md / dev-flow.md に問題がないか確認
 
 ---
 

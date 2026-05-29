@@ -55,7 +55,6 @@ docs/
 ├── setup/                 ← 環境構築ガイド
 ├── CLAUDE_AI_MCP_SETUP.md ← claude.ai カスタムコネクタ OAuth 設定手順（Issue #85）
 ├── PROJECT_CONTEXT.md     ← ビジョン・ロードマップ
-├── DEVELOPMENT_POLICY.md  ← 開発フロー・タスク分類・運用ルール
 ├── architecture.md        ← フロントエンド構成・ディレクトリ設計
 ├── gas-column-headers.md  ← GAS シートのカラム定義（コピペ用）
 ├── dev-flow.md            ← 開発フロー詳細

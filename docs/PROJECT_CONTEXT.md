@@ -214,7 +214,6 @@ Level 5: 高度（新しい型を作る）
 ```
 docs/
 ├── PROJECT_CONTEXT.md          ← このファイル（背景・ビジョン）
-├── DEVELOPMENT_POLICY.md       ← 開発ルール・方針
 ├── requirements-logic.md       ← Logic Training 要件定義
 ├── requirements-thinking.md    ← Thinking Training 要件定義
 ├── specification-logic.md      ← Logic Training 仕様書

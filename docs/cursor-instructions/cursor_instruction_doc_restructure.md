@@ -113,7 +113,6 @@ docs/
 ├── cursor-instructions/
 ├── setup/
 ├── PROJECT_CONTEXT.md
-├── DEVELOPMENT_POLICY.md
 ├── architecture.md
 ├── gas-column-headers.md
 ├── dev-flow.md

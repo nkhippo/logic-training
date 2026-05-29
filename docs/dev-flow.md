@@ -125,7 +125,7 @@ STEP 8: develop マージ後、GitHub Actions が develop → main の PR を自
 STEP 9: Naoya が同様に承認コメント → main マージ → 本番自動デプロイ
 ```
 
-詳細な担当分担・ツール責務は `docs/DEVELOPMENT_POLICY.md` を参照。
+詳細な担当分担・ツール責務は `CLAUDE.md` を参照。
 
 Issue 本文に含めるべき項目は `CLAUDE.md` の「Cursor 指示書の品質基準」を参照。
 
