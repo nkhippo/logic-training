@@ -4,6 +4,7 @@ import { useTranslation } from '../../hooks/useTranslation.js';
 import { usePersona } from '../../hooks/usePersona.js';
 import PersonaModal from '../shared/PersonaModal.jsx';
 import LangModal from '../shared/LangModal.jsx';
+import GuideModal from '../shared/GuideModal.jsx';
 
 /**
  * @param {{ page: 'logic'|'thinking' }} props
@@ -14,6 +15,7 @@ export default function Header({ page }) {
   const { personas } = usePersona();
   const [showPersona, setShowPersona] = useState(false);
   const [showLang, setShowLang] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
   const titleKey = page === 'logic' ? 'appTitle' : 'thinkingAppTitle';
   const otherPath = page === 'logic' ? '/thinking' : '/logic';
   const otherLabel = page === 'logic' ? t('linkToThinking') : t('thinkingLinkToLogic');
@@ -31,6 +33,15 @@ export default function Header({ page }) {
           </nav>
         </div>
         <div className="app-header-actions">
+          {page === 'logic' && (
+            <button
+              type="button"
+              className="header-action-btn no-print"
+              onClick={() => setShowGuide(true)}
+            >
+              {t('guideBtn')}
+            </button>
+          )}
           <button
             type="button"
             className="header-action-btn no-print"
@@ -46,6 +57,7 @@ export default function Header({ page }) {
           </button>
         </div>
       </div>
+      {showGuide && <GuideModal onClose={() => setShowGuide(false)} />}
       {showPersona && <PersonaModal onClose={() => setShowPersona(false)} />}
       {showLang && <LangModal onClose={() => setShowLang(false)} />}
     </>
