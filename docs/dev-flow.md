@@ -1,8 +1,8 @@
 # 論理トレーニングアプリ 開発フロー
 
-**バージョン**: 1.1  
+**バージョン**: 1.2  
 **作成日**: 2026-05-20  
-**更新日**: 2026-05-20  
+**更新日**: 2026-05-28  
 
 ---
 
@@ -75,50 +75,59 @@ git checkout develop && git pull origin main && git push origin develop
 | **Cursor でローカル確認** | `cp .env.example .env.local` → `VITE_API_BASE_URL` に Railway URL を記入。`npm run dev` で起動 |
 | **Vercel 本番** | Vercel Environment Variables に `VITE_API_BASE_URL` を設定。FE に Claude API キーは不要。Claude キーは Railway Variables のみ |
 
+### Remote MCP（claude.ai カスタムコネクタ）運用
+
+| 項目 | ルール |
+|---|---|
+| 接続URL | `https://thinkgrindai-production.up.railway.app/mcp` |
+| OAuth callback URL | `https://thinkgrindai-production.up.railway.app/oauth/github/callback` |
+| 必須環境変数 | `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GITHUB_OWNER`, `GITHUB_REPO`, `MCP_API_BASE_URL` |
+| 本番反映 | Railway は **Deploy Latest Commit** を使用（Redeploy は同一コミット再実行） |
+| 連携確認 | `/.well-known/oauth-protected-resource/mcp` と `POST /mcp (initialize)` を curl で確認 |
+
+#### Remote MCP 障害時の切り分け
+
+1. `GET /.well-known/oauth-protected-resource/mcp` が 200 か
+2. `POST /mcp` の `initialize` が 200 か
+3. Railway HTTP Logs に `@path:/token` を指定し、OAuth エラーを確認
+4. GitHub OAuth App の callback URL が一致しているか確認
+
 ---
 
-## 推奨開発フロー
+## 推奨開発フロー（GitHub Issue ベース・現行）
 
 ```
-STEP 1: Claudeで仕様を議論・決定
+STEP 1: 要件議論（Claude × Naoya）
          ↓
-STEP 2: Claudeで仕様書（specification.md）の変更差分を作成
+STEP 2: Claude が Issue を直接起票（MCP カスタムコネクタ経由）
+        または Issue 本文草稿（.md）を出力して Naoya がコピペ
+        タイプCの場合は docs/requirements/・docs/specification/ も作成
          ↓
-STEP 3: Cursorで仕様書を更新（Claudeの差分を適用）
+STEP 3: Issue に ready-for-cursor ラベルが付与される
+        （feature.yml の自動付与 or Naoya が手動付与）
          ↓
-STEP 4: Claudeで「Cursor作業指示プロンプト」を生成
+STEP 4: Cursor が Issue を検知・実装（feature/* ブランチ）
+        ※ Mac 起動・Cursor 起動中の場合のみ自動検知（最大5分）
          ↓
-STEP 5: CursorにSTEP4のプロンプト + 仕様書を渡してコード修正
+STEP 5: CI が npm test + build を実行
          ↓
-STEP 6: 動作確認 → git push → Vercel 自動デプロイ
+STEP 6: PR 作成（base: develop）→ waiting-for-review ラベル自動付与
+        Cursor は不明点を PR Comments に書いて Naoya の回答を待つ
+         ↓
+STEP 7: Naoya が iPhone/PC で動作確認
+        ・承認: PR Comments に「approve」「OK」「lgtm」「👍」「✅」のいずれか
+          → GitHub Actions が自動マージ → Vercel Preview / Railway Staging 反映
+        ・修正依頼: PR Comments に「修正依頼: ○○」「要修正: ○○」「change request: ○○」のいずれか
+          → Cursor が再実装して同 PR に追加コミット
+         ↓
+STEP 8: develop マージ後、GitHub Actions が develop → main の PR を自動作成
+         ↓
+STEP 9: Naoya が同様に承認コメント → main マージ → 本番自動デプロイ
 ```
 
----
+詳細な担当分担・ツール責務は `docs/DEVELOPMENT_POLICY.md` を参照。
 
-## Cursorへの作業指示プロンプト テンプレート
-
-```
-## 作業指示
-
-### 参照ドキュメント
-- docs/specification.md（仕様書）
-- docs/requirements.md（要件定義書）
-
-### 修正対象ファイル
-- （対象ファイルを明記）
-
-### 変更内容
-（変更内容を具体的に記述）
-
-### 制約事項
-- 仕様書に記載された定数・設定値は変更しないこと
-- 既存の他タブの動作を壊さないこと
-- i18n（ja/en 両対応）を維持すること
-- バージョンを X.Y → X.(Y+1) に更新すること
-
-### 完了条件
-- （確認すべき動作を箇条書きで記載）
-```
+Issue 本文に含めるべき項目は `CLAUDE.md` の「Cursor 指示書の品質基準」を参照。
 
 ---
 
