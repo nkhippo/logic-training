@@ -8,7 +8,7 @@ import ProblemMeta from '../../shared/ProblemMeta.jsx';
 import { validateBeforeGen } from '../../../logic/themeHelpers.js';
 import { generateFillProblem, gradeFillProblem, buildFillPastEntry } from '../../../logic/fillLogic.js';
 import { addPastEntry } from '../../../services/pastStorage.js';
-import { esc, formatFeedback100 } from '../../../utils/markdown.js';
+import { esc, formatFillFeedback100 } from '../../../utils/markdown.js';
 
 /**
  * @returns {JSX.Element}
@@ -118,7 +118,7 @@ export default function FillTab() {
             <div
               className="feedback-box"
               style={{ marginTop: '1rem' }}
-              dangerouslySetInnerHTML={{ __html: formatFeedback100(prob.feedback, prob.lang) }}
+              dangerouslySetInnerHTML={{ __html: formatFillFeedback100(prob.feedback, prob.lang) }}
             />
           )}
         </div>
