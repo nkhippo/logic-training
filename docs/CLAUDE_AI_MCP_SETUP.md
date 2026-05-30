@@ -53,6 +53,31 @@ Settings → Connectors → **Add connector**
 
 Claude が直接 GitHub に Issue を作成します。
 
+### 利用可能な MCP ツール（主要）
+
+| ツール名 | 機能 |
+|---|---|
+| `create_issue` | Issue 新規作成 |
+| `update_issue` | Issue タイトル・本文の更新（起票後の修正・完了定義更新に使用） |
+| `add_issue_comment` | Issue にコメント追加 |
+| `list_issues` | Issue 一覧取得 |
+| `get_issue_comments` | Issue コメント取得 |
+| `create_pull_request` | PR 作成 |
+| 等 | `backend/src/mcp/protocol-handler.js` の `TOOL_DEFINITIONS` を参照 |
+
+### Step 5: Issue 更新テスト（update_issue）
+
+起票後に Issue 本文を修正する場合：
+
+```
+Issue #XXX の本文を以下に更新してください：
+（新しい Markdown 本文）
+```
+
+Claude が `update_issue` ツール（`PATCH /repos/{owner}/{repo}/issues/{issue_number}`）を呼び出し、GitHub 上の Issue 本文が置き換わります。
+
+> `title` と `body` は任意パラメータですが、**少なくとも一方**は指定が必要です。ラベル変更・クローズは本ツールの対象外です。
+
 ## トラブルシューティング
 
 ### 「Could not register with connector's sign-in service」エラー

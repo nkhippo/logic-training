@@ -113,6 +113,7 @@ backend/src/
 | ツール名 | 内容 |
 |---|---|
 | `create_issue` | thinkgrindai リポジトリに Issue 作成 |
+| `update_issue` | 指定 Issue のタイトル・本文を更新 |
 | `list_issues` | thinkgrindai リポジトリの Issue 一覧取得 |
 
 ---
