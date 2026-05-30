@@ -35,44 +35,10 @@ jobs:
             echo "action=none" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Resolve PR head branch
-        if: |
-          github.event.comment.user.login == 'nkhippo' &&
-          steps.intent.outputs.action == 'approve'
-        id: pr_meta
-        run: |
-          PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
-          HEAD_REF=$(gh pr view "$PR_NUMBER" \
-            --repo "${{ github.repository }}" \
-            --json headRefName \
-            --jq '.headRefName')
-          echo "head_ref=${HEAD_REF}" >> "$GITHUB_OUTPUT"
-          if [[ "${HEAD_REF}" == auto/issue-* ]]; then
-            echo "is_bridge_pr=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "is_bridge_pr=false" >> "$GITHUB_OUTPUT"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Skip merge for bridge PR (auto/issue-*)
-        if: |
-          github.event.comment.user.login == 'nkhippo' &&
-          steps.intent.outputs.action == 'approve' &&
-          steps.pr_meta.outputs.is_bridge_pr == 'true'
-        run: |
-          PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
-          gh pr comment "$PR_NUMBER" \
-            --repo "${{ github.repository }}" \
-            --body "⏭️ Bridge PR（\`auto/issue-*\`）のため、\`ok\` / \`approve\` による自動マージをスキップしました。実装コミットが付いた PR をレビューしてマージしてください。"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Merge on approve
         if: |
           github.event.comment.user.login == 'nkhippo' &&
-          steps.intent.outputs.action == 'approve' &&
-          steps.pr_meta.outputs.is_bridge_pr != 'true'
+          steps.intent.outputs.action == 'approve'
         run: |
           PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
           gh pr merge "$PR_NUMBER" \
