@@ -546,7 +546,7 @@ Cursor は PR 作成前に以下を確認すること：
 
 **PR 本文**
 - [ ] `Closes #XXX` を記載したか
-- [ ] base ブランチが正しいか（docs/chore → main、feature/bug → develop）
+- [ ] base ブランチが正しいか（全ラベル develop 経由）
 
 ---
 
