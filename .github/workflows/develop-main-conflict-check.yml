@@ -1,0 +1,90 @@
+name: Develop to Main Conflict Check
+
+on:
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  check-conflicts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect merge conflicts with main
+        id: conflict
+        run: |
+          git fetch origin main develop
+          git checkout -B _merge-check origin/develop
+
+          set +e
+          git merge origin/main --no-commit --no-ff >/dev/null 2>&1
+          merge_exit=$?
+          set -e
+
+          if [ "$merge_exit" -ne 0 ]; then
+            echo "has_conflict=true" >> "$GITHUB_OUTPUT"
+            git diff --name-only --diff-filter=U | sort -u | tee conflict-files.txt
+            git merge --abort >/dev/null 2>&1 || git reset --hard origin/develop
+          else
+            echo "has_conflict=false" >> "$GITHUB_OUTPUT"
+            git reset --hard origin/develop
+          fi
+
+      - name: Skip when no conflicts
+        if: steps.conflict.outputs.has_conflict != 'true'
+        run: echo "No conflicts between develop and main."
+
+      - name: Ensure develop to main PR and notify conflicts
+        if: steps.conflict.outputs.has_conflict == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          FILES=$(sed 's/^/- /' conflict-files.txt)
+          TIMESTAMP=$(date -u +%Y%m%d-%H%M%S)
+          BODY=$(cat <<EOF
+          ## develop → main コンフリクト検知
+
+          \`develop\` ブランチが \`main\` とコンフリクトしています。手動解消が必要です。
+
+          ### コンフリクトが発生しているファイル
+          ${FILES}
+
+          ---
+          _自動検知: develop-main-conflict-check.yml (${TIMESTAMP} UTC)_
+          EOF
+          )
+
+          EXISTING=$(gh pr list \
+            --base main \
+            --head develop \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -z "$EXISTING" ]; then
+            gh pr create \
+              --base main \
+              --head develop \
+              --title "chore: develop → main コンフリクト解消" \
+              --body "$BODY" \
+              --repo "${{ github.repository }}"
+            EXISTING=$(gh pr list \
+              --base main \
+              --head develop \
+              --state open \
+              --json number \
+              --jq '.[0].number')
+          else
+            gh pr comment "$EXISTING" \
+              --body "$BODY" \
+              --repo "${{ github.repository }}"
+          fi
+
+          echo "Notified PR #${EXISTING} about develop/main conflicts."

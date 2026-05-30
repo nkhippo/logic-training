@@ -35,6 +35,19 @@ jobs:
             echo "action=none" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Remove needs-review on approve
+        if: |
+          github.event.comment.user.login == 'nkhippo' &&
+          steps.intent.outputs.action == 'approve'
+        run: |
+          PR_NUMBER=$(jq -r '.issue.number' "$GITHUB_EVENT_PATH")
+          gh pr edit "$PR_NUMBER" \
+            --remove-label "needs-review" \
+            --remove-label "waiting-for-review" \
+            --repo ${{ github.repository }} 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Merge on approve
         if: |
           github.event.comment.user.login == 'nkhippo' &&
@@ -57,6 +70,7 @@ jobs:
           gh pr edit "$PR_NUMBER" \
             --add-label "revision-requested" \
             --remove-label "waiting-for-review" \
+            --remove-label "needs-review" \
             --repo ${{ github.repository }}
           gh pr comment "$PR_NUMBER" \
             --body "🔄 修正依頼を受け付けました。Cursor が対応します。" \

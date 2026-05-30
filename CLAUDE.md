@@ -774,6 +774,17 @@ PR 本文の必須フォーマットは **`.cursor/rules/dev-flow.mdc`「## PR D
 ⑥ Naoya が PR をレビューし、`ok` 等で承認 → 自動マージ（または手動マージ）
 ```
 
+### PR レビューフロー（needs-review ラベル）
+
+| イベント | ラベル変化 |
+|---|---|
+| Cursor が PR を作成 / 追加 push | `needs-review` が自動付与される |
+| Naoya が PR をマージ | `needs-review` が自動除去される |
+| Naoya が承認コメント（ok / lgtm / ✅）| `needs-review` が自動除去される |
+
+> Naoya は GitHub の PR 一覧で `label:needs-review` フィルターを使うとレビュー待ち PR のみを表示できる。
+> 付与対象は Bot / github-actions 作成 PR のみ（Naoya 本人作成 PR には付与しない）。
+
 ### Bridge 方式廃止について（2026-05-30）
 
 旧 Bridge workflow（`issue-to-automation-bridge.yml` / `approval-comment-automation-bridge.yml`）は廃止済み。  
