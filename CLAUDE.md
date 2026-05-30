@@ -600,13 +600,13 @@ Closes #XXX
 **現在の運用フロー（手動ポーリング期）**
 
 ```
-① Naoya が GitHub Issue を作成（または Comment を書く）
-② Naoya が Cursor デスクトップアプリに
-   「このリンクで返信しました → <Issue/Comment URL>」と伝える
-③ Cursor が該当 URL を読んで作業・返信
-④ Cursor が Issue Comment に作業結果・懸念・質問を書く
-⑤ Cursor が Naoya に
-   「Comment に書きました → <Comment URL>」と伝える
+① Naoya が GitHub Issue を作成し、完了定義・実装範囲などを記載して
+   `ready-for-cursor` ラベルを付与する
+② Cursor Automation が Label change トリガーで Issue を検知し、起動する
+③ Cursor が Issue 本文を正本として読み、実装ブランチを作成して実装する
+④ Cursor が PR を作成する（base ブランチは Issue ラベルに従う）
+⑤ Cursor が Issue Comment に作業結果・懸念・質問を書く
+⑥ Naoya が PR をレビューし、`ok` 等で承認 → 自動マージ（または手動マージ）
 ```
 
 **将来の運用フロー（自動ポーリング期）**
