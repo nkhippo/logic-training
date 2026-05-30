@@ -69,6 +69,18 @@ jobs:
                 });
                 core.info(`Closed issue #${issueNumber}`);
               } catch (error) {
-                core.warning(`Skipped #${issueNumber}: ${error.message}`);
+                core.warning(`Skipped closing #${issueNumber}: ${error.message}`);
+              }
+
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: "ready-for-cursor"
+                });
+                core.info(`Removed ready-for-cursor from #${issueNumber}`);
+              } catch (error) {
+                core.info(`Label not found on #${issueNumber}: ${error.message}`);
               }
             }
