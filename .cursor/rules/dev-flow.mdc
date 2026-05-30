@@ -11,6 +11,7 @@ alwaysApply: true
 - 全体フロー・分割判断・タイプ判定・base ブランチ判断は `CLAUDE.md` を参照
 - ドキュメント編集・要件定義書・仕様書の品質基準は `CLAUDE.md` の「## 品質基準」セクションを参照
 - Bug 対応の根本原因記録は `docs/bug-knowledge.md` を参照
+- Bug Issue テンプレは `.github/ISSUE_TEMPLATE/bug.md` を参照
 
 > 矛盾を見つけた場合は **`CLAUDE.md` が正**。Issue Comment で Naoya に報告すること。
 
@@ -295,6 +296,20 @@ Closes #XXX
 - Issue: #XXXX
 - 仕様: Issue 本文（タイプ C は docs/ も参照）
 ```
+
+### Bug Issue の場合の追加対応
+
+ラベルに `bug` が含まれる Issue を完了させる場合、PR マージ後に以下を**必ず**実施する：
+
+1. **Issue 本文の「## 根本原因記録」テーブル**を記入する
+   - 直接原因 / 根本原因 / 根本原因カテゴリ（6 カテゴリから選択）/ 再発防止策
+   - カテゴリ定義は `docs/bug-knowledge.md` を参照
+2. **`docs/bug-knowledge.md` の末尾に同内容を追記**する
+   - フォーマットは `docs/bug-knowledge.md`「## 記録フォーマット（Cursor用）」を参照
+   - ファイル末尾の「<!-- 新しい記録は末尾に追加する -->」コメントの後に追記
+3. 1〜2 を含めた追加コミットを **同一 PR ブランチ**にプッシュする（PR がまだマージされていない場合）、または **新規 docs PR**を作成する（PR が既にマージされている場合）
+
+> ⚠️ 根本原因が PR マージ時点で不明な場合は、「調査中」と記載して別 Issue を立てる。調査完了後に bug-knowledge.md を更新する。
 
 ---
 
