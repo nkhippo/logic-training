@@ -597,23 +597,25 @@ Closes #XXX
 - Cursor から Naoya への質問・報告・持ち帰り資料は **Issue Comment** に書く
 - Cursor デスクトップアプリは「GitHub の URL を伝える中継手段」として使う
 
-**現在の運用フロー（手動ポーリング期）**
+**現在の運用フロー（Webhook 自動起動）**
 
 ```
 ① Naoya が GitHub Issue を作成し、完了定義・実装範囲などを記載して
    `ready-for-cursor` ラベルを付与する
-② Cursor Automation が Label change トリガーで Issue を検知し、起動する
+② GitHub Actions（`trigger-cursor-on-ready.yml`）が Cursor Automation の
+   Webhook へ Issue 番号・本文などを POST し、Cursor が起動する
 ③ Cursor が Issue 本文を正本として読み、実装ブランチを作成して実装する
 ④ Cursor が PR を作成する（base ブランチは Issue ラベルに従う）
 ⑤ Cursor が Issue Comment に作業結果・懸念・質問を書く
 ⑥ Naoya が PR をレビューし、`ok` 等で承認 → 自動マージ（または手動マージ）
 ```
 
-**将来の運用フロー（自動ポーリング期）**
+**将来の運用フロー（Cursor ネイティブ対応時）**
 
 ```
-① Naoya が GitHub Issue を作成（または Comment を書く）
-② Cursor が GitHub をポーリングして自動検知
+① Naoya が GitHub Issue を作成し、`ready-for-cursor` ラベルを付与する
+② Cursor Automation が Issue のラベル変更をネイティブに検知して起動する
+   （GitHub Actions による Webhook POST は不要になる想定）
 ③ Cursor が Issue Comment に作業結果・懸念・質問を書く
 ④ Naoya が GitHub で確認・返信
 ```
