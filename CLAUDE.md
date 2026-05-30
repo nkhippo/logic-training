@@ -5,6 +5,71 @@
 
 ---
 
+## ルール変更時のセルフチェック手順
+
+CLAUDE.md / dev-flow.mdc / bug-knowledge.md / bug.md / `.github/ISSUE_TEMPLATE/*` / `.cursor/rules/*` を編集する際は、Claude が**必ず以下の手順を踏む**。施策追加時の先祖帰り・矛盾・重複を防ぐためのセルフチェック。
+
+### Step 1: 既存記述の網羅確認（grep）
+
+変更する概念・キーワードが**他の場所にも書かれていないか**を必ず確認する：
+
+```bash
+# 例：base ブランチ判断を変更する場合
+grep -nE 'base|develop|main' CLAUDE.md .cursor/rules/dev-flow.mdc docs/*.md .github/ISSUE_TEMPLATE/*.md
+
+# 例：PR 本文形式を変更する場合
+grep -nE 'PR 本文|PR Description|## 変更内容|## 実装内容' CLAUDE.md .cursor/rules/dev-flow.mdc
+
+# 例：Obsidian 関連を変更する場合
+grep -nE 'Obsidian|decisions/|implementations/' CLAUDE.md .cursor/rules/dev-flow.mdc
+```
+
+ヒットした箇所**すべて**について、以下のいずれかを判断する：
+
+| パターン | 対応 |
+|---|---|
+| 完全に同一内容で重複している | 1 箇所に正を残し、他は「→ 〇〇を参照」に置換 |
+| 内容が微妙に異なる（矛盾している） | どちらが「正」かを決め、矛盾を解消 |
+| 古い記述（旧構成・旧運用）が残っている | 削除または更新 |
+| 別概念だが用語が同じで紛らわしい | 別用語に変更、または明示的に「別概念」と注記 |
+
+### Step 2: 連動更新の確認
+
+変更が以下のファイルに**連動更新を必要とするか**を確認する：
+
+- `CLAUDE.md` を変更したか？ → `.cursor/rules/dev-flow.mdc` を見るべきか確認
+- `.cursor/rules/dev-flow.mdc` を変更したか？ → `CLAUDE.md` 側に逆参照が必要か確認
+- 開発フロー（Step 1〜7 / 事前確認 0〜3 / Step 3-a〜3-c）に影響するか？ → 番号体系の整合性を確認
+- Bug Issue 運用に影響するか？ → `docs/bug-knowledge.md` / `.github/ISSUE_TEMPLATE/bug.md` を確認
+- スキル（`cursor-instruction-writer/SKILL.md`）に影響するか？ → スキル更新を別 Issue で起票するか判断
+
+### Step 3: 変更後の grep 再確認
+
+変更完了後、もう一度 grep して以下を確認する：
+
+- 旧記述が**完全に**消えているか（部分的な残存がないか）
+- 新記述が**意図した箇所すべて**に反映されているか
+- 矛盾するペアが存在しないか
+
+### Step 4: Obsidian / 索引の更新確認
+
+変更が以下に影響するか確認：
+
+- `docs/ai-context/FILE_MAP.md` の索引更新が必要か
+- Obsidian の `decisions/` または `confirmed-decisions/` に記録すべきか
+- 月次 Opus レビュー（`docs/bug-knowledge.md`）で取り上げるべき構造的問題か
+
+### Step 5: Issue 起票時の追記
+
+ルール変更を含む Issue を起票する際、以下を**必ず**Issue 本文に含める：
+
+- 「変更前」「変更後」の対比表または diff 例
+- grep コマンドとその出力（網羅確認の証跡）
+- 連動更新が必要な他ファイルへの参照
+- 既存記述の削除箇所（あれば明示）
+
+> ⚠️ このセルフチェックを省略してルール変更を起票した場合、レビュー時に**Re-open または差し戻し**となる。
+
 ## プロジェクト概要
 
 - **名称**: thinkgrindai
