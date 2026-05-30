@@ -610,6 +610,12 @@ Closes #XXX
 ⑥ Naoya が PR をレビューし、`ok` 等で承認 → 自動マージ（または手動マージ）
 ```
 
+### Bridge 方式廃止について（2026-05-30）
+
+旧 Bridge workflow（`issue-to-automation-bridge.yml` / `approval-comment-automation-bridge.yml`）は廃止済み。  
+Cursor の自動起動は `trigger-cursor-on-ready.yml`（Webhook 方式）に統一。  
+`.cursor/automation-bridge/` ディレクトリは参照不要（Issue 本文を正本として読む）。
+
 **将来の運用フロー（Cursor ネイティブ対応時）**
 
 ```
