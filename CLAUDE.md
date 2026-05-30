@@ -784,6 +784,7 @@ PR 本文の必須フォーマットは **`.cursor/rules/dev-flow.mdc`「## PR D
 
 > Naoya は GitHub の PR 一覧で `label:needs-review` フィルターを使うとレビュー待ち PR のみを表示できる。
 > 付与対象は Bot / github-actions 作成 PR のみ（Naoya 本人作成 PR には付与しない）。
+> PR マージ後の head ブランチ自動削除・Cursor トラブル時の対処は `docs/dev-flow-runbook.md` を参照。
 
 ### Bridge 方式廃止について（2026-05-30）
 
