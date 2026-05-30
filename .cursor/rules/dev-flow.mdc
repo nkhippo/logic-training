@@ -292,7 +292,7 @@ Closes #XXX
 2. 問題なければ【GitHub】Merge
 3. Merge 後:
    【Google Sheets】REQ-XXX のステータスを「完了」に変更 / 実完了日を記入（タイプ C）
-   【Obsidian】Issue 本文の「Obsidian記録」セクションに従い decisions/ に保存
+   （Obsidian 実装記録は PR 作成時に Cursor が `implementations/` へ自動保存済み）
 
 🔗 関連:
 - Issue: #XXXX
@@ -327,17 +327,37 @@ Closes #XXX
 
 ---
 
-# Obsidian 同期タスク自動リマインド
+# Obsidian 同期タスク（PR 作成時に Cursor が自動実行）
 
-## あなたが GitHub に commit・push するたびに
+## あなたが PR を作成するたびに
 
-以下の「Obsidian 同期タスク」メッセージを **必ず Naoya への返答末尾** に含め、可能なら **GitHub Issue コメント** または **ターミナル** でも提示してください。
+PR 作成直後に、以下を自動で実行してください：
+
+1. ローカル Obsidian ディレクトリへのアクセス可否を確認
+   - 対象: `/Users/naoya.k/Documents/Obsidian/thinkgrindai/implementations/`
+2. **アクセス可能な場合**：
+   - `YYYY-MM-DD-<topic>.md` を新規作成
+   - Issue 本文「## Obsidian記録」のテンプレに従い内容を記入
+3. **アクセス不可の場合**：
+   - Issue Comment に保存予定内容を「🔄 Obsidian 同期タスク」として投稿
+   - Naoya が手動で `implementations/` に保存する
+
+## 保存内容テンプレ
+
+`CLAUDE.md`「## Obsidian 同期ルール」内「Cursor が保存する内容のテンプレ（実装記録）」と同一。
+
+> ⚠️ 旧運用（パターン 1 / パターン 2 / post-push フック等）は本セクションに統合された。
+> `scripts/obsidian-sync-reminder.sh` は引き続き使ってよいが、PR 作成時の自動保存が主、スクリプトは補助。
 
 初回セットアップ: `bash scripts/install-git-hooks.sh`（post-push フック有効化）
 
 push 後の手動実行: `bash scripts/obsidian-sync-reminder.sh`
 
-## リマインドメッセージテンプレ
+## リマインドメッセージテンプレ（push 単位の補助）
+
+> 以下のパターンは push 時の補助リマインドです。
+> PR 作成時の自動保存（前述）が完了している場合、これらのリマインドは省略してよい。
+> push 単位で別途確認したいタスクがある場合のみ出力する。
 
 ### パターン 1: 要件定義書・仕様書・指示書を push したとき
 
@@ -382,6 +402,10 @@ push 後の手動実行: `bash scripts/obsidian-sync-reminder.sh`
 
 ## トリガー一覧
 
+> ⚠️ パターン 1・2 は **push 単位の補助リマインド**。
+> PR 作成時の自動保存（Cursor が `implementations/` に直接保存）が主のフローであり、
+> パターン 1・2 はそれを補完する位置づけ。
+
 | 行動 | 出力パターン | リマインド内容 |
 |------|-------------|----------------|
 | `docs/requirements*/**/*.md` / `docs/requirements*.md` を push | パターン 1 | 議論ログ整理タスク |
@@ -417,7 +441,7 @@ git commit -m "feat: implement MECE tab (Closes #229)"
 
 ## push 後に Cursor が必ずすること
 
-1. `git push` を実行したら、変更ファイルに応じてパターン 1 または 2 のメッセージを **ユーザーへの返答に含める**
+1. PR 作成時の Obsidian 自動保存が未実施の場合のみ、変更ファイルに応じてパターン 1 または 2 のメッセージを **ユーザーへの返答に含める**
 2. post-push フックの出力があれば、その内容を共有する
 3. Wiki のみの変更（`.github/wiki/`）では Obsidian リマインドは不要
 
