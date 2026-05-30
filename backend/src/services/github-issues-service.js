@@ -76,6 +76,43 @@ async function createGitHubIssue({ accessToken, title, body, labels = ['ready-fo
 }
 
 /**
+ * GitHub Issue のタイトル・本文を更新する
+ * @param {object} params
+ * @param {string} params.accessToken
+ * @param {number} params.issueNumber
+ * @param {string} [params.title]
+ * @param {string} [params.body]
+ * @returns {Promise<{ number: number, title: string, url: string, updated_at: string }>}
+ */
+async function updateGitHubIssue({ accessToken, issueNumber, title, body }) {
+  const payload = {};
+  if (typeof title === 'string') payload.title = title;
+  if (typeof body === 'string') payload.body = body;
+
+  if (Object.keys(payload).length === 0) {
+    throw new GitHubApiError('title または body のいずれかは必須です', 400);
+  }
+
+  const response = await fetch(`${GITHUB_API}/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues/${issueNumber}`, {
+    method: 'PATCH',
+    headers: githubHeaders(accessToken),
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    await throwGitHubApiError(response, 'GitHub Issue 更新に失敗しました');
+  }
+
+  const issue = await response.json();
+  return {
+    number: issue.number,
+    title: issue.title,
+    url: issue.html_url,
+    updated_at: issue.updated_at,
+  };
+}
+
+/**
  * GitHub Pull Request を作成する
  * @param {object} params
  * @param {string} params.accessToken
@@ -494,6 +531,7 @@ async function listGitHubIssues({ accessToken, state = 'open', perPage = 10 }) {
 
 module.exports = {
   createGitHubIssue,
+  updateGitHubIssue,
   createGitHubPullRequest,
   getGitHubPullRequest,
   mergeGitHubPullRequest,

@@ -1,5 +1,6 @@
 const {
   createGitHubIssue,
+  updateGitHubIssue,
   createGitHubPullRequest,
   getGitHubPullRequest,
   mergeGitHubPullRequest,
@@ -32,6 +33,19 @@ const TOOL_DEFINITIONS = [
         },
       },
       required: ['title', 'body'],
+    },
+  },
+  {
+    name: 'update_issue',
+    description: '指定した Issue の本文・タイトルを更新する',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        issue_number: { type: 'integer', description: '対象 Issue 番号' },
+        title: { type: 'string', description: '新しいタイトル（任意）' },
+        body: { type: 'string', description: '新しい本文（Markdown、任意）' },
+      },
+      required: ['issue_number'],
     },
   },
   {
@@ -298,6 +312,29 @@ async function handleMcpJsonRpc(req, res) {
           title,
           body: issueBody,
           labels: Array.isArray(labels) ? labels : undefined,
+        });
+
+        return res.json(
+          jsonRpcResult(id, {
+            content: [{ type: 'text', text: JSON.stringify(issue, null, 2) }],
+            isError: false,
+          })
+        );
+      }
+
+      if (toolName === 'update_issue') {
+        if (!Number.isInteger(args.issue_number)) {
+          return res.status(400).json(jsonRpcError(id, -32602, 'issue_number は整数で指定してください'));
+        }
+        if (typeof args.title !== 'string' && typeof args.body !== 'string') {
+          return res.status(400).json(jsonRpcError(id, -32602, 'title または body のいずれかは必須です'));
+        }
+
+        const issue = await updateGitHubIssue({
+          accessToken,
+          issueNumber: args.issue_number,
+          title: typeof args.title === 'string' ? args.title : undefined,
+          body: typeof args.body === 'string' ? args.body : undefined,
         });
 
         return res.json(
