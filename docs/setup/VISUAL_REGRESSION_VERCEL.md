@@ -14,6 +14,8 @@ Visual Regression Test を **Vercel Preview URL** 上で実行するための設
 
 Secret 未設定時は CI 内 `build + preview` にフォールバックします。
 
+> **運用状況（2026-05-31）**: `VERCEL_AUTOMATION_BYPASS_SECRET` 登録済み。PR 時は Vercel Preview を優先してテストする。
+
 ---
 
 ## Step 1: Vercel で Bypass Secret を発行
