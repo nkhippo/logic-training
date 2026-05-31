@@ -208,3 +208,20 @@ gh api -X DELETE "repos/nkhippo/ThinkGrindAi/git/refs/heads/<branch-name>"
    - 再現手順
    - 試した対処（Actions ログ URL、Issue / PR URL）
 2. Claude Chat に状況を共有して相談する
+
+---
+
+## Visual Regression Test（CI 動作確認）
+
+develop / main 向け PR 作成時に `.github/workflows/visual-regression.yml` が自動実行される。
+
+**確認手順**
+
+1. PR の **Checks** タブで `Visual Regression Test` が成功しているか
+2. PR コメントに `📸 Visual Regression Report` が投稿されているか
+3. `/logic`・`/thinking` の差分率（0% なら ✅）を確認する
+
+**前提**: Vercel の GitHub 連携により Preview Deployment Status が PR に表示されていること。
+
+**基準画像**: [screenshots ブランチ](https://github.com/nkhippo/ThinkGrindAi/tree/screenshots)
+
