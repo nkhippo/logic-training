@@ -136,6 +136,65 @@ PLAYWRIGHT_BASE_URL=https://thinkgrindai.vercel.app npm run test:visual
 
 ---
 
+## Vercel Ignored Build Step の設定
+
+### 背景
+
+`screenshots/develop` / `screenshots/main` ブランチは Visual Regression の基準 PNG のみを格納する倉庫ブランチです。
+`package.json` が存在しないため、Vercel がこれらのブランチへの push をビルドしようとすると以下のエラーが発生します。
+
+```
+npm error enoent Could not read package.json
+Error: Command "npm run build" exited with 254
+```
+
+このエラーは **CI（GitHub Actions）には無関係**であり、アプリの不具合ではありません。
+ただし Vercel Dashboard にノイズが出続けるため、Ignored Build Step でスキップ設定を行います。
+
+> **develop 向け PR の Preview には影響しません。**  
+> Ignored Build Step は `screenshots/*` など倉庫ブランチだけ exit 0（スキップ）にし、  
+> `develop` / `feat/*` などは exit 1（ビルド続行）のままです。
+
+### 設定手順
+
+1. [Vercel Dashboard](https://vercel.com/dashboard) → **thinkgrindai** → **Settings**
+2. 左メニュー **Build and Deployment**（※ **Git** タブではない）
+3. 下へスクロール → **Ignored Build Step**
+4. **Behavior** を **Custom** にし、以下を入力して **Save**
+
+```bash
+case "$VERCEL_GIT_COMMIT_REF" in
+  screenshots/*|screenshots-backup) exit 0 ;;
+  *) exit 1 ;;
+esac
+```
+
+> Vercel の仕様: **exit 0** = ビルドをスキップ / **exit 1** = ビルドを続行  
+> `case` 文は末尾の **`esac`** まで含めること（欠けるとシェルエラーになる）。
+
+**Production Overrides** に空の Command が残っていると警告が出ることがあります。
+その場合は Override をリセットするか、Project Settings と同じコマンドを入れてください。
+
+### 設定済み環境
+
+| 設定日 | 設定者 | スキップ対象ブランチ |
+|--------|--------|---------------------|
+| 2026-05-31 | Naoya | `screenshots/*`, `screenshots-backup` |
+
+### 動作確認
+
+| 確認項目 | 期待結果 |
+|---------|---------|
+| `screenshots/develop` への push | Deployments が **Canceled** / **Skipped**（Failed ではない） |
+| develop 向け PR | Vercel Preview が作成され、Visual Regression の `対象: Vercel Preview` になる |
+
+### 注意事項
+
+- 将来 `screenshots` 系のブランチを追加した場合は、上記 `case` のパターンに含まれているか確認すること
+- `screenshots/*` のワイルドカードは `screenshots/develop` / `screenshots/main` 両方をカバーする
+
+---
+
 ## 関連ファイル
 
 | ファイル | 役割 |
