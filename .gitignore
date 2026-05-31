@@ -18,3 +18,8 @@ backend/.DS_Store
 # iCloud/Dropbox sync conflicts（ファイル・ディレクトリ両対応）
 *\ [0-9].*
 *\ [0-9]/
+
+# Playwright
+/test-results/
+/playwright-report/
+screenshots-diff/
