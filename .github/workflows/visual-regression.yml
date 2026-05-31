@@ -34,17 +34,12 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium
 
-      - name: Wait for Vercel Preview
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: vercel_preview
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 120
-
+      # Vercel Preview は Deployment Protection により 401 となるため、
+      # CI 内で build + preview を起動してテストする（playwright.config.js の webServer）
       - name: Run visual tests
         run: npm run test:visual
         env:
-          PLAYWRIGHT_BASE_URL: ${{ steps.vercel_preview.outputs.url }}
+          VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
 
       - name: Checkout screenshots branch (baseline)
         uses: actions/checkout@v4
@@ -103,6 +98,8 @@ jobs:
 
       - name: Capture baseline screenshots
         run: npm run test:visual
+        env:
+          VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
 
       - name: Update screenshots branch
         run: |
