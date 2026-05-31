@@ -68,11 +68,25 @@ async function findPreviewUrl() {
 }
 
 /**
+ * Bypass 用クエリパラメータ付き URL を返す（Node fetch の redirect loop 回避）。
+ * @param {string} url
+ * @returns {string}
+ */
+function withBypassQuery(url) {
+  if (!bypassSecret) return url;
+  const parsed = new URL(url);
+  parsed.searchParams.set('x-vercel-protection-bypass', bypassSecret);
+  parsed.searchParams.set('x-vercel-set-bypass-cookie', 'true');
+  return parsed.toString();
+}
+
+/**
  * Preview URL が 200 を返すまで待機する。
  * @param {string} url
  * @returns {Promise<void>}
  */
 async function waitUntilReady(url) {
+  const pollUrl = withBypassQuery(url);
   const headers = {};
   if (bypassSecret) {
     headers['x-vercel-protection-bypass'] = bypassSecret;
@@ -83,13 +97,18 @@ async function waitUntilReady(url) {
   let attempt = 0;
 
   while (Date.now() < deadline) {
-    const response = await fetch(url, { headers, redirect: 'follow' });
-    if (response.status === 200) {
-      console.log(`Preview ready: ${url} (attempt ${attempt})`);
-      return;
+    try {
+      const response = await fetch(pollUrl, { headers, redirect: 'follow' });
+      if (response.status === 200) {
+        console.log(`Preview ready: ${url} (attempt ${attempt})`);
+        return;
+      }
+      console.log(`GET status: ${response.status}. Attempt ${attempt}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.log(`GET failed: ${message}. Attempt ${attempt}`);
     }
 
-    console.log(`GET status: ${response.status}. Attempt ${attempt}`);
     attempt += 1;
     await new Promise((resolve) => setTimeout(resolve, checkIntervalMs));
   }
