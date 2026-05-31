@@ -1,0 +1,301 @@
+name: Visual Regression Test
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+  deployments: read
+  statuses: read
+  checks: read
+
+jobs:
+  visual-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Wait for Vercel Preview
+        id: vercel
+        run: node scripts/wait-for-vercel-preview.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          MAX_TIMEOUT: '120'
+
+      - name: Run visual tests (Vercel Preview)
+        if: steps.vercel.outputs.url != ''
+        run: npm run test:visual
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Run visual tests (local preview fallback)
+        if: steps.vercel.outputs.url == ''
+        run: npm run test:visual
+        env:
+          VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
+
+      - name: Checkout baseline branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref == 'main' && 'screenshots/main' || 'screenshots/develop' }}
+          path: screenshots-baseline
+
+      - name: Compare screenshots
+        run: node scripts/compare-screenshots.js
+        env:
+          BASELINE_DIR: screenshots-baseline
+          BASELINE_REF: ${{ github.base_ref == 'main' && 'screenshots/main' || 'screenshots/develop' }}
+
+      - name: Post PR comment
+        uses: actions/github-script@v7
+        if: always()
+        env:
+          VERCEL_TARGET: ${{ steps.vercel.outputs.url != '' && 'Vercel Preview' || 'CI local preview (fallback)' }}
+          BASELINE_REF: ${{ github.base_ref == 'main' && 'screenshots/main' || 'screenshots/develop' }}
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'screenshots-diff/report.json';
+            if (!fs.existsSync(reportPath)) {
+              core.warning('Report file not found; skipping PR comment');
+              return;
+            }
+
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const target = process.env.VERCEL_TARGET;
+            const baselineRef = process.env.BASELINE_REF;
+            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const judgmentLabel = {
+              ok: '✅ 正常',
+              env_diff: '⚠️ 環境差の可能性',
+              ui_change: '⚠️ UI変更の疑い',
+              critical: '❌ 重大な差分',
+            };
+
+            const lines = [
+              '## 📸 Visual Regression Report',
+              '',
+              `**対象**: ${target}`,
+              `**基準**: ${baselineRef}`,
+              '',
+              '| ページ | 差分率 | 判定 | 推奨アクション |',
+              '|--------|--------|------|----------------|',
+            ];
+
+            for (const page of report.pages) {
+              const judgment = judgmentLabel[page.classification] || page.judgment;
+              lines.push(
+                `| \`${page.name}\` | ${page.diffPercent}% | ${judgment} | ${page.recommendation} |`
+              );
+            }
+
+            lines.push('', '---', '');
+
+            for (const page of report.pages) {
+              if (page.classification === 'ok') {
+                continue;
+              }
+
+              if (page.classification === 'env_diff') {
+                lines.push(
+                  `### ⚠️ ${page.name} — 環境差の可能性（${page.diffPercent}%）`,
+                  '差分が画面全体に分散しています。フォント描画・アンチエイリアスによる環境差の可能性が高いです。',
+                  '→ 意図的なUI変更の場合: このコメントに「✅ 意図的な変更」と返信してください',
+                  '→ 基準画像を更新する場合: 「基準更新:」と返信してください',
+                  '',
+                  '---',
+                  ''
+                );
+                continue;
+              }
+
+              if (page.classification === 'ui_change') {
+                const bbox = page.bbox
+                  ? `ページ（x: ${page.bbox.minX}〜${page.bbox.maxX}px, y: ${page.bbox.minY}〜${page.bbox.maxY}px付近）`
+                  : 'ページの一部';
+                lines.push(
+                  `### ⚠️ ${page.name} — UI変更の疑い（${page.diffPercent}%、局所集中）`,
+                  `${bbox}に差分が集中しています。意図しないUI変更の可能性があります。`,
+                  '→ Cursorに修正させる場合: このコメントに「修正依頼: （修正内容の説明）」と返信してください',
+                  '→ 意図的な変更の場合: 「✅ 意図的な変更」と返信してください',
+                  '',
+                  '---',
+                  ''
+                );
+                continue;
+              }
+
+              if (page.classification === 'critical') {
+                const reason = page.dimensionMismatch
+                  ? '画像サイズが一致しません。'
+                  : page.missingBaseline
+                    ? '基準画像が見つかりません。'
+                    : `差分が ${page.diffPercent}% です。`;
+                lines.push(
+                  `### ❌ ${page.name} — 重大な差分（${page.diffPercent}%）`,
+                  `${reason}`,
+                  '→ ClaudeまたはNaoyaと方針を確認してください（自動修正は行いません）',
+                  '',
+                  '---',
+                  ''
+                );
+              }
+            }
+
+            lines.push('', `📎 差分画像: [Artifactsからダウンロード](${artifactUrl})`);
+
+            const body = lines.join('\n');
+            const marker = '## 📸 Visual Regression Report';
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+
+            const existing = comments.find(
+              (comment) =>
+                comment.user?.type === 'Bot' &&
+                comment.body?.includes(marker)
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screenshots-diff
+          path: screenshots-diff/
+
+  update-baseline-develop:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Wait for Vercel Preview (develop)
+        id: vercel
+        run: node scripts/wait-for-vercel-preview.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+          MAX_TIMEOUT: '300'
+
+      - name: Capture baseline (Vercel Preview)
+        if: steps.vercel.outputs.url != ''
+        run: npm run test:visual
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Capture baseline (local fallback)
+        if: steps.vercel.outputs.url == ''
+        run: npm run test:visual
+        env:
+          VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
+
+      - name: Update screenshots/develop branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/baseline-new
+          cp screenshots/*.png /tmp/baseline-new/
+          git fetch origin screenshots/develop
+          git checkout screenshots/develop
+          cp /tmp/baseline-new/*.png .
+          git add logic.png thinking.png
+          if git diff --staged --quiet; then
+            echo "No screenshot changes to commit"
+          else
+            git commit -m "chore: update baseline screenshots for develop [skip ci]"
+            git push origin screenshots/develop
+          fi
+
+  update-baseline-main:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Capture baseline (production)
+        run: npm run test:visual
+        env:
+          PLAYWRIGHT_BASE_URL: https://thinkgrindai.vercel.app
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Update screenshots/main branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          mkdir -p /tmp/baseline-new
+          cp screenshots/*.png /tmp/baseline-new/
+          git fetch origin screenshots/main
+          git checkout screenshots/main
+          cp /tmp/baseline-new/*.png .
+          git add logic.png thinking.png
+          if git diff --staged --quiet; then
+            echo "No screenshot changes to commit"
+          else
+            git commit -m "chore: update baseline screenshots for main [skip ci]"
+            git push origin screenshots/main
+          fi
