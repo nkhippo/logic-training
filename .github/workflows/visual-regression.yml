@@ -36,7 +36,6 @@ jobs:
 
       - name: Wait for Vercel Preview
         id: vercel
-        continue-on-error: true
         run: node scripts/wait-for-vercel-preview.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

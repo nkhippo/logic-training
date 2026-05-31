@@ -12,6 +12,17 @@ const screenshotsDir = path.join(__dirname, '../../screenshots');
  * @param {string} fileName
  */
 async function capturePageScreenshot(page, routePath, fileName) {
+  const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  const baseUrl = process.env.PLAYWRIGHT_BASE_URL || '';
+
+  if (bypassSecret && baseUrl.includes('vercel.app')) {
+    const seedUrl = new URL(baseUrl);
+    seedUrl.searchParams.set('x-vercel-protection-bypass', bypassSecret);
+    seedUrl.searchParams.set('x-vercel-set-bypass-cookie', 'true');
+    await page.goto(`${seedUrl.pathname}${seedUrl.search}`);
+    await page.waitForLoadState('networkidle');
+  }
+
   await page.goto(routePath);
   await page.waitForLoadState('networkidle');
   await page.screenshot({
