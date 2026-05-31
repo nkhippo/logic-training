@@ -808,6 +808,9 @@ PR 本文の必須フォーマットは **`.cursor/rules/dev-flow.mdc`「## PR D
 - Hotfix フロー（CLAUDE.md「Hotfix フロー」参照）を使う
 - develop にも同内容を確実に backport すること
 
+> 💡 main への直接 push および force push は GitHub Rulesets（「main protection」）によりブロックされている。PR 経由でのマージが必須。
+> 「develop 以外からの main 向け PR の禁止」は GitHub Free では Rulesets で enforce できないため、上記運用ルールで遵守する。
+
 ### Bridge 方式廃止について（2026-05-30）
 
 旧 Bridge workflow（`issue-to-automation-bridge.yml` / `approval-comment-automation-bridge.yml`）は廃止済み。  

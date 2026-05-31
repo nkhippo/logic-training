@@ -6,7 +6,7 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
+  issues: write
 
 jobs:
   check-conflicts:
@@ -41,50 +41,77 @@ jobs:
         if: steps.conflict.outputs.has_conflict != 'true'
         run: echo "No conflicts between develop and main."
 
-      - name: Ensure develop to main PR and notify conflicts
+      - name: Notify conflict via GitHub Issue
         if: steps.conflict.outputs.has_conflict == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          FILES=$(sed 's/^/- /' conflict-files.txt)
-          TIMESTAMP=$(date -u +%Y%m%d-%H%M%S)
-          BODY=$(cat <<EOF
-          ## develop → main コンフリクト検知
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const title = '⚠️ develop→main コンフリクトが検出されました';
+            const runbookUrl = `https://github.com/${owner}/${repo}/blob/main/docs/dev-flow-runbook.md#リリースdevelop--main前チェック`;
 
-          \`develop\` ブランチが \`main\` とコンフリクトしています。手動解消が必要です。
+            const conflictFiles = fs.existsSync('conflict-files.txt')
+              ? fs.readFileSync('conflict-files.txt', 'utf8').trim().split('\n').filter(Boolean)
+              : [];
+            const fileList = conflictFiles.length
+              ? conflictFiles.map((f) => `- ${f}`).join('\n')
+              : '- （ファイル一覧の取得に失敗しました）';
 
-          ### コンフリクトが発生しているファイル
-          ${FILES}
+            const body = `## コンフリクト検出
 
-          ---
-          _自動検知: develop-main-conflict-check.yml (${TIMESTAMP} UTC)_
-          EOF
-          )
+            develop ブランチを main にマージしようとするとコンフリクトが発生します。
 
-          EXISTING=$(gh pr list \
-            --base main \
-            --head develop \
-            --state open \
-            --json number \
-            --jq '.[0].number // empty')
+            **検出コミット**: ${context.sha}
+            **検出時刻**: ${new Date().toISOString()}
 
-          if [ -z "$EXISTING" ]; then
-            gh pr create \
-              --base main \
-              --head develop \
-              --title "chore: develop → main コンフリクト解消" \
-              --body "$BODY" \
-              --repo "${{ github.repository }}"
-            EXISTING=$(gh pr list \
-              --base main \
-              --head develop \
-              --state open \
-              --json number \
-              --jq '.[0].number')
-          else
-            gh pr comment "$EXISTING" \
-              --body "$BODY" \
-              --repo "${{ github.repository }}"
-          fi
+            ### コンフリクトが発生しているファイル
+            ${fileList}
 
-          echo "Notified PR #${EXISTING} about develop/main conflicts."
+            ## 対処手順
+
+            [docs/dev-flow-runbook.md — リリース（develop → main）前チェック](${runbookUrl}) を参照してください。
+
+            \`\`\`bash
+            git checkout develop && git pull origin develop
+            git merge origin/main
+            # コンフリクト解消後
+            git push origin develop
+            \`\`\`
+
+            ## 自動クローズ
+
+            コンフリクト解消後、develop への push が成功したら本 Issue を手動でクローズしてください。`;
+
+            const { data: openIssues } = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              labels: 'chore',
+              per_page: 100,
+            });
+
+            const existing = openIssues.find((issue) =>
+              issue.title.includes('develop→main コンフリクト')
+            );
+
+            if (existing) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: existing.number,
+                body: `${body}\n\n---\n_再検知: develop-main-conflict-check.yml_`,
+              });
+              core.info(`Updated existing conflict issue #${existing.number}`);
+              return;
+            }
+
+            const { data: created } = await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body,
+              labels: ['chore'],
+            });
+            core.info(`Created conflict issue #${created.number}`);

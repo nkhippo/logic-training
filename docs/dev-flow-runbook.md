@@ -156,6 +156,34 @@ git diff origin/main...origin/develop -- CLAUDE.md .cursor/rules/dev-flow.mdc
 
 ---
 
+## main への直接 push / 誤った source branch からの PR
+
+### 症状
+
+- `git push origin main` が **rejected** される（`protected branch` / `Changes must be made through a pull request`）
+- GitHub UI で main へ直接 commit できない
+
+### 原因
+
+リポジトリ Rulesets **「main protection」** により、main への直接 push・force push が禁止されている。
+
+### 対処法
+
+| 状況 | 対処 |
+|---|---|
+| 通常の変更 | feature / docs / chore ブランチを切り、**develop または main 向け PR** を作成してマージ |
+| Hotfix | CLAUDE.md「Hotfix フロー」に従い、Hotfix ブランチ → PR → develop へ backport |
+| develop 以外から main へ PR したい | **運用上禁止**。develop 経由でリリース PR を作成する |
+
+Rulesets 設定の確認:
+
+```bash
+gh api repos/nkhippo/ThinkGrindAi/rulesets
+gh api repos/nkhippo/ThinkGrindAi/rulesets/<id>
+```
+
+---
+
 ## PR マージ後のブランチ後片付け
 
 - リポジトリ設定 **「Automatically delete head branches」** を有効化済み（2026-05-30）
