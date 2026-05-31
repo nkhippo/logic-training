@@ -573,7 +573,8 @@ Claude は **Issue 本文草稿を `.md` ファイルとして出力** する（
 検証が完了したら、確認なしに以下まで一気に進めること：
 1. コミット
 2. push（未完成でも必ずpushすること）
-3. PR作成（Draft可。base・ラベル・Closes #XXX を記載）
+3. PR作成（Draft可。base・ラベルを記載）
+   ※ `Closes #XXX` は develop 向け PR には書かない。リリース PR（develop→main）作成時に Claude がまとめて記載する。
    - 未完成の場合はタイトルに `[WIP]` を付けてよい
 4. PR 本文の必須フォーマットは **`.cursor/rules/dev-flow.mdc`「## PR Description」を参照** すること。以下の採用版に従う：
 
@@ -596,7 +597,7 @@ Claude は **Issue 本文草稿を `.md` ファイルとして出力** する（
 - （あれば記載。なければ「なし」）
 
 ## 関連 Issue
-Closes #XXX
+#XXX（`Closes #XXX` は記載しない — develop 向け PR のため）
 ---
 
 途中で止まってよいのは「不明点がある場合」のみ。
@@ -732,7 +733,7 @@ Cursor は PR 作成前に以下を確認すること：
 - [ ] PR 作成時に Obsidian `implementations/` にメモを保存したか（またはフォールバックで Issue Comment に出力したか）
 
 **PR 本文**
-- [ ] `Closes #XXX` を記載したか
+- [ ] `Closes #XXX` は記載しない（develop 向け PR のため）
 - [ ] base ブランチが正しいか（全ラベル develop 経由）
 
 ---
