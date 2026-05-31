@@ -34,9 +34,25 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install chromium
 
-      # Vercel Preview は Deployment Protection により 401 となるため、
-      # CI 内で build + preview を起動してテストする（playwright.config.js の webServer）
-      - name: Run visual tests
+      - name: Wait for Vercel Preview
+        id: vercel
+        continue-on-error: true
+        run: node scripts/wait-for-vercel-preview.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          MAX_TIMEOUT: '120'
+
+      - name: Run visual tests (Vercel Preview)
+        if: steps.vercel.outcome == 'success'
+        run: npm run test:visual
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.vercel.outputs.url }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+      - name: Run visual tests (local preview fallback)
+        if: steps.vercel.outcome != 'success'
         run: npm run test:visual
         env:
           VITE_API_BASE_URL: https://thinkgrindai-staging.up.railway.app
@@ -61,7 +77,10 @@ jobs:
               return;
             }
             const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
-            const lines = ['## 📸 Visual Regression Report', ''];
+            const target = '${{ steps.vercel.outcome }}' === 'success'
+              ? 'Vercel Preview'
+              : 'CI local preview (fallback)';
+            const lines = ['## 📸 Visual Regression Report', '', `対象: ${target}`, ''];
             for (const page of report.pages) {
               const icon = page.diffPercent === 0 ? '✅' : '⚠️';
               lines.push(`${icon} \`${page.name}\` — 差分: ${page.diffPercent}%`);
