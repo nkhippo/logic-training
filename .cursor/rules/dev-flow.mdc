@@ -295,8 +295,10 @@ docs: <作業内容>（#XXX）
 - （あれば記載。なければ「なし」）
 
 ## 関連 Issue
-Closes #XXX
+#XXX（`Closes #XXX` は記載しない — develop 向け PR のため）
 ```
+
+> develop 向け PR では `Closes #XXX` を書かない（GitHub は default ブランチ main へのマージ時のみ Issue を Close する）。Issue Close はリリース PR（develop→main）で Claude がまとめて記載する。
 
 ---
 
