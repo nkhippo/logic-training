@@ -23,7 +23,7 @@ jobs:
       - name: Detect comment intent
         id: intent
         run: |
-          BODY='${{ github.event.comment.body }}'
+          BODY=$(printf '%s' '${{ github.event.comment.body }}' | tr -d '\r')
           BODY_LOWER=$(echo "$BODY" | tr '[:upper:]' '[:lower:]' | xargs)
 
           if echo "$BODY_LOWER" | grep -qE "^(approve|ok|lgtm)$" || \
