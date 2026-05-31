@@ -1,13 +1,14 @@
 /**
  * GitHub Actions 用: Vercel Preview デプロイ完了を待ち、URL を GITHUB_OUTPUT に書き出す。
- * Deployment Protection 有効時は VERCEL_AUTOMATION_BYPASS_SECRET ヘッダーで 401 を回避する。
+ * GitHub Deployments API で success を確認した時点で URL を返す。
+ * Node fetch による HTTP ヘルスチェックは行わない（Deployment Protection 下で redirect loop になるため）。
+ * 実際のアクセス確認は Playwright（extraHTTPHeaders で bypass）に任せる。
  */
 import fs from 'fs';
 
 const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
 const sha = process.env.GITHUB_DEPLOYMENT_SHA || process.env.GITHUB_SHA;
 const token = process.env.GITHUB_TOKEN;
-const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '';
 const maxTimeoutSec = Number.parseInt(process.env.MAX_TIMEOUT || '120', 10);
 const checkIntervalMs = Number.parseInt(process.env.CHECK_INTERVAL_MS || '2000', 10);
 
@@ -42,7 +43,7 @@ async function githubApi(path) {
 }
 
 /**
- * PR  head SHA に紐づく Vercel Preview URL を取得する。
+ * PR head SHA に紐づく Vercel Preview URL を取得する。
  * @returns {Promise<string | null>}
  */
 async function findPreviewUrl() {
@@ -67,55 +68,6 @@ async function findPreviewUrl() {
   return null;
 }
 
-/**
- * Bypass 用クエリパラメータ付き URL を返す（Node fetch の redirect loop 回避）。
- * @param {string} url
- * @returns {string}
- */
-function withBypassQuery(url) {
-  if (!bypassSecret) return url;
-  const parsed = new URL(url);
-  parsed.searchParams.set('x-vercel-protection-bypass', bypassSecret);
-  parsed.searchParams.set('x-vercel-set-bypass-cookie', 'true');
-  return parsed.toString();
-}
-
-/**
- * Preview URL が 200 を返すまで待機する。
- * @param {string} url
- * @returns {Promise<void>}
- */
-async function waitUntilReady(url) {
-  const pollUrl = withBypassQuery(url);
-  const headers = {};
-  if (bypassSecret) {
-    headers['x-vercel-protection-bypass'] = bypassSecret;
-    headers['x-vercel-set-bypass-cookie'] = 'true';
-  }
-
-  const deadline = Date.now() + maxTimeoutSec * 1000;
-  let attempt = 0;
-
-  while (Date.now() < deadline) {
-    try {
-      const response = await fetch(pollUrl, { headers, redirect: 'follow' });
-      if (response.status === 200) {
-        console.log(`Preview ready: ${url} (attempt ${attempt})`);
-        return;
-      }
-      console.log(`GET status: ${response.status}. Attempt ${attempt}`);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      console.log(`GET failed: ${message}. Attempt ${attempt}`);
-    }
-
-    attempt += 1;
-    await new Promise((resolve) => setTimeout(resolve, checkIntervalMs));
-  }
-
-  throw new Error(`Timeout waiting for ${url}`);
-}
-
 const previewDeadline = Date.now() + maxTimeoutSec * 1000;
 let previewUrl = null;
 
@@ -131,8 +83,7 @@ if (!previewUrl) {
   throw new Error(`No Vercel Preview deployment found for sha ${sha}`);
 }
 
-console.log(`Found preview URL: ${previewUrl}`);
-await waitUntilReady(previewUrl);
+console.log(`Preview deployment ready: ${previewUrl}`);
 
 if (process.env.GITHUB_OUTPUT) {
   fs.appendFileSync(process.env.GITHUB_OUTPUT, `url=${previewUrl}\n`);
