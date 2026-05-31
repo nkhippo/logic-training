@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4173';
+const vercelBypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '';
 
 /** @type {import('@playwright/test').PlaywrightTestConfig} */
 export default defineConfig({
@@ -14,6 +15,14 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'on-first-retry',
+    ...(vercelBypassSecret
+      ? {
+          extraHTTPHeaders: {
+            'x-vercel-protection-bypass': vercelBypassSecret,
+            'x-vercel-set-bypass-cookie': 'true',
+          },
+        }
+      : {}),
   },
   projects: [
     {
