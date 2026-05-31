@@ -39,6 +39,9 @@ grep -nE 'Obsidian|decisions/|implementations/' CLAUDE.md .cursor/rules/dev-flow
 
 - `CLAUDE.md` を変更したか？ → `.cursor/rules/dev-flow.mdc` を見るべきか確認
 - `.cursor/rules/dev-flow.mdc` を変更したか？ → `CLAUDE.md` 側に逆参照が必要か確認
+- `CLAUDE.md` または `dev-flow.mdc` を変更したか？
+  → `git diff origin/main...HEAD -- CLAUDE.md .cursor/rules/dev-flow.mdc` で
+  **main との差分**を確認し、main 側に競合しうる変更がないか確認する
 - 開発フロー（Step 1〜7 / 事前確認 0〜3 / Step 3-a〜3-c）に影響するか？ → 番号体系の整合性を確認
 - Bug Issue 運用に影響するか？ → `docs/bug-knowledge.md` / `.github/ISSUE_TEMPLATE/bug.md` を確認
 - スキル（`cursor-instruction-writer/SKILL.md`）に影響するか？ → スキル更新を別 Issue で起票するか判断
@@ -785,6 +788,25 @@ PR 本文の必須フォーマットは **`.cursor/rules/dev-flow.mdc`「## PR D
 > Naoya は GitHub の PR 一覧で `label:needs-review` フィルターを使うとレビュー待ち PR のみを表示できる。
 > 付与対象は Bot / github-actions 作成 PR のみ（Naoya 本人作成 PR には付与しない）。
 > PR マージ後の head ブランチ自動削除・Cursor トラブル時の対処は `docs/dev-flow-runbook.md` を参照。
+
+### develop → main リリースルール
+
+**必ず守ること**：
+
+- develop → main のリリースは **原則 1 PR で全量**（部分同期 PR を挟まない）
+- main に直接 docs を編集・マージしない（develop 経由のみ）
+- main にマージした直後、develop を main で同期する（`git merge origin/main`）
+
+**リリース PR 作成前の必須チェック**：
+
+1. `git log --oneline origin/develop..origin/main` を実行して、main だけが持つコミットがないか確認
+2. 存在する場合は先に `develop` へ `git merge origin/main` して sync する
+3. sync 後に改めてリリース PR を作成する
+
+**部分同期 PR が必要な緊急時**：
+
+- Hotfix フロー（CLAUDE.md「Hotfix フロー」参照）を使う
+- develop にも同内容を確実に backport すること
 
 ### Bridge 方式廃止について（2026-05-30）
 

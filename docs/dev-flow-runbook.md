@@ -1,6 +1,6 @@
 # Cursor 自動運用 失敗時ランブック
 
-**最終更新**: 2026-05-30  
+**最終更新**: 2026-05-31  
 **前提**: Cursor 自動起動は Webhook 方式（`.github/workflows/trigger-cursor-on-ready.yml`）。Bridge 方式（`issue-to-automation-bridge.yml`）は **2026-05-30 廃止済み**。
 
 関連: [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) §6 / [CURSOR_AUTOMATION_ISSUE_TRIGGER.md](./setup/CURSOR_AUTOMATION_ISSUE_TRIGGER.md)
@@ -129,6 +129,30 @@ base ブランチは develop です。
 ```
 
 4. 実装完了後、PR URL を Naoya に共有する
+
+---
+
+## リリース（develop → main）前チェック
+
+PR 作成前に以下を実行する：
+
+```bash
+# main だけが持つコミットを確認（0 件なら安全）
+git log --oneline origin/develop..origin/main
+
+# CLAUDE.md の差分を確認
+git diff origin/main...origin/develop -- CLAUDE.md .cursor/rules/dev-flow.mdc
+```
+
+コミットや差分がある場合：
+
+1. `git checkout develop && git pull origin develop`
+2. `git merge origin/main`
+3. コンフリクトがあれば develop 側を正として解消
+4. `git push origin develop`
+5. 改めてリリース PR を作成する
+
+詳細ルールは `CLAUDE.md`「develop → main リリースルール」を参照。
 
 ---
 
