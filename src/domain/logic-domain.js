@@ -41,6 +41,7 @@ export const FILL_PRESETS={
     {value:'proposal',label:'提案書・企画書',minDiff:2},
     {value:'report',label:'分析レポート・調査報告',minDiff:3},
     {value:'strategy',label:'経営戦略文書・コンサルレポート',minDiff:4},
+    {value:'custom',label:'その他（自由入力）',minDiff:1},
   ],
   en:[
     {value:'email',label:'Internal email / communication',minDiff:1},
@@ -48,6 +49,7 @@ export const FILL_PRESETS={
     {value:'proposal',label:'Proposal / project plan',minDiff:2},
     {value:'report',label:'Analysis report / research findings',minDiff:3},
     {value:'strategy',label:'Management strategy / consulting report',minDiff:4},
+    {value:'custom',label:'Other (free input)',minDiff:1},
   ],
 };
 export const SUMMARY_PRESETS=FILL_PRESETS;
@@ -58,6 +60,7 @@ export const CRITIQUE_PRESETS={
     {value:'proposal',label:'提案書・企画書',minDiff:2},
     {value:'report',label:'分析レポート・稟議書',minDiff:3},
     {value:'strategy',label:'経営戦略文書・提言書',minDiff:4},
+    {value:'custom',label:'その他（自由入力）',minDiff:1},
   ],
   en:[
     {value:'chat',label:'Internal chat / short email',minDiff:1},
@@ -65,6 +68,7 @@ export const CRITIQUE_PRESETS={
     {value:'proposal',label:'Proposal / project plan',minDiff:2},
     {value:'report',label:'Analysis report / approval document',minDiff:3},
     {value:'strategy',label:'Strategy document / policy recommendation',minDiff:4},
+    {value:'custom',label:'Other (free input)',minDiff:1},
   ],
 };
 export const AME_PRESETS={
@@ -73,12 +77,14 @@ export const AME_PRESETS={
     {value:'hr',label:'人事・組織',minDiff:1},
     {value:'it',label:'IT・システム',minDiff:2},
     {value:'strategy',label:'経営・戦略',minDiff:3},
+    {value:'custom',label:'その他（自由入力）',minDiff:1},
   ],
   en:[
     {value:'sales',label:'Sales / Revenue',minDiff:1},
     {value:'hr',label:'HR / Organization',minDiff:1},
     {value:'it',label:'IT / Systems',minDiff:2},
     {value:'strategy',label:'Management / Strategy',minDiff:3},
+    {value:'custom',label:'Other (free input)',minDiff:1},
   ],
 };
 export const INDUSTRY_CONSTRAINT={

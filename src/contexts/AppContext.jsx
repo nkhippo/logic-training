@@ -16,6 +16,10 @@ const initialState = {
   sDocType: '',
   cDocType: '',
   aDocType: '',
+  fCustomTheme: '',
+  sCustomTheme: '',
+  cCustomTheme: '',
+  aCustomTheme: '',
   sVolume: DEFAULT_S_VOLUME,
   fFilter: 'all',
   sFilter: 'all',
@@ -56,6 +60,10 @@ function appReducer(state, action) {
     }
     case 'SET_DOC_TYPE': {
       const key = `${action.tab}DocType`;
+      return { ...state, [key]: action.payload };
+    }
+    case 'SET_CUSTOM_THEME': {
+      const key = `${action.tab}CustomTheme`;
       return { ...state, [key]: action.payload };
     }
     case 'SET_VOLUME':

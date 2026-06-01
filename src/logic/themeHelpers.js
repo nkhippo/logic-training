@@ -60,5 +60,9 @@ export function buildThemeInFromDocType(state, mode, isEN) {
         ? ` Industry context: ${ind.label}.`
         : ` 業界：${ind.label}。`
       : '';
+  if (value === 'custom') {
+    const customText = state[`${mode}CustomTheme`] || '';
+    return customText ? customText + indNote : '';
+  }
   return preset.label + indNote;
 }
